@@ -69,12 +69,12 @@ function layoutCircle(){
   letterPositions = [];
 
   ctx.clearRect(0,0,w,h);
-  ctx.font = "24px sans-serif";
+  ctx.font = `${Math.floor(r/3)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
   for(let i=0;i<n;i++){
-    const angle = (i/(n))*2*Math.PI - Math.PI/2;
+    const angle = (i/n)*2*Math.PI - Math.PI/2;
     const x = cx + r*Math.cos(angle);
     const y = cy + r*Math.sin(angle);
     letterPositions.push({x,y});
@@ -88,7 +88,6 @@ function redraw(){
   const h = canvas.height;
   ctx.clearRect(0,0,w,h);
 
-  // линии между выбранными буквами
   if(selectedIndices.length>1){
     ctx.strokeStyle="#4b7bec";
     ctx.lineWidth=4;
@@ -101,13 +100,13 @@ function redraw(){
     ctx.stroke();
   }
 
-  // буквы
   letterPositions.forEach((pos,i)=>{
     drawLetter(pos.x,pos.y,letters[i],selectedIndices.includes(i));
   });
 }
 
 function drawLetter(x,y,l,selected){
+  // Пока базовая заливка, потом заменим на текстуру
   ctx.fillStyle = selected ? "#4b7bec" : "#fff";
   ctx.strokeStyle = "#4b7bec";
   ctx.lineWidth = 2;
@@ -188,7 +187,7 @@ function renderLevelMenu(){
   });
 }
 
-// Подсказка
+// Подсказки и монеты
 function updateBonusUI(){
   hintBtn.innerText = `Подсказка (${hintsLeft})`;
   coinsDiv.innerText = `Монеты: ${coins}`;
@@ -210,7 +209,6 @@ hintBtn.onclick = ()=>{
   }
 };
 
-// Реклама / бонус
 adBtn.onclick = ()=>{
   coins += 5;
   alert((currentLang==="ru"?"Вы получили 5 монет!":"You earned 5 coins!"));
@@ -221,7 +219,7 @@ adBtn.onclick = ()=>{
 function checkWord(){
   if(currentWord && validWords.includes(currentWord) && !found.includes(currentWord)){
     found.push(currentWord);
-    coins += 1; // монета за слово
+    coins += 1;
     updateBonusUI();
     foundWordsDiv.innerHTML = found.join(", ");
     if(found.length === validWords.length){
