@@ -8,3 +8,48 @@ body { margin:0; font-family:sans-serif; background:#f7f8fb; color:#1e1f26; }
 button { padding:8px 12px; border:none; border-radius:6px; background:#4b7bec; color:#fff; cursor:pointer; }
 button:hover { opacity:0.9; }
 .found { max-width:500px; margin:0 auto; text-align:center; word-break: break-word; }
+
+.level-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto 20px;
+}
+
+.level-menu button {
+  padding:10px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  background:#4b7bec;
+  color:#fff;
+}
+
+.level-menu button.locked {
+  background:#ccc;
+  cursor:default;
+}
+
+.hidden { display:none; }
+
+.bonus-controls {
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:10px;
+  align-items:center;
+}
+
+#adBtn {
+  padding:8px 12px;
+  background:#ff6b6b;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+#adBtn:hover { opacity:0.9; }
+
+#coins { font-weight:600; }

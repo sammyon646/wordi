@@ -15,9 +15,12 @@
       <option value="ru">Русский</option>
       <option value="en">English</option>
     </select>
+    <button id="levelMenuBtn">Меню уровней</button>
   </header>
 
   <main>
+    <section id="levelMenu" class="level-menu hidden"></section>
+
     <section class="circle-section">
       <canvas id="circleCanvas"></canvas>
     </section>
@@ -28,12 +31,21 @@
       <button id="clearBtn">Очистить</button>
     </section>
 
+    <section class="bonus-controls">
+      <button id="hintBtn">Подсказка (3)</button>
+      <div id="coins">Монеты: 0</div>
+    </section>
+
+    <section class="ad-banner">
+      <button id="adBtn">Смотреть рекламу</button>
+    </section>
+
     <section class="found">
       <h3>Найдено</h3>
       <div id="foundWords"></div>
     </section>
   </main>
 
-  <script src="game-swipe.js"></script>
+  <script src="game-menu.js"></script>
 </body>
 </html>
