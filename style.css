@@ -1,8 +1,10 @@
-body {
-  font-family: sans-serif;
-  padding: 20px;
-}
-#letters {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+body { margin:0; font-family:sans-serif; background:#f7f8fb; color:#1e1f26; }
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; gap:10px; }
+#score { background:#eef2ff; padding:4px 8px; border-radius:6px; }
+.circle-section { display:flex; justify-content:center; align-items:center; margin:20px 0; }
+#circleCanvas { width:90vw; max-width:400px; height:90vw; max-height:400px; touch-action: none; }
+.controls { display:flex; justify-content:center; gap:10px; margin-bottom:10px; flex-wrap: wrap; }
+#currentWord { font-size:1.5em; font-weight:600; min-width:100px; text-align:center; }
+button { padding:8px 12px; border:none; border-radius:6px; background:#4b7bec; color:#fff; cursor:pointer; }
+button:hover { opacity:0.9; }
+.found { max-width:500px; margin:0 auto; text-align:center; word-break: break-word; }

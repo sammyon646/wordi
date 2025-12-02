@@ -1,20 +1,39 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Wordi Mini App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wordi Game</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Wordi</h2>
+  <header class="topbar">
+    <h1 id="levelTitle">Уровень 1</h1>
+    <div id="score">0</div>
+    <select id="langSelect">
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
+  </header>
 
-  <div id="letters"></div>
-  <input id="wordInput" placeholder="Введите слово">
-  <button id="checkBtn">Проверить</button>
+  <main>
+    <section class="circle-section">
+      <canvas id="circleCanvas"></canvas>
+    </section>
 
-  <div id="foundWords"></div>
+    <section class="controls">
+      <div id="currentWord" class="current-word"></div>
+      <button id="shuffleBtn">Перемешать</button>
+      <button id="clearBtn">Очистить</button>
+    </section>
 
-  <script src="game.js"></script>
+    <section class="found">
+      <h3>Найдено</h3>
+      <div id="foundWords"></div>
+    </section>
+  </main>
+
+  <script src="game-swipe.js"></script>
 </body>
 </html>
