@@ -1,0 +1,11 @@
+# Игнор node_modules
+node_modules/
+
+# Игнор билда и кэша
+dist/
+.vercel/
+
+# Логи и временные
+*.log
+.env
+.DS_Store  # если на Mac
