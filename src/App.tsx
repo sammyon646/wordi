@@ -14,7 +14,7 @@ export default function App() {
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
-    const radius = 130
+    const radius = 120  // Уменьшили радиус, чтобы буквы внутри круга
     const x = radius * Math.cos(angle)
     const y = radius * Math.sin(angle)
     return { x, y }
@@ -29,15 +29,15 @@ export default function App() {
 
   const checkLetterHit = (pos: { x: number; y: number }) => {
     letters.forEach((letter, i) => {
-      if (path.includes(i)) return
+      if (path.includes(i)) return  // Не добавляем повторно
+      if (path.length > 0 && path[path.length - 1] === i) return  // Не повторяем последнюю букву
       const { x: lx, y: ly } = getLetterPosition(i)
-      const dx = pos.x - (144 + lx)
+      const dx = pos.x - (144 + lx)  // Центр 144px для w-72
       const dy = pos.y - (144 + ly)
-      if (dx * dx + dy * dy < 28 * 28) {
+      if (dx * dx + dy * dy < 28 * 28) {  // Радиус буквы
         updateTypedWord(letter, i)
         consumeEnergy(1)
         addCoins(1)
-        // Добавь проверку смежности, если нужно: if (path.length > 0 && Math.abs(path[path.length - 1] - i) > 1) return
       }
     })
   }
@@ -73,7 +73,7 @@ export default function App() {
     }
   }
 
-  // Линия между центрами букв (прямая, потолще)
+  // Линия только между центрами букв (прямая, потолще)
   const linePath = path.map(i => {
     const { x, y } = getLetterPosition(i)
     return { x: 144 + x, y: 144 + y }
@@ -123,11 +123,11 @@ export default function App() {
         </div>
       </div>
 
-      {/* Круг по центру */}
-      <div className="relative w-80 h-80 rounded-full bg-black/50 shadow-xl flex items-center justify-center pb-20" ref={circleRef}>
+      {/* Круг по центру (удали pb-20) */}
+      <div className="relative w-80 h-80 rounded-full bg-black/50 shadow-xl flex items-center justify-center" ref={circleRef}>
         {/* Подсказка */}
-        <div className="absolute inset-0 flex items-center justify-center text-5xl z-10">{currentWord.hint}</div>
-        <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70 z-10">{currentWord.category}</p>
+        <div className="absolute inset-0 flex items-center justify-center text-5xl">{currentWord.hint}</div>
+        <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70">{currentWord.category}</p>
 
         {/* Буквы */}
         {letters.map((letter, i) => {
@@ -136,19 +136,19 @@ export default function App() {
           return (
             <motion.div
               key={i}
-              className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
+              className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
               style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
               animate={{ scale: isSelected ? 1.1 : 1 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}  // Плавная анимация без прыжков
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
             >
               {letter.toUpperCase()}
             </motion.div>
           )
         })}
 
-        {/* Прямая линия между центрами, потолще */}
+        {/* Линия */}
         {path.length > 1 && (
-          <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
+          <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 320 320">
             <path
               d={linePath}
               stroke="yellow"
