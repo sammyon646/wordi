@@ -1,22 +1,13 @@
 {
-  "game": {
-    "coins": "Coins",
-    "energy": "Energy",
-    "level": "Level",
-    "tap_letters": "Tap letters to form the word",
-    "correct": "Perfect!",
-    "wrong": "Try again",
-    "daily_combo": "Daily Combo"
-  },
-  "nav": {
-    "play": "Play",
-    "boost": "Boost",
-    "friends": "Friends",
-    "earn": "Earn"
-  },
-  "boosts": {
-    "multiletter": "Multiletter x2",
-    "hint": "Hint",
-    "energy": "Full Energy"
-  }
+  "title": "WORDI",
+  "coins": "Coins",
+  "energy": "Energy",
+  "level": "Level",
+  "tap_letters": "Tap letters to form the word",
+  "correct": "Perfect!",
+  "wrong": "Try again",
+  "boost": "Boost",
+  "friends": "Friends",
+  "earn": "Earn",
+  "daily_combo": "Daily Combo"
 }
