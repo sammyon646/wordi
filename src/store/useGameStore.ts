@@ -7,41 +7,35 @@ interface Word {
 }
 
 const words: Word[] = [
-  { word: 'apple', hint: '🍎', category: 'Fruit' },
-  { word: 'banana', hint: '🍌', category: 'Fruit' },
-  { word: 'cat', hint: '🐱', category: 'Animal' },
-  { word: 'dog', hint: '🐶', category: 'Animal' },
-  { word: 'paris', hint: '🗼', category: 'City' },
-  { word: 'london', hint: '🏰', category: 'City' },
-  { word: 'coffee', hint: '☕', category: 'Drink' },
-  { word: 'pizza', hint: '🍕', category: 'Food' },
-  { word: 'guitar', hint: '🎸', category: 'Instrument' },
-  { word: 'mountain', hint: '🏔️', category: 'Nature' },
-  { word: 'river', hint: '🏞️', category: 'Nature' },
-  { word: 'book', hint: '📖', category: 'Object' },
-  { word: 'computer', hint: '💻', category: 'Tech' },
-  { word: 'phone', hint: '📱', category: 'Tech' },
-  { word: 'sun', hint: '☀️', category: 'Weather' },
-  { word: 'rain', hint: '🌧️', category: 'Weather' },
-  { word: 'love', hint: '❤️', category: 'Emotion' },
-  { word: 'happy', hint: '😊', category: 'Emotion' },
-  { word: 'car', hint: '🚗', category: 'Transport' },
-  { word: 'bike', hint: '🚲', category: 'Transport' },
-  // Добавь 3000+ слов. Можно загрузить из JSON
+  { word: 'apple', hint: 'Apple', category: 'Fruit' },
+  { word: 'banana', hint: 'Banana', category: 'Fruit' },
+  { word: 'cat', hint: 'Cat', category: 'Animal' },
+  { word: 'dog', hint: 'Dog', category: 'Animal' },
+  { word: 'paris', hint: 'Paris', category: 'City' },
+  { word: 'london', hint: 'London', category: 'City' },
+  { word: 'coffee', hint: 'Coffee', category: 'Drink' },
+  { word: 'pizza', hint: 'Pizza', category: 'Food' },
+  { word: 'guitar', hint: 'Guitar', category: 'Instrument' },
+  { word: 'mountain', hint: 'Mountain', category: 'Nature' },
+  { word: 'river', hint: 'River', category: 'Nature' },
+  { word: 'book', hint: 'Book', category: 'Object' },
+  { word: 'computer', hint: 'Computer', category: 'Tech' },
+  { word: 'phone', hint: 'Phone', category: 'Tech' },
+  { word: 'love', hint: 'Love', category: 'Emotion' },
+  { word: 'happy', hint: 'Happy', category: 'Emotion' },
+  { word: 'car', hint: 'Car', category: 'Transport' },
+  { word: 'bike', hint: 'Bike', category: 'Transport' },
+  // Добавь сколько угодно слов
 ]
 
 type State = {
   coins: number
-  energy: number
-  maxEnergy: number
   level: number
   currentWord: Word
-  letters: string[]  // Фиксированные буквы
+  letters: string[]
   typedWord: string
-  path: number[]  // Индексы
+  path: number[]
   addCoins: (amount: number) => void
-  consumeEnergy: (amount: number) => void
-  regenerateEnergy: () => void
   setNewWord: () => void
   updateTypedWord: (letter: string, index: number) => void
   resetPath: () => void
@@ -50,19 +44,12 @@ type State = {
 
 const useGameStore = create<State>((set, get) => ({
   coins: 0,
-  energy: 1000,
-  maxEnergy: 1000,
   level: 1,
   currentWord: words[0],
   letters: words[0].word.split('').sort(() => Math.random() - 0.5),
   typedWord: '',
   path: [],
   addCoins: (amount) => set({ coins: get().coins + amount }),
-  consumeEnergy: (amount) => set({ energy: Math.max(0, get().energy - amount) }),
-  regenerateEnergy: () => {
-    const interval = setInterval(() => set({ energy: Math.min(get().maxEnergy, get().energy + 1) }), 100)
-    return () => clearInterval(interval)
-  },
   setNewWord: () => {
     const index = Math.floor(Math.random() * words.length)
     const newWord = words[index]
@@ -70,12 +57,12 @@ const useGameStore = create<State>((set, get) => ({
     set({ currentWord: newWord, letters: newLetters, typedWord: '', path: [] })
   },
   updateTypedWord: (letter, index) => {
-    if (get().path.includes(index)) return  // Нет повторений
+    if (get().path.includes(index)) return
     const newPath = [...get().path, index]
     set({ typedWord: get().typedWord + letter, path: newPath })
   },
   resetPath: () => set({ typedWord: '', path: [] }),
-  levelUp: () => set({ level: get().level + 1, maxEnergy: get().maxEnergy + 200 })
+  levelUp: () => set({ level: get().level + 1 })
 }))
 
 export default useGameStore

@@ -1,15 +1,16 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, Zap, Trophy, Users, DollarSign } from 'lucide-react'
+import { Coins, Trophy, Users, DollarSign, Settings, X } from 'lucide-react'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
 export default function App() {
   const { t, i18n } = useTranslation()
-  const { coins, energy, maxEnergy, level, currentWord, letters, typedWord, path, addCoins, consumeEnergy, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
-  const isSwiping = useRef(false)
+  const { coins, level, currentWord, letters, typedWord, path, addCoins, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
   const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])
+  const [showLevelUp, setShowLevelUp] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
 
   const getLetterPosition = (i: number) => {
@@ -31,103 +32,97 @@ export default function App() {
     letters.forEach((letter, i) => {
       if (path.includes(i)) return
       const { x: lx, y: ly } = getLetterPosition(i)
-      const dx = pos.x - (160 + lx)  // Центр w-80 = 320px / 2 = 160
+      const dx = pos.x - (160 + lx)
       const dy = pos.y - (160 + ly)
       if (dx * dx + dy * dy < 28 * 28) {
         updateTypedWord(letter, i)
-        consumeEnergy(1)
         addCoins(1)
       }
     })
   }
 
-  const handleStart = (e: MouseEvent | TouchEvent) => {
+  const handleStart = (e: any) => {
     e.preventDefault()
     resetPath()
-    isSwiping.current = true
     const pos = getEventPosition(e)
     setLinePoints([pos])
     checkLetterHit(pos)
   }
 
-  const handleMove = (e: MouseEvent | TouchEvent) => {
+  const handleMove = (e: any) => {
     e.preventDefault()
-    if (!isSwiping.current) return
     const pos = getEventPosition(e)
     setLinePoints(prev => [...prev, pos])
     checkLetterHit(pos)
   }
 
-  const handleEnd = (e: MouseEvent | TouchEvent) => {
-    e.preventDefault()
-    isSwiping.current = false
+  const handleEnd = () => {
     setLinePoints([])
     if (typedWord === currentWord.word) {
       addCoins(100 * level)
       canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } })
-      levelUp()
-      setNewWord()
+      setShowLevelUp(true)
+      setTimeout(() => {
+        setShowLevelUp(false)
+        levelUp()
+        setNewWord()
+      }, 1500)
     } else {
       resetPath()
     }
   }
 
-  // Прямая линия между центрами
   const linePath = path.map(i => {
     const { x, y } = getLetterPosition(i)
     return { x: 160 + x, y: 160 + y }
   }).map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ')
 
   useEffect(() => {
-    const circle = circleRef.current
-    if (circle) {
-      circle.addEventListener('mousedown', handleStart)
-      circle.addEventListener('mousemove', handleMove)
-      circle.addEventListener('mouseup', handleEnd)
-      circle.addEventListener('touchstart', handleStart)
-      circle.addEventListener('touchmove', handleMove)
-      circle.addEventListener('touchend', handleEnd)
-      return () => {
-        circle.removeEventListener('mousedown', handleStart)
-        circle.removeEventListener('mousemove', handleMove)
-        circle.removeEventListener('mouseup', handleEnd)
-        circle.removeEventListener('touchstart', handleStart)
-        circle.removeEventListener('touchmove', handleMove)
-        circle.removeEventListener('touchend', handleEnd)
-      }
+    const el = circleRef.current
+    if (!el) return
+    el.addEventListener('mousedown', handleStart)
+    el.addEventListener('mousemove', handleMove)
+    el.addEventListener('mouseup', handleEnd)
+    el.addEventListener('touchstart', handleStart)
+    el.addEventListener('touchmove', handleMove)
+    el.addEventListener('touchend', handleEnd)
+    return () => {
+      el.removeEventListener('mousedown', handleStart)
+      el.removeEventListener('mousemove', handleMove)
+      el.removeEventListener('mouseup', handleEnd)
+      el.removeEventListener('touchstart', handleStart)
+      el.removeEventListener('touchmove', handleMove)
+      el.removeEventListener('touchend', handleEnd)
     }
-  }, [letters]) // Зависимость от letters, но не currentWord, чтобы не прыгали
+  }, [letters])
 
-  useEffect(() => {
-    useGameStore.getState().regenerateEnergy()
-  }, [])
-
-  const changeLanguage = (lng: string) => i18n.changeLanguage(lng)
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng)
+    setIsSettingsOpen(false)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white flex flex-col">
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center w-full">
         <div className="flex items-center gap-2">
-          <Coins className="w-6 h-6" />
-          {coins.toLocaleString()}
+          <Coins className="w-6 h-6 text-yellow-400" />
+          <span className="text-xl font-bold">{coins.toLocaleString()}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Zap className="w-6 h-6" />
-          {energy}/{maxEnergy}
-        </div>
-        <div className="flex items-center gap-2">
-          <Trophy className="w-6 h-6" />
-          Lv {level}
+          <Trophy className="w-6 h-6 text-yellow-400" />
+          <span className="text-xl font-bold">Lv {level}</span>
         </div>
       </div>
 
-      {/* Круг по центру */}
-      <div className="flex-1 flex items-center justify-center pb-20">
-        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-xl flex items-center justify-center cursor-pointer select-none">
+      {/* Центральный круг */}
+      <div className="flex-1 flex items-center justify-center">
+        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl">
           {/* Подсказка */}
-          <div className="absolute inset-0 flex items-center justify-center text-5xl z-10">{currentWord.hint}</div>
-          <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70 z-10">{currentWord.category}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
+            <div className="text-6xl mb-2">{currentWord.hint}</div>
+            <p className="text-sm opacity-70">{currentWord.category}</p>
+          </div>
 
           {/* Буквы */}
           {letters.map((letter, i) => {
@@ -135,57 +130,111 @@ export default function App() {
             const isSelected = path.includes(i)
             return (
               <motion.div
-                key={i + letter}  // Key с letter, но letters фиксированы, так что ок
-                className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
-                style={{ left: `calc(50% + ${x}px - 28px)`, top: `calc(50% + ${y}px - 28px)` }}  // Центрирование буквы (w-14 / 2 = 28)
-                animate={{ scale: isSelected ? 1.1 : 1 }}
-                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                key={i}
+                className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all ${
+                  isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-600 text-white'
+                }`}
+                style={{ left: `calc(50% + ${x}px - 28px)`, top: `calc(50% + ${y}px - 28px)` }}
               >
                 {letter.toUpperCase()}
               </motion.div>
             )
           })}
 
-          {/* Прямая линия */}
+          {/* Линия */}
           {path.length > 1 && (
             <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
-              <path
-                d={linePath}
-                stroke="yellow"
-                strokeWidth="8"  // Потолще
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d={linePath} stroke="yellow" strokeWidth="8" fill="none" strokeLinecap="round" />
             </svg>
           )}
         </div>
       </div>
 
-      {/* Слово */}
-      <div className="text-center text-4xl font-bold mb-4">{typedWord.toUpperCase()}</div>
+      {/* Текущее слово */}
+      <div className="text-center text-4xl font-bold pb-20">{typedWord.toUpperCase()}</div>
 
-      {/* Язык */}
-      <div className="text-center mb-4">
-        <button onClick={() => changeLanguage('en')} className="mx-2">EN</button>
-        <button onClick={() => changeLanguage('ru')} className="mx-2">RU</button>
-      </div>
+      {/* Level Up анимация */}
+      <AnimatePresence>
+        {showLevelUp && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1.3 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+          >
+            <div className="text-6xl font-bold text-yellow-400 drop-shadow-2xl">Level Up!</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Меню */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/80 border-t border-white/20 flex justify-around py-4">
-        <button className="flex flex-col items-center">
-          <Trophy className="w-6 h-6 mb-1" />
+      {/* Нижнее меню */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-white/20 flex justify-around py-4">
+        <button className="flex flex-col items-center text-white">
+          <Trophy className="w-7 h-7 mb-1" />
           <span className="text-xs">{t('boost')}</span>
         </button>
-        <button className="flex flex-col items-center">
-          <Users className="w-6 h-6 mb-1" />
+        <button className="flex flex-col items-center text-white">
+          <Users className="w-7 h-7 mb-1" />
           <span className="text-xs">{t('friends')}</span>
         </button>
-        <button className="flex flex-col items-center">
-          <DollarSign className="w-6 h-6 mb-1" />
+        <button className="flex flex-col items-center text-white">
+          <DollarSign className="w-7 h-7 mb-1" />
           <span className="text-xs">{t('earn')}</span>
         </button>
+        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
+          <Settings className="w-7 h-7 mb-1" />
+          <span className="text-xs">{t('settings')}</span>
+        </button>
       </div>
+
+      {/* Модальное окно настроек */}
+      <AnimatePresence>
+        {isSettingsOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSettingsOpen(false)}
+          >
+            <motion.div
+              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
+              initial={{ scale: 0.9, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 50 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">{t('settings')}</h2>
+                <button onClick={() => setIsSettingsOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <p className="text-center text-lg">{t('title')} Language</p>
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => changeLanguage('en')}
+                    className={`px-6 py-3 rounded-full text-lg font-bold transition-all ${
+                      i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+                    }`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => changeLanguage('ru')}
+                    className={`px-6 py-3 rounded-full text-lg font-bold transition-all ${
+                      i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+                    }`}
+                  >
+                    RU
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
