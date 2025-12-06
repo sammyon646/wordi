@@ -27,7 +27,7 @@ const words: Word[] = [
   { word: 'happy', hint: '😊', category: 'Emotion' },
   { word: 'car', hint: '🚗', category: 'Transport' },
   { word: 'bike', hint: '🚲', category: 'Transport' },
-  // Добавь 3000+ слов здесь. Можно загрузить из JSON: fetch('/assets/words.json').then(res => res.json())
+  // Добавь здесь 3000+ слов. Пример: загрузка из JSON - useEffect(() => fetch('/assets/words.json').then(res => res.json()).then(data => words = data))
 ]
 
 type State = {
@@ -37,7 +37,7 @@ type State = {
   level: number
   currentWord: Word
   typedWord: string
-  path: number[] // Индексы букв в пути swipe
+  path: number[]  // Индексы выделенных букв для линии
   addCoins: (amount: number) => void
   consumeEnergy: (amount: number) => void
   regenerateEnergy: () => void
@@ -58,9 +58,7 @@ const useGameStore = create<State>((set, get) => ({
   addCoins: (amount) => set({ coins: get().coins + amount }),
   consumeEnergy: (amount) => set({ energy: Math.max(0, get().energy - amount) }),
   regenerateEnergy: () => {
-    const interval = setInterval(() => {
-      set({ energy: Math.min(get().maxEnergy, get().energy + 1) })
-    }, 100)
+    const interval = setInterval(() => set({ energy: Math.min(get().maxEnergy, get().energy + 1) }), 100)
     return () => clearInterval(interval)
   },
   setNewWord: () => {

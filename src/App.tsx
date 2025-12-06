@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Coins, Zap, Trophy, Users, DollarSign } from 'lucide-react'
@@ -8,13 +8,12 @@ import useGameStore from './store/useGameStore'
 export default function App() {
   const { t, i18n } = useTranslation()
   const { coins, energy, maxEnergy, level, currentWord, typedWord, path, addCoins, consumeEnergy, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
-  const [isSwiping, setIsSwiping] = useState(false)
-  const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])
+  const isSwiping = useRef(false)
+  const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])  // Изменил на state для re-render
   const circleRef = useRef<HTMLDivElement>(null)
 
-  const letters = currentWord.word.split('').sort(() => Math.random() - 0.5) // Перемешиваем буквы
+  const letters = currentWord.word.split('').sort(() => Math.random() - 0.5) // Перемешиваем
 
-  // Позиции букв в круге
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
     const radius = 130
@@ -23,32 +22,50 @@ export default function App() {
     return { x, y }
   }
 
-  // Start swipe
-  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
+  const getEventPosition = (e: MouseEvent | TouchEvent) => {
+    const rect = circleRef.current?.getBoundingClientRect() || { left: 0, top: 0 }
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    return { x: clientX - rect.left, y: clientY - rect.top }
+  }
+
+  const checkLetterHit = (pos: { x: number; y: number }) => {
+    letters.forEach((letter, i) => {
+      if (path.includes(i)) return
+      const { x: lx, y: ly } = getLetterPosition(i)
+      const dx = pos.x - (144 + lx) // Центр круга w-72 = 288px / 2 = 144
+      const dy = pos.y - (144 + ly)
+      if (dx * dx + dy * dy < 28 * 28) { // Радиус буквы ~28px (w-14 / 2 = 28)
+        updateTypedWord(letter, i)
+        consumeEnergy(1)
+        addCoins(1) // +1 за букву
+      }
+    })
+  }
+
+  const handleStart = (e: MouseEvent | TouchEvent) => {
     e.preventDefault()
     resetPath()
-    setIsSwiping(true)
+    isSwiping.current = true
     const pos = getEventPosition(e)
     setLinePoints([pos])
     checkLetterHit(pos)
   }
 
-  // Move swipe
-  const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleMove = (e: MouseEvent | TouchEvent) => {
     e.preventDefault()
-    if (!isSwiping) return
+    if (!isSwiping.current) return
     const pos = getEventPosition(e)
-    setLinePoints([...linePoints, pos])
+    setLinePoints(prev => [...prev, pos])  // Обновление state вызывает re-render
     checkLetterHit(pos)
   }
 
-  // End swipe
-  const handleEnd = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleEnd = (e: MouseEvent | TouchEvent) => {
     e.preventDefault()
-    setIsSwiping(false)
+    isSwiping.current = false
     setLinePoints([])
     if (typedWord === currentWord.word) {
-      addCoins(100 * level)
+      addCoins(100 * level) // Бонус за слово
       canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } })
       levelUp()
       setNewWord()
@@ -57,27 +74,25 @@ export default function App() {
     }
   }
 
-  // Получить позицию касания/мыши относительно круга
-  const getEventPosition = (e: React.MouseEvent | React.TouchEvent) => {
-    const rect = circleRef.current?.getBoundingClientRect() || { left: 0, top: 0 }
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-    return { x: clientX - rect.left, y: clientY - rect.top }
-  }
-
-  // Проверить, попал ли палец на букву (collision)
-  const checkLetterHit = (pos: { x: number; y: number }) => {
-    letters.forEach((letter, i) => {
-      if (path.includes(i)) return // Уже в пути
-      const letterPos = getLetterPosition(i)
-      const dx = pos.x - (150 + letterPos.x) // Центр буквы (w-72/2 = 144, approx 150)
-      const dy = pos.y - (150 + letterPos.y)
-      if (dx * dx + dy * dy < 35 * 35) { // Радиус буквы ~35px
-        updateTypedWord(letter, i)
-        consumeEnergy(1)
+  useEffect(() => {
+    const circle = circleRef.current
+    if (circle) {
+      circle.addEventListener('mousedown', handleStart)
+      circle.addEventListener('mousemove', handleMove)
+      circle.addEventListener('mouseup', handleEnd)
+      circle.addEventListener('touchstart', handleStart)
+      circle.addEventListener('touchmove', handleMove)
+      circle.addEventListener('touchend', handleEnd)
+      return () => {
+        circle.removeEventListener('mousedown', handleStart)
+        circle.removeEventListener('mousemove', handleMove)
+        circle.removeEventListener('mouseup', handleEnd)
+        circle.removeEventListener('touchstart', handleStart)
+        circle.removeEventListener('touchmove', handleMove)
+        circle.removeEventListener('touchend', handleEnd)
       }
-    })
-  }
+    }
+  }, [currentWord])
 
   useEffect(() => {
     useGameStore.getState().regenerateEnergy()
@@ -103,20 +118,11 @@ export default function App() {
         </div>
       </div>
 
-      {/* Круг с буквами */}
+      {/* Круг */}
       <div className="flex-1 flex items-center justify-center pb-20">
-        <div className="relative w-72 h-72" ref={circleRef}
-          onMouseDown={handleStart}
-          onMouseMove={handleMove}
-          onMouseUp={handleEnd}
-          onTouchStart={handleStart}
-          onTouchMove={handleMove}
-          onTouchEnd={handleEnd}
-        >
-          {/* Подсказка в центре */}
-          <div className="absolute inset-0 flex items-center justify-center text-5xl">
-            {currentWord.hint}
-          </div>
+        <div ref={circleRef} className="relative w-72 h-72 cursor-pointer select-none">
+          {/* Подсказка */}
+          <div className="absolute inset-0 flex items-center justify-center text-5xl">{currentWord.hint}</div>
           <p className="absolute top-0 left-0 right-0 text-center text-sm opacity-70">{currentWord.category}</p>
 
           {/* Буквы */}
@@ -135,9 +141,9 @@ export default function App() {
             )
           })}
 
-          {/* Линия swipe (SVG) */}
-          {isSwiping && (
-            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 288 288" preserveAspectRatio="none">
+          {/* Линия */}
+          {linePoints.length > 1 && (
+            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 288 288">
               <path
                 d={linePoints.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ')}
                 stroke="yellow"
@@ -151,16 +157,16 @@ export default function App() {
         </div>
       </div>
 
-      {/* Собранное слово */}
+      {/* Слово */}
       <div className="text-center text-4xl font-bold mb-4">{typedWord.toUpperCase()}</div>
 
-      {/* Переключатель языка */}
+      {/* Язык */}
       <div className="text-center mb-4">
         <button onClick={() => changeLanguage('en')} className="mx-2">EN</button>
         <button onClick={() => changeLanguage('ru')} className="mx-2">RU</button>
       </div>
 
-      {/* Нижнее меню */}
+      {/* Меню */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/80 border-t border-white/20 flex justify-around py-4">
         <button className="flex flex-col items-center">
           <Trophy className="w-6 h-6 mb-1" />
