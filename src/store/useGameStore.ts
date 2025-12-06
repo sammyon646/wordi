@@ -2,41 +2,37 @@ import { create } from 'zustand'
 
 interface Word {
   word: string
-  hint: string  // Только эмодзи!
-  category: string
+  hint: string
 }
 
 const words: Word[] = [
-  { word: 'apple', hint: 'Apple', category: 'Fruit' },
-  { word: 'banana', hint: 'Banana', category: 'Fruit' },
-  { word: 'cat', hint: 'Cat', category: 'Animal' },
-  { word: 'dog', hint: 'Dog', category: 'Animal' },
-  { word: 'paris', hint: 'Paris', category: 'City' },
-  { word: 'london', hint: 'London', category: 'City' },
-  { word: 'coffee', hint: 'Coffee', category: 'Drink' },
-  { word: 'pizza', hint: 'Pizza', category: 'Food' },
-  { word: 'guitar', hint: 'Guitar', category: 'Instrument' },
-  { word: 'mountain', hint: 'Mountain', category: 'Nature' },
-  { word: 'river', hint: 'River', category: 'Nature' },
-  { word: 'book', hint: 'Book', category: 'Object' },
-  { word: 'computer', hint: 'Computer', category: 'Tech' },
-  { word: 'phone', hint: 'Phone', category: 'Tech' },
-  { word: 'sun', hint: 'Sun', category: 'Weather' },
-  { word: 'rain', hint: 'Rain', category: 'Weather' },
-  { word: 'love', hint: 'Love', category: 'Emotion' },
-  { word: 'happy', hint: 'Happy', category: 'Emotion' },
-  { word: 'car', hint: 'Car', category: 'Transport' },
-  { word: 'bike', hint: 'Bike', category: 'Transport' },
+  { word: 'apple', hint: 'Apple' },
+  { word: 'banana', hint: 'Banana' },
+  { word: 'cat', hint: 'Cat' },
+  { word: 'dog', hint: 'Dog' },
+  { word: 'paris', hint: 'Paris' },
+  { word: 'london', hint: 'London' },
+  { word: 'coffee', hint: 'Coffee' },
+  { word: 'pizza', hint: 'Pizza' },
+  { word: 'guitar', hint: 'Guitar' },
+  { word: 'river', hint: 'River' },
+  { word: 'book', hint: 'Book' },
+  { word: 'phone', hint: 'Phone' },
+  { word: 'sun', hint: 'Sun' },
+  { word: 'love', hint: 'Love' },
+  { word: 'car', hint: 'Car' },
+  { word: 'bike', hint: 'Bike' },
+  // Добавь сколько угодно — короткие слова!
 ]
 
 type State = {
-  coins: number
+  wordPoints: number
   level: number
   currentWord: Word
   letters: string[]
   typedWord: string
   path: number[]
-  addCoins: (amount: number) => void
+  addWordPoints: (amount: number) => void
   setNewWord: () => void
   updateTypedWord: (letter: string, index: number) => void
   resetPath: () => void
@@ -44,13 +40,13 @@ type State = {
 }
 
 const useGameStore = create<State>((set, get) => ({
-  coins: 0,
+  wordPoints: 0,
   level: 1,
   currentWord: words[0],
   letters: words[0].word.split('').sort(() => Math.random() - 0.5),
   typedWord: '',
   path: [],
-  addCoins: (amount) => set({ coins: get().coins + amount }),
+  addWordPoints: (amount) => set({ wordPoints: get().wordPoints + amount }),
   setNewWord: () => {
     const index = Math.floor(Math.random() * words.length)
     const newWord = words[index]

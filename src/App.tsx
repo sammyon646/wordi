@@ -1,19 +1,20 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, Trophy, Users, DollarSign, Settings, X } from 'lucide-react'
+import { Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide-react'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
 export default function App() {
   const { t, i18n } = useTranslation()
-  const { coins, level, currentWord, letters, typedWord, path, addCoins, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
+  const { wordPoints, level, currentWord, letters, typedWord, path, addWordPoints, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [showHint, setShowHint] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
 
   const wordLength = currentWord.word.length
-  const displayedLetters = typedWord.padEnd(wordLength, ' ').split('') // Пробелы для пустых
+  const displayedLetters = typedWord.padEnd(wordLength, ' ').split('')
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
@@ -38,7 +39,6 @@ export default function App() {
       const dy = pos.y - (160 + ly)
       if (dx * dx + dy * dy < 28 * 28) {
         updateTypedWord(letter, i)
-        addCoins(1)
       }
     })
   }
@@ -61,7 +61,7 @@ export default function App() {
 
   const handleEnd = () => {
     if (typedWord === currentWord.word) {
-      addCoins(100 * level)
+      addWordPoints(100 + level * 20)
       canvasConfetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } })
       setShowLevelUp(true)
       setTimeout(() => {
@@ -83,7 +83,6 @@ export default function App() {
     const el = circleRef.current
     if (!el) return
 
-    const prevent = (e: Event) => e.preventDefault()
     el.addEventListener('touchstart', handleStart, { passive: false })
     el.addEventListener('touchmove', handleMove, { passive: false })
     el.addEventListener('touchend', handleEnd)
@@ -115,18 +114,23 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-black text-white flex flex-col">
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Coins className="w-7 h-7 text-yellow-400" />
-          <span className="text-xl font-bold">{coins.toLocaleString()}</span>
+        <div className="flex items-center gap-3">
+          <div className="text-2xl font-bold text-yellow-400">{wordPoints}</div>
+          <span className="text-sm opacity-80">points</span>
         </div>
+
+        <button onClick={() => setShowHint(true)} className="bg-purple-700/50 px-4 py-2 rounded-full flex items-center gap-2">
+          <Lightbulb className="w-6 h-6" /> Hint
+        </button>
+
         <div className="flex items-center gap-2">
           <Trophy className="w-7 h-7 text-yellow-400" />
           <span className="text-xl font-bold">Lv {level}</span>
         </div>
       </div>
 
-      {/* Квадратики с буквами — НАД кругом */}
-      <div className="flex-1 flex items-end justify-center pb-4">
+      {/* Квадратики — всегда в одну строку */}
+      <div className="flex-1 flex items-end justify-center pb-8">
         <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
           {displayedLetters.map((letter, i) => (
             <motion.div
@@ -142,16 +146,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* Центральный круг */}
-      <div className="flex-1 flex items-center justify-center">
+      {/* Круг — поднят выше */}
+      <div className="flex-1 flex items-start justify-center pt-12">
         <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl">
-          {/* Подсказка */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-            <div className="text-7xl mb-2">{currentWord.hint}</div>
-            <p className="text-sm opacity-70">{currentWord.category}</p>
-          </div>
-
-          {/* Буквы */}
           {letters.map((letter, i) => {
             const { x, y } = getLetterPosition(i)
             const isSelected = path.includes(i)
@@ -171,7 +168,6 @@ export default function App() {
             )
           })}
 
-          {/* Линия */}
           {path.length > 1 && (
             <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
               <path d={linePath} stroke="#fbbf24" strokeWidth="10" fill="none" strokeLinecap="round" />
@@ -180,21 +176,30 @@ export default function App() {
         </div>
       </div>
 
+      {/* Подсказка */}
+      <AnimatePresence>
+        {showHint && (
+          <motion.div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center" onClick={() => setShowHint(false)}>
+            <motion.div className="bg-purple-900 rounded-3xl p-12 text-center" onClick={e => e.stopPropagation()}>
+              <div className="text-9xl mb-6">{currentWord.hint}</div>
+              <button onClick={() => setShowHint(false)} className="bg-yellow-400 text-black px-8 py-4 rounded-full text-xl font-bold">
+                OK
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Level Up */}
       <AnimatePresence>
         {showLevelUp && (
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <motion.div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
             <motion.div
-              className="text-7xl font-bold text-yellow-400 drop-shadow-2xl"
+              className="text-8xl font-bold text-yellow-400 drop-shadow-2xl"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1.3, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{ duration: 1.2, type: "spring" }}
+              exit={{ scale: 0 }}
+              transition={{ duration: 1.6, type: "spring" }}
             >
               Level Up!
             </motion.div>
@@ -204,42 +209,21 @@ export default function App() {
 
       {/* Нижнее меню */}
       <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-white/20 flex justify-around py-4">
-        <button className="flex flex-col items-center text-white">
-          <Trophy className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('boost')}</span>
-        </button>
-        <button className="flex flex-col items-center text-white">
-          <Users className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('friends')}</span>
-        </button>
-        <button className="flex flex-col items-center text-white">
-          <DollarSign className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('earn')}</span>
-        </button>
-        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-          <Settings className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('settings')}</span>
-        </button>
+        <button className="flex flex-col items-center"><Trophy className="w-7 h-7 mb-1" /><span className="text-xs">{t('boost')}</span></button>
+        <button className="flex flex-col items-center"><Users className="w-7 h-7 mb-1" /><span className="text-xs">{t('friends')}</span></button>
+        <button className="flex flex-col items-center"><DollarSign className="w-7 h-7 mb-1" /><span className="text-xs">{t('earn')}</span></button>
+        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center"><Settings className="w-7 h-7 mb-1" /><span className="text-xs">{t('settings')}</span></button>
       </div>
 
       {/* Настройки */}
       <AnimatePresence>
         {isSettingsOpen && (
-          <motion.div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center" onClick={() => setIsSettingsOpen(false)}>
-            <motion.div
-              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">{t('settings')}</h2>
-                <button onClick={() => setIsSettingsOpen(false)}><X className="w-6 h-6" /></button>
-              </div>
+          <motion.div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center" onClick={() => setIsSettingsOpen(false)}>
+            <motion.div className="bg-purple-900 rounded-2xl p-8" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between mb-6"><h2 className="text-2xl font-bold">{t('settings')}</h2><button onClick={() => setIsSettingsOpen(false)}><X className="w-6 h-6" /></button></div>
               <div className="flex justify-center gap-6">
-                <button onClick={() => changeLanguage('en')} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>EN</button>
-                <button onClick={() => changeLanguage('ru')} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>RU</button>
+                <button onClick={() => { i18n.changeLanguage('en'); setIsSettingsOpen(false) }} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>EN</button>
+                <button onClick={() => { i18n.changeLanguage('ru'); setIsSettingsOpen(false) }} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>RU</button>
               </div>
             </motion.div>
           </motion.div>
