@@ -17,7 +17,6 @@ i18n
     interpolation: { escapeValue: false },
   })
 
-// Автоопределение по Telegram
 if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
   i18n.changeLanguage(window.Telegram.WebApp.initDataUnsafe.user.language_code)
 }

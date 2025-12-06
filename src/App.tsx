@@ -7,12 +7,10 @@ import useGameStore from './store/useGameStore'
 
 export default function App() {
   const { t, i18n } = useTranslation()
-  const { coins, energy, maxEnergy, level, currentWord, typedWord, path, addCoins, consumeEnergy, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
+  const { coins, energy, maxEnergy, level, currentWord, letters, typedWord, path, addCoins, consumeEnergy, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
   const isSwiping = useRef(false)
-  const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])  // Изменил на state для re-render
+  const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])
   const circleRef = useRef<HTMLDivElement>(null)
-
-  const letters = currentWord.word.split('').sort(() => Math.random() - 0.5) // Перемешиваем
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
@@ -33,12 +31,13 @@ export default function App() {
     letters.forEach((letter, i) => {
       if (path.includes(i)) return
       const { x: lx, y: ly } = getLetterPosition(i)
-      const dx = pos.x - (144 + lx) // Центр круга w-72 = 288px / 2 = 144
+      const dx = pos.x - (144 + lx)
       const dy = pos.y - (144 + ly)
-      if (dx * dx + dy * dy < 28 * 28) { // Радиус буквы ~28px (w-14 / 2 = 28)
+      if (dx * dx + dy * dy < 28 * 28) {
         updateTypedWord(letter, i)
         consumeEnergy(1)
-        addCoins(1) // +1 за букву
+        addCoins(1)
+        // Добавь проверку смежности, если нужно: if (path.length > 0 && Math.abs(path[path.length - 1] - i) > 1) return
       }
     })
   }
@@ -56,7 +55,7 @@ export default function App() {
     e.preventDefault()
     if (!isSwiping.current) return
     const pos = getEventPosition(e)
-    setLinePoints(prev => [...prev, pos])  // Обновление state вызывает re-render
+    setLinePoints(prev => [...prev, pos])
     checkLetterHit(pos)
   }
 
@@ -65,7 +64,7 @@ export default function App() {
     isSwiping.current = false
     setLinePoints([])
     if (typedWord === currentWord.word) {
-      addCoins(100 * level) // Бонус за слово
+      addCoins(100 * level)
       canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } })
       levelUp()
       setNewWord()
@@ -73,6 +72,12 @@ export default function App() {
       resetPath()
     }
   }
+
+  // Линия между центрами букв (прямая, потолще)
+  const linePath = path.map(i => {
+    const { x, y } = getLetterPosition(i)
+    return { x: 144 + x, y: 144 + y }
+  }).map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ')
 
   useEffect(() => {
     const circle = circleRef.current
@@ -92,7 +97,7 @@ export default function App() {
         circle.removeEventListener('touchend', handleEnd)
       }
     }
-  }, [currentWord])
+  }, [currentWord, letters])
 
   useEffect(() => {
     useGameStore.getState().regenerateEnergy()
@@ -101,9 +106,9 @@ export default function App() {
   const changeLanguage = (lng: string) => i18n.changeLanguage(lng)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white flex flex-col items-center justify-center">
       {/* Шапка */}
-      <div className="p-4 flex justify-between items-center">
+      <div className="p-4 flex justify-between items-center w-full">
         <div className="flex items-center gap-2">
           <Coins className="w-6 h-6" />
           {coins.toLocaleString()}
@@ -118,43 +123,42 @@ export default function App() {
         </div>
       </div>
 
-      {/* Круг */}
-      <div className="flex-1 flex items-center justify-center pb-20">
-        <div ref={circleRef} className="relative w-72 h-72 cursor-pointer select-none">
-          {/* Подсказка */}
-          <div className="absolute inset-0 flex items-center justify-center text-5xl">{currentWord.hint}</div>
-          <p className="absolute top-0 left-0 right-0 text-center text-sm opacity-70">{currentWord.category}</p>
+      {/* Круг по центру */}
+      <div className="relative w-80 h-80 rounded-full bg-black/50 shadow-xl flex items-center justify-center pb-20" ref={circleRef}>
+        {/* Подсказка */}
+        <div className="absolute inset-0 flex items-center justify-center text-5xl z-10">{currentWord.hint}</div>
+        <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70 z-10">{currentWord.category}</p>
 
-          {/* Буквы */}
-          {letters.map((letter, i) => {
-            const { x, y } = getLetterPosition(i)
-            const isSelected = path.includes(i)
-            return (
-              <motion.div
-                key={i}
-                className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
-                style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
-                animate={{ scale: isSelected ? 1.1 : 1 }}
-              >
-                {letter.toUpperCase()}
-              </motion.div>
-            )
-          })}
+        {/* Буквы */}
+        {letters.map((letter, i) => {
+          const { x, y } = getLetterPosition(i)
+          const isSelected = path.includes(i)
+          return (
+            <motion.div
+              key={i}
+              className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
+              style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
+              animate={{ scale: isSelected ? 1.1 : 1 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}  // Плавная анимация без прыжков
+            >
+              {letter.toUpperCase()}
+            </motion.div>
+          )
+        })}
 
-          {/* Линия */}
-          {linePoints.length > 1 && (
-            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 288 288">
-              <path
-                d={linePoints.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ')}
-                stroke="yellow"
-                strokeWidth="4"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
-        </div>
+        {/* Прямая линия между центрами, потолще */}
+        {path.length > 1 && (
+          <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
+            <path
+              d={linePath}
+              stroke="yellow"
+              strokeWidth="6"  // Потолще
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
       </div>
 
       {/* Слово */}

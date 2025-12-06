@@ -27,7 +27,7 @@ const words: Word[] = [
   { word: 'happy', hint: '😊', category: 'Emotion' },
   { word: 'car', hint: '🚗', category: 'Transport' },
   { word: 'bike', hint: '🚲', category: 'Transport' },
-  // Добавь здесь 3000+ слов. Пример: загрузка из JSON - useEffect(() => fetch('/assets/words.json').then(res => res.json()).then(data => words = data))
+  // Добавь 3000+ слов. Можно загрузить из JSON
 ]
 
 type State = {
@@ -36,8 +36,9 @@ type State = {
   maxEnergy: number
   level: number
   currentWord: Word
+  letters: string[]  // Фиксированные перемешанные буквы
   typedWord: string
-  path: number[]  // Индексы выделенных букв для линии
+  path: number[]  // Индексы для линии
   addCoins: (amount: number) => void
   consumeEnergy: (amount: number) => void
   regenerateEnergy: () => void
@@ -53,6 +54,7 @@ const useGameStore = create<State>((set, get) => ({
   maxEnergy: 1000,
   level: 1,
   currentWord: words[0],
+  letters: words[0].word.split('').sort(() => Math.random() - 0.5),
   typedWord: '',
   path: [],
   addCoins: (amount) => set({ coins: get().coins + amount }),
@@ -63,7 +65,9 @@ const useGameStore = create<State>((set, get) => ({
   },
   setNewWord: () => {
     const index = Math.floor(Math.random() * words.length)
-    set({ currentWord: words[index], typedWord: '', path: [] })
+    const newWord = words[index]
+    const newLetters = newWord.word.split('').sort(() => Math.random() - 0.5)  // Перемешиваем только здесь
+    set({ currentWord: newWord, letters: newLetters, typedWord: '', path: [] })
   },
   updateTypedWord: (letter, index) => {
     const newPath = [...get().path, index]
