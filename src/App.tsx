@@ -14,7 +14,7 @@ export default function App() {
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
-    const radius = 120  // Уменьшили радиус, чтобы буквы внутри круга
+    const radius = 130
     const x = radius * Math.cos(angle)
     const y = radius * Math.sin(angle)
     return { x, y }
@@ -29,12 +29,11 @@ export default function App() {
 
   const checkLetterHit = (pos: { x: number; y: number }) => {
     letters.forEach((letter, i) => {
-      if (path.includes(i)) return  // Не добавляем повторно
-      if (path.length > 0 && path[path.length - 1] === i) return  // Не повторяем последнюю букву
+      if (path.includes(i)) return
       const { x: lx, y: ly } = getLetterPosition(i)
-      const dx = pos.x - (144 + lx)  // Центр 144px для w-72
-      const dy = pos.y - (144 + ly)
-      if (dx * dx + dy * dy < 28 * 28) {  // Радиус буквы
+      const dx = pos.x - (160 + lx)  // Центр w-80 = 320px / 2 = 160
+      const dy = pos.y - (160 + ly)
+      if (dx * dx + dy * dy < 28 * 28) {
         updateTypedWord(letter, i)
         consumeEnergy(1)
         addCoins(1)
@@ -73,10 +72,10 @@ export default function App() {
     }
   }
 
-  // Линия только между центрами букв (прямая, потолще)
+  // Прямая линия между центрами
   const linePath = path.map(i => {
     const { x, y } = getLetterPosition(i)
-    return { x: 144 + x, y: 144 + y }
+    return { x: 160 + x, y: 160 + y }
   }).map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ')
 
   useEffect(() => {
@@ -97,7 +96,7 @@ export default function App() {
         circle.removeEventListener('touchend', handleEnd)
       }
     }
-  }, [currentWord, letters])
+  }, [letters]) // Зависимость от letters, но не currentWord, чтобы не прыгали
 
   useEffect(() => {
     useGameStore.getState().regenerateEnergy()
@@ -106,7 +105,7 @@ export default function App() {
   const changeLanguage = (lng: string) => i18n.changeLanguage(lng)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-black text-white flex flex-col">
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center w-full">
         <div className="flex items-center gap-2">
@@ -123,42 +122,44 @@ export default function App() {
         </div>
       </div>
 
-      {/* Круг по центру (удали pb-20) */}
-      <div className="relative w-80 h-80 rounded-full bg-black/50 shadow-xl flex items-center justify-center" ref={circleRef}>
-        {/* Подсказка */}
-        <div className="absolute inset-0 flex items-center justify-center text-5xl">{currentWord.hint}</div>
-        <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70">{currentWord.category}</p>
+      {/* Круг по центру */}
+      <div className="flex-1 flex items-center justify-center pb-20">
+        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-xl flex items-center justify-center cursor-pointer select-none">
+          {/* Подсказка */}
+          <div className="absolute inset-0 flex items-center justify-center text-5xl z-10">{currentWord.hint}</div>
+          <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70 z-10">{currentWord.category}</p>
 
-        {/* Буквы */}
-        {letters.map((letter, i) => {
-          const { x, y } = getLetterPosition(i)
-          const isSelected = path.includes(i)
-          return (
-            <motion.div
-              key={i}
-              className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
-              style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
-              animate={{ scale: isSelected ? 1.1 : 1 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-            >
-              {letter.toUpperCase()}
-            </motion.div>
-          )
-        })}
+          {/* Буквы */}
+          {letters.map((letter, i) => {
+            const { x, y } = getLetterPosition(i)
+            const isSelected = path.includes(i)
+            return (
+              <motion.div
+                key={i + letter}  // Key с letter, но letters фиксированы, так что ок
+                className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 ${isSelected ? 'bg-yellow-400 text-black' : 'bg-purple-600 text-white'}`}
+                style={{ left: `calc(50% + ${x}px - 28px)`, top: `calc(50% + ${y}px - 28px)` }}  // Центрирование буквы (w-14 / 2 = 28)
+                animate={{ scale: isSelected ? 1.1 : 1 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+              >
+                {letter.toUpperCase()}
+              </motion.div>
+            )
+          })}
 
-        {/* Линия */}
-        {path.length > 1 && (
-          <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 320 320">
-            <path
-              d={linePath}
-              stroke="yellow"
-              strokeWidth="6"  // Потолще
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        )}
+          {/* Прямая линия */}
+          {path.length > 1 && (
+            <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
+              <path
+                d={linePath}
+                stroke="yellow"
+                strokeWidth="8"  // Потолще
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </div>
       </div>
 
       {/* Слово */}

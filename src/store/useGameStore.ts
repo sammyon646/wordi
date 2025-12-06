@@ -36,9 +36,9 @@ type State = {
   maxEnergy: number
   level: number
   currentWord: Word
-  letters: string[]  // Фиксированные перемешанные буквы
+  letters: string[]  // Фиксированные буквы
   typedWord: string
-  path: number[]  // Индексы для линии
+  path: number[]  // Индексы
   addCoins: (amount: number) => void
   consumeEnergy: (amount: number) => void
   regenerateEnergy: () => void
@@ -66,10 +66,11 @@ const useGameStore = create<State>((set, get) => ({
   setNewWord: () => {
     const index = Math.floor(Math.random() * words.length)
     const newWord = words[index]
-    const newLetters = newWord.word.split('').sort(() => Math.random() - 0.5)  // Перемешиваем только здесь
+    const newLetters = newWord.word.split('').sort(() => Math.random() - 0.5)
     set({ currentWord: newWord, letters: newLetters, typedWord: '', path: [] })
   },
   updateTypedWord: (letter, index) => {
+    if (get().path.includes(index)) return  // Нет повторений
     const newPath = [...get().path, index]
     set({ typedWord: get().typedWord + letter, path: newPath })
   },
