@@ -1,64 +1,46 @@
 import { create } from 'zustand'
-
-interface Word {
-  word: string
-  hint: string
-}
-
-const words: Word[] = [
-  { word: 'apple', hint: 'Apple' },
-  { word: 'banana', hint: 'Banana' },
-  { word: 'cat', hint: 'Cat' },
-  { word: 'dog', hint: 'Dog' },
-  { word: 'paris', hint: 'Paris' },
-  { word: 'london', hint: 'London' },
-  { word: 'coffee', hint: 'Coffee' },
-  { word: 'pizza', hint: 'Pizza' },
-  { word: 'guitar', hint: 'Guitar' },
-  { word: 'river', hint: 'River' },
-  { word: 'book', hint: 'Book' },
-  { word: 'phone', hint: 'Phone' },
-  { word: 'sun', hint: 'Sun' },
-  { word: 'love', hint: 'Love' },
-  { word: 'car', hint: 'Car' },
-  { word: 'bike', hint: 'Bike' },
-  // Добавь сколько угодно — короткие слова!
-]
+import { puzzles, type Puzzle } from '../data/puzzles'
 
 type State = {
   wordPoints: number
   level: number
-  currentWord: Word
-  letters: string[]
-  typedWord: string
-  path: number[]
+  currentPuzzle: Puzzle
+  selectedCells: [number, number][]
+  completedWords: Set<string>
   addWordPoints: (amount: number) => void
-  setNewWord: () => void
-  updateTypedWord: (letter: string, index: number) => void
-  resetPath: () => void
+  setNewPuzzle: () => void
+  selectCell: (row: number, col: number) => void
+  completeWord: (word: string) => void
   levelUp: () => void
 }
 
 const useGameStore = create<State>((set, get) => ({
   wordPoints: 0,
   level: 1,
-  currentWord: words[0],
-  letters: words[0].word.split('').sort(() => Math.random() - 0.5),
-  typedWord: '',
-  path: [],
+  currentPuzzle: puzzles[0],
+  selectedCells: [],
+  completedWords: new Set(),
   addWordPoints: (amount) => set({ wordPoints: get().wordPoints + amount }),
-  setNewWord: () => {
-    const index = Math.floor(Math.random() * words.length)
-    const newWord = words[index]
-    const newLetters = newWord.word.split('').sort(() => Math.random() - 0.5)
-    set({ currentWord: newWord, letters: newLetters, typedWord: '', path: [] })
+  setNewPuzzle: () => {
+    const index = Math.floor(Math.random() * puzzles.length)
+    set({ 
+      currentPuzzle: puzzles[index], 
+      selectedCells: [], 
+      completedWords: new Set() 
+    })
   },
-  updateTypedWord: (letter, index) => {
-    if (get().path.includes(index)) return
-    const newPath = [...get().path, index]
-    set({ typedWord: get().typedWord + letter, path: newPath })
+  selectCell: (row, col) => {
+    const cells = get().selectedCells
+    const exists = cells.some(([r, c]) => r === row && c === col)
+    set({ 
+      selectedCells: exists 
+        ? cells.filter(([r, c]) => !(r === row && c === col))
+        : [...cells, [row, col]]
+    })
   },
-  resetPath: () => set({ typedWord: '', path: [] }),
+  completeWord: (word) => set({ 
+    completedWords: new Set([...get().completedWords, word]) 
+  }),
   levelUp: () => set({ level: get().level + 1 })
 }))
 
