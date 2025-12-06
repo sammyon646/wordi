@@ -8,7 +8,6 @@ import useGameStore from './store/useGameStore'
 export default function App() {
   const { t, i18n } = useTranslation()
   const { coins, level, currentWord, letters, typedWord, path, addCoins, setNewWord, updateTypedWord, resetPath, levelUp } = useGameStore()
-  const [linePoints, setLinePoints] = useState<{ x: number; y: number }[]>([])
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
@@ -43,21 +42,21 @@ export default function App() {
 
   const handleStart = (e: any) => {
     e.preventDefault()
+    e.stopPropagation()
     resetPath()
     const pos = getEventPosition(e)
-    setLinePoints([pos])
     checkLetterHit(pos)
   }
 
   const handleMove = (e: any) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (path.length === 0) return
     const pos = getEventPosition(e)
-    setLinePoints(prev => [...prev, pos])
     checkLetterHit(pos)
   }
 
   const handleEnd = () => {
-    setLinePoints([])
     if (typedWord === currentWord.word) {
       addCoins(100 * level)
       canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } })
@@ -72,6 +71,7 @@ export default function App() {
     }
   }
 
+  // Линия между центрами букв
   const linePath = path.map(i => {
     const { x, y } = getLetterPosition(i)
     return { x: 160 + x, y: 160 + y }
@@ -80,21 +80,32 @@ export default function App() {
   useEffect(() => {
     const el = circleRef.current
     if (!el) return
+
+    const preventDefault = (e: Event) => e.preventDefault()
+
+    el.addEventListener('touchstart', handleStart, { passive: false })
+    el.addEventListener('touchmove', handleMove, { passive: false })
+    el.addEventListener('touchend', handleEnd)
+
     el.addEventListener('mousedown', handleStart)
     el.addEventListener('mousemove', handleMove)
     el.addEventListener('mouseup', handleEnd)
-    el.addEventListener('touchstart', handleStart)
-    el.addEventListener('touchmove', handleMove)
-    el.addEventListener('touchend', handleEnd)
+
+    // Блокируем скролл и свайп Mini App
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+
     return () => {
-      el.removeEventListener('mousedown', handleStart)
-      el.removeEventListener('mousemove', handleMove)
-      el.removeEventListener('mouseup', handleEnd)
       el.removeEventListener('touchstart', handleStart)
       el.removeEventListener('touchmove', handleMove)
       el.removeEventListener('touchend', handleEnd)
+      el.removeEventListener('mousedown', handleStart)
+      el.removeEventListener('mousemove', handleMove)
+      el.removeEventListener('mouseup', handleEnd)
+      document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
-  }, [letters])
+  }, [path, letters])
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -115,14 +126,14 @@ export default function App() {
         </div>
       </div>
 
-      {/* Центральный круг */}
-      <div className="flex-1 flex items-center justify-center">
-        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl">
-          {/* Подсказка */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-            <div className="text-6xl mb-2">{currentWord.hint}</div>
-            <p className="text-sm opacity-70">{currentWord.category}</p>
+      {/* Центральный круг — НЕ ДВИГАЕТСЯ */}
+      <div className="flex-1 flex items-center justify-center touch-none">
+        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl select-none">
+          {/* Только эмодзи */}
+          <div className="absolute inset-0 flex items-center justify-center text-7xl z-10">
+            {currentWord.hint}
           </div>
+          <p className="absolute top-4 left-0 right-0 text-center text-sm opacity-70 z-10">{currentWord.category}</p>
 
           {/* Буквы */}
           {letters.map((letter, i) => {
@@ -144,25 +155,25 @@ export default function App() {
           {/* Линия */}
           {path.length > 1 && (
             <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
-              <path d={linePath} stroke="yellow" strokeWidth="8" fill="none" strokeLinecap="round" />
+              <path d={linePath} stroke="yellow" strokeWidth="10" fill="none" strokeLinecap="round" />
             </svg>
           )}
         </div>
       </div>
 
-      {/* Текущее слово */}
-      <div className="text-center text-4xl font-bold pb-20">{typedWord.toUpperCase()}</div>
+      {/* Слово */}
+      <div className="text-center text-5xl font-bold pb-20">{typedWord.toUpperCase()}</div>
 
-      {/* Level Up анимация */}
+      {/* Level Up */}
       <AnimatePresence>
         {showLevelUp && (
           <motion.div
             className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1.3 }}
-            exit={{ opacity: 0, scale: 0.5 }}
+            exit={{ opacity: 0 }}
           >
-            <div className="text-6xl font-bold text-yellow-400 drop-shadow-2xl">Level Up!</div>
+            <div className="text-7xl font-bold text-yellow-400 drop-shadow-2xl">Level Up!</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -187,7 +198,7 @@ export default function App() {
         </button>
       </div>
 
-      {/* Модальное окно настроек */}
+      {/* Настройки */}
       <AnimatePresence>
         {isSettingsOpen && (
           <motion.div
@@ -199,9 +210,9 @@ export default function App() {
           >
             <motion.div
               className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-              initial={{ scale: 0.9, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 50 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
@@ -210,26 +221,13 @@ export default function App() {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              <div className="space-y-4">
-                <p className="text-center text-lg">{t('title')} Language</p>
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={() => changeLanguage('en')}
-                    className={`px-6 py-3 rounded-full text-lg font-bold transition-all ${
-                      i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                    }`}
-                  >
-                    EN
-                  </button>
-                  <button
-                    onClick={() => changeLanguage('ru')}
-                    className={`px-6 py-3 rounded-full text-lg font-bold transition-all ${
-                      i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                    }`}
-                  >
-                    RU
-                  </button>
-                </div>
+              <div className="flex justify-center gap-6">
+                <button onClick={() => changeLanguage('en')} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>
+                  EN
+                </button>
+                <button onClick={() => changeLanguage('ru')} className={`px-8 py-4 rounded-full text-xl font-bold ${i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'}`}>
+                  RU
+                </button>
               </div>
             </motion.div>
           </motion.div>

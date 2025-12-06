@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 interface Word {
   word: string
-  hint: string
+  hint: string  // Только эмодзи!
   category: string
 }
 
@@ -21,11 +21,12 @@ const words: Word[] = [
   { word: 'book', hint: 'Book', category: 'Object' },
   { word: 'computer', hint: 'Computer', category: 'Tech' },
   { word: 'phone', hint: 'Phone', category: 'Tech' },
+  { word: 'sun', hint: 'Sun', category: 'Weather' },
+  { word: 'rain', hint: 'Rain', category: 'Weather' },
   { word: 'love', hint: 'Love', category: 'Emotion' },
   { word: 'happy', hint: 'Happy', category: 'Emotion' },
   { word: 'car', hint: 'Car', category: 'Transport' },
   { word: 'bike', hint: 'Bike', category: 'Transport' },
-  // Добавь сколько угодно слов
 ]
 
 type State = {
