@@ -11,7 +11,6 @@ const RADIUS = 100
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
 
-// лёгкая вибрация / haptics
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
   tg?.HapticFeedback?.impactOccurred?.('light')
@@ -34,7 +33,6 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
-  // анимация монет
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -79,14 +77,12 @@ export default function App() {
     resetPath()
     checkLetterHit(getEventPosition(e))
   }
-
   const handleMove = (e: any) => {
     e.preventDefault()
     e.stopPropagation()
     if (!path.length) return
     checkLetterHit(getEventPosition(e))
   }
-
   const handleEnd = () => {
     if (!typedWord) {
       resetPath()
@@ -178,10 +174,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Основная зона */}
-      <div className="flex-1 flex flex-col items-center px-4 pb-0">
-        {/* Кроссворд */}
-        <div className="w-full flex justify-center">
+      {/* Основная зона: блок под кроссворд и под вывод набранных букв */}
+      <div className="flex-1 flex flex-col px-4 pb-0">
+        {/* Кроссворд (область 1) */}
+        <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
             {Array.from({ length: maxRow + 1 }).map((_, r) => (
               <div key={r} className="flex gap-1">
@@ -208,8 +204,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Набранное слово */}
-        <div className="h-12 flex items-center justify-center mt-2">
+        {/* Область для всплывающих букв (выделенное слово) — зона 2 */}
+        <div className="h-16 flex items-center justify-center mt-2 mb-2">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -225,13 +221,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг у нижней кромки + иконки вокруг */}
-        <div className="flex-1 w-full flex items-end justify-center pb-4">
-          <div
-            className="relative flex items-center justify-center"
-            style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
-          >
-            {/* Иконки с подложкой */}
+        {/* Круг у нижней кромки + иконки вокруг (не пересекаются) */}
+        <div className="flex-1 flex items-end justify-center pb-4">
+          <div className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}>
+            {/* Иконки с подложкой (чуть дальше от круга) */}
             <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <Trophy className="w-6 h-6" />
@@ -244,13 +237,13 @@ export default function App() {
               </div>
               <span className="text-xs">friends</span>
             </div>
-            <div className="absolute left-10 bottom-0 flex flex-col items-center gap-1">
+            <div className="absolute left-12 bottom-0 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <DollarSign className="w-6 h-6" />
               </div>
               <span className="text-xs">earn</span>
             </div>
-            <div className="absolute right-10 bottom-0 flex flex-col items-center gap-1">
+            <div className="absolute right-12 bottom-0 flex flex-col items-center gap-1">
               <button
                 onClick={() => setIsSettingsOpen(true)}
                 className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
