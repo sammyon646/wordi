@@ -5,9 +5,9 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 260
+const CIRCLE_SIZE = 240
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 95
+const RADIUS = 88
 const HIT_RADIUS = 22
 const LETTER_SIZE = 46
 
@@ -210,7 +210,7 @@ export default function App() {
         </div>
 
         {/* Собранное слово */}
-        <div className="h-16 flex items-center justify-center mt-3">
+        <div className="h-14 flex items-center justify-center mt-3">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -227,7 +227,10 @@ export default function App() {
         </div>
 
         {/* Круг и кнопки вокруг — компактно */}
-        <div className="mt-4 relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 80, height: CIRCLE_SIZE + 80 }}>
+        <div
+          className="mt-4 relative flex items-center justify-center"
+          style={{ width: CIRCLE_SIZE + 70, height: CIRCLE_SIZE + 70 }}
+        >
           {/* Кнопки вокруг круга */}
           <div className="absolute left-2 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
@@ -241,13 +244,13 @@ export default function App() {
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-10 bottom-4">
+          <div className="absolute left-8 bottom-3">
             <button className="flex flex-col items-center text-white">
               <DollarSign className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-10 bottom-4">
+          <div className="absolute right-8 bottom-3">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
               <Settings className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('settings')}</span>
@@ -399,7 +402,7 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify между	items-center mb-6">
                 <h2 className="text-2xl font-bold">{t('settings')}</h2>
                 <button onClick={() => setIsSettingsOpen(false)}>
                   <X className="w-6 h-6" />

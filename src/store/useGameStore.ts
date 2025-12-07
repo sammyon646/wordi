@@ -48,7 +48,33 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
-// Дубликаты букв добавляем столько раз, сколько нужно
+// Проверка пересечений: если разные буквы — конфликт
+const validateEntries = (entries: EntryRef[]) => {
+  const cellMap: Record<string, string> = {}
+  const conflicts: string[] = []
+  entries.forEach((entry) => {
+    entry.answer
+      .toUpperCase()
+      .split('')
+      .forEach((ch, idx) => {
+        const r = entry.direction === 'across' ? entry.row : entry.row + idx
+        const c = entry.direction === 'across' ? entry.col + idx : entry.col
+        const key = `${r}-${c}`
+        if (cellMap[key] && cellMap[key] !== ch) {
+          conflicts.push(`Conflict at ${key}: ${cellMap[key]} vs ${ch}`)
+        } else {
+          cellMap[key] = ch
+        }
+      })
+  })
+  if (conflicts.length) {
+    console.error('Puzzle conflicts:', conflicts)
+    return false
+  }
+  return true
+}
+
+// Дубликаты букв — ровно столько, сколько максимум в любом слове
 const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   const maxCount: Record<string, number> = {}
   entries.forEach((e) => {
@@ -68,6 +94,7 @@ const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   return shuffle(letters)
 }
 
+// Построение сетки из решённых слов; не перезаписываем отличающиеся буквы
 const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
   const grid: Record<string, string> = {}
   entries.forEach((entry) => {
@@ -75,21 +102,30 @@ const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean
     entry.answer.split('').forEach((ch, idx) => {
       const r = entry.direction === 'across' ? entry.row : entry.row + idx
       const c = entry.direction === 'across' ? entry.col + idx : entry.col
-      grid[`${r}-${c}`] = ch
+      const key = `${r}-${c}`
+      if (grid[key] && grid[key] !== ch) {
+        console.warn(`Grid mismatch at ${key}: have ${grid[key]}, new ${ch}`)
+        return
+      }
+      grid[key] = ch
     })
   })
   return grid
 }
 
+const initPuzzleIndex = 0
+const initEntries = buildEntries(puzzles[initPuzzleIndex])
+validateEntries(initEntries)
+
 const useGameStore = create<State>((set, get) => ({
   coins: 0,
   level: 1,
-  puzzleIndex: 0,
-  puzzle: puzzles[0],
-  entries: buildEntries(puzzles[0]),
+  puzzleIndex: initPuzzleIndex,
+  puzzle: puzzles[initPuzzleIndex],
+  entries: initEntries,
   solved: {},
   gridLetters: {},
-  letters: buildLettersFromPuzzle(buildEntries(puzzles[0])),
+  letters: buildLettersFromPuzzle(initEntries),
   typedWord: '',
   path: [],
 
@@ -99,6 +135,10 @@ const useGameStore = create<State>((set, get) => ({
     const nextIndex = (get().puzzleIndex + 1) % puzzles.length
     const puzzle = puzzles[nextIndex]
     const entries = buildEntries(puzzle)
+    if (!validateEntries(entries)) {
+      console.error('Invalid puzzle layout, skipping setNewPuzzle')
+      return
+    }
     set({
       puzzleIndex: nextIndex,
       puzzle,
