@@ -5,23 +5,17 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-// Параметры круга
 const CIRCLE_SIZE = 260
 const CENTER = CIRCLE_SIZE / 2
 const RADIUS = 100
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
 
-// Лёгкая вибрация / haptic для iOS/Android/Telegram
+// лёгкая вибрация / haptics
 const triggerHaptic = () => {
-  // Telegram WebApp API
-  if (window?.Telegram?.WebApp?.HapticFeedback?.impactOccurred) {
-    window.Telegram.WebApp.HapticFeedback.impactOccurred('light')
-  }
-  // Вибрация браузера (Android)
-  if (navigator?.vibrate) {
-    navigator.vibrate(10)
-  }
+  const tg: any = (window as any)?.Telegram?.WebApp
+  tg?.HapticFeedback?.impactOccurred?.('light')
+  if (navigator?.vibrate) navigator.vibrate(10)
 }
 
 export default function App() {
@@ -40,7 +34,6 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
-  // Анимация монет
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -83,16 +76,14 @@ export default function App() {
     e.preventDefault()
     e.stopPropagation()
     resetPath()
-    const pos = getEventPosition(e)
-    checkLetterHit(pos)
+    checkLetterHit(getEventPosition(e))
   }
 
   const handleMove = (e: any) => {
     e.preventDefault()
     e.stopPropagation()
     if (!path.length) return
-    const pos = getEventPosition(e)
-    checkLetterHit(pos)
+    checkLetterHit(getEventPosition(e))
   }
 
   const handleEnd = () => {
@@ -233,50 +224,44 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг + стилизованный фон под иконки */}
+        {/* Круг и иконки вокруг (как на референсе, без обводки круга) */}
         <div
           className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 140, height: CIRCLE_SIZE + 140 }}
+          style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
         >
-          {/* Тёмный фон-подложка для иконок вокруг круга */}
-          <div
-            className="absolute inset-0 m-auto rounded-full bg-[#12072f]/50 blur-[0px]"
-            style={{ width: CIRCLE_SIZE + 100, height: CIRCLE_SIZE + 100 }}
-          />
-
-          {/* Иконки вокруг круга на подложке */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+          {/* Иконки в маленьких фиолетовых кружках */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
               <Trophy className="w-6 h-6" />
             </div>
             <span className="text-xs">boost</span>
           </div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
               <Users className="w-6 h-6" />
             </div>
             <span className="text-xs">friends</span>
           </div>
-          <div className="absolute left-16 bottom-2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+          <div className="absolute left-10 bottom-2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
               <DollarSign className="w-6 h-6" />
             </div>
             <span className="text-xs">earn</span>
           </div>
-          <div className="absolute right-16 bottom-2 flex flex-col items-center gap-1">
+          <div className="absolute right-10 bottom-2 flex flex-col items-center gap-1">
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60"
+              className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
             >
               <Settings className="w-6 h-6" />
             </button>
             <span className="text-xs">settings</span>
           </div>
 
-          {/* Сам круг */}
+          {/* Сам круг — без обводки */}
           <motion.div
             ref={circleRef}
-            className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"
+            className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl"
             style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
