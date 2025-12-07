@@ -13,32 +13,26 @@ export interface Puzzle {
 }
 
 /**
- * Пересечения только по совпадающим буквам. Колесо из букв берётся из всех слов пазла.
+ * Пересечения только по совпадающим буквам.
+ * Level 1 — буквы FICTION, компактная сетка.
  */
 export const puzzles: Puzzle[] = [
-  // Level 1 — буквы FICTION (6 букв)
+  // Level 1 — FICTION, FIT, NOT, TIN, ICON, INFO, FONT
   {
     across: {
-      // INFO — строка 1, столбцы 1..4
-      '1': { clue: 'Information', answer: 'INFO', row: 1, col: 1 },
-      // FICTION — строка 4, столбцы 2..8
-      '3': { clue: 'Imaginary story', answer: 'FICTION', row: 4, col: 2 },
-      // TIN — строка 6, столбцы 5..7
-      '5': { clue: 'Metal container', answer: 'TIN', row: 6, col: 5 },
+      '1': { clue: 'Imaginary story', answer: 'FICTION', row: 3, col: 3 }, // F I C T I O N
+      '3': { clue: 'Metal container', answer: 'TIN', row: 1, col: 9 },     // T I N
+      '5': { clue: 'Text style', answer: 'FONT', row: 5, col: 0 },         // F O N T
     },
     down: {
-      // FIT — столбец 2, строки 4..6 (пересекается с F в FICTION на (4,2))
-      '2': { clue: 'Be suitable', answer: 'FIT', row: 4, col: 2 },
-      // NOT — столбец 5, строки 2..4 (пересекается с T в FICTION на (4,5))
-      '4': { clue: 'Opposite of yes', answer: 'NOT', row: 2, col: 5 },
-      // ICON — столбец 8, строки 1..4 (пересекается с N в FICTION на (4,8))
-      '6': { clue: 'Symbol', answer: 'ICON', row: 1, col: 8 },
-      // FONT — столбец 4, строки 0..3
-      '8': { clue: 'Text style', answer: 'FONT', row: 0, col: 4 },
+      '2': { clue: 'Be suitable', answer: 'FIT', row: 0, col: 5 },         // N O T (пересечений нет)
+      '4': { clue: 'Opposite of yes', answer: 'NOT', row: 0, col: 5 },     // N O T
+      '6': { clue: 'Symbol', answer: 'ICON', row: 0, col: 8 },             // I C O N (N пересекается с FICTION в (3,8))
+      '8': { clue: 'Information', answer: 'INFO', row: 1, col: 2 },        // I N F O
     },
   },
 
-  // Level 2 — буквы BEAVER (6 букв)
+  // Level 2 — (пример) буквы BEAVER
   {
     across: {
       '1': { clue: 'Courageous', answer: 'BRAVE', row: 2, col: 1 },
@@ -46,10 +40,10 @@ export const puzzles: Puzzle[] = [
       '5': { clue: 'No longer', answer: 'NEVER', row: 6, col: 3 },
     },
     down: {
-      '2': { clue: 'Adult male bear', answer: 'BRUIN', row: 0, col: 3 }, // пример короткого слова; можно заменить
-      '4': { clue: 'At any time', answer: 'EVER', row: 0, col: 5 },
-      '6': { clue: 'Face up to', answer: 'BRAVE', row: 1, col: 1 }, // пересекается по нескольким буквам
-      '8': { clue: 'Wild animal', answer: 'BEAR', row: 1, col: 4 },
+      '2': { clue: 'At any time', answer: 'EVER', row: 0, col: 5 },
+      '4': { clue: 'Wild animal', answer: 'BEAR', row: 1, col: 4 },
+      '6': { clue: 'Face up to', answer: 'BRAVE', row: 1, col: 1 },
+      '8': { clue: 'Adult male bear', answer: 'BRUIN', row: 0, col: 3 },
     },
   },
 ]

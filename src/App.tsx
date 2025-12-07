@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 200
+const CIRCLE_SIZE = 180
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 75
+const RADIUS = 68
 const HIT_RADIUS = 20
-const LETTER_SIZE = 42
+const LETTER_SIZE = 40
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -226,10 +226,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг и кнопки вокруг */}
+        {/* Круг и кнопки вокруг — компактнее */}
         <div
           className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
+          style={{ width: CIRCLE_SIZE + 90, height: CIRCLE_SIZE + 90 }}
         >
           <div className="absolute left-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
@@ -243,13 +243,13 @@ export default function App() {
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-10 bottom-2">
+          <div className="absolute left-10 bottom-0">
             <button className="flex flex-col items-center text-white">
               <DollarSign className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-10 bottom-2">
+          <div className="absolute right-10 bottom-0">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
               <Settings className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('settings')}</span>
@@ -337,7 +337,7 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify между items-center mb-6">
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Hints</h2>
                 <button onClick={() => setIsHintsOpen(false)}>
                   <X className="w-6 h-6" />
