@@ -12,6 +12,7 @@
     "node": "24.x"
   },
   "dependencies": {
+    "@jaredreisinger/react-crossword": "^5.2.0",
     "@tma.js/sdk": "^2.0.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^11.0.0",
@@ -21,6 +22,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.0.0",
+    "styled-components": "^6.1.19",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
@@ -30,6 +32,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@types/react-i18next": "^7.8.3",
+    "@types/styled-components": "^5.1.36",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
