@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 240
+const CIRCLE_SIZE = 260
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 90
-const HIT_RADIUS = 22
-const LETTER_SIZE = 46
+const RADIUS = 100
+const HIT_RADIUS = 24
+const LETTER_SIZE = 48
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -219,7 +219,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* круг и кнопки вокруг (больше «рамка») */}
+        {/* круг и кнопки вокруг */}
         <div
           className="mt-3 relative flex items-center justify-center"
           style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}

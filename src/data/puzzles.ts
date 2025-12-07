@@ -1,43 +1,53 @@
-export interface Entry { id: string; direction: 'across' | 'down'; clue: string; answer: string; row: number; col: number }
-export interface Puzzle {
-  across: Record<string, { clue: string; answer: string; row: number; col: number }>;
-  down:   Record<string, { clue: string; answer: string; row: number; col: number }>;
+export interface Entry {
+  id: string
+  direction: 'across' | 'down'
+  clue: string
+  answer: string
+  row: number
+  col: number
 }
 
+export interface Puzzle {
+  across: Record<string, { clue: string; answer: string; row: number; col: number }>
+  down: Record<string, { clue: string; answer: string; row: number; col: number }>
+}
+
+/**
+ * Компактные уровни, без пересечений на разных буквах.
+ * 3–5 слов на уровень.
+ */
 export const puzzles: Puzzle[] = [
-  // Level 1 — буквы REACT (5)
+  // Level 1 — буквы C A T R N (3 слова)
   {
     across: {
-      '1': { clue: 'Act in response', answer: 'REACT', row: 2, col: 1 },   // R E A C T
-      '3': { clue: 'Rate something',  answer: 'RATE',  row: 4, col: 0 },   // R A T E
+      '1': { clue: 'Drive a vehicle', answer: 'CAR', row: 1, col: 1 },
+      '3': { clue: 'Get sun on skin', answer: 'TAN', row: 2, col: 2 },
     },
     down: {
-      '2': { clue: 'Art skill',       answer: 'CRAFT', row: 0, col: 3 },   // C R A F T
-      '4': { clue: 'Tea time?',       answer: 'TEA',   row: 0, col: 4 },   // T E A
+      '2': { clue: 'Pet with whiskers', answer: 'CAT', row: 0, col: 2 },
     },
   },
 
-  // Level 2 — буквы WORLD (5)
+  // Level 2 — буквы B E A R V (4 слова)
   {
     across: {
-      '1': { clue: 'Our planet',  answer: 'WORLD', row: 2, col: 1 },       // W O R L D
-      '3': { clue: 'Old',         answer: 'OLD',   row: 4, col: 3 },       // O L D
+      '1': { clue: 'Animal with fur', answer: 'BEAR', row: 1, col: 1 },
+      '3': { clue: 'Courageous', answer: 'BRAVE', row: 3, col: 0 },
     },
     down: {
-      '2': { clue: 'Ruler',       answer: 'LORD',  row: 0, col: 3 },       // L O R D
-      '4': { clue: 'Rowing tool', answer: 'OAR',   row: 1, col: 1 },       // O A R
+      '2': { clue: 'Organ of hearing', answer: 'EAR', row: 0, col: 2 },
+      '4': { clue: 'Opposite of leave', answer: 'BE', row: 0, col: 1 }, // маленькое пересечение
     },
   },
 
-  // Level 3 — буквы LEAFS (5)
+  // Level 3 — буквы D O G L (3 слова)
   {
     across: {
-      '1': { clue: 'Tree part',   answer: 'LEAF',  row: 1, col: 1 },       // L E A F
-      '3': { clue: 'Safe place',  answer: 'SAFE',  row: 3, col: 0 },       // S A F E
+      '1': { clue: 'Pet that barks', answer: 'DOG', row: 1, col: 1 },
     },
     down: {
-      '2': { clue: 'Not hard',    answer: 'EASY',  row: 0, col: 4 },       // E A S Y
-      '4': { clue: 'Tiny bug',    answer: 'FLEA',  row: 0, col: 2 },       // F L E A
+      '2': { clue: 'Tree trunk', answer: 'LOG', row: 0, col: 2 },
+      '4': { clue: 'Opposite of high', answer: 'LOW', row: 0, col: 1 },
     },
   },
-];
+]
