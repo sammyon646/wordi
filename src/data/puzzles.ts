@@ -25,7 +25,7 @@ export const puzzles: Puzzle[] = [
     },
     down: {
       '2': { clue: 'Light hit', answer: 'TAP', row: 1, col: 3 },
-      '4': { clue: 'Opposite of can\'t', answer: 'CAN', row: 1, col: 1 },
+      '4': { clue: "Opposite of can't", answer: 'CAN', row: 1, col: 1 },
     },
   },
 

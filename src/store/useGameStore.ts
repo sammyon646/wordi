@@ -48,20 +48,24 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
-const MAX_LETTERS = 7
+// Добавляем дубликаты букв столько раз, сколько нужно для каждого слова
 const buildLettersFromPuzzle = (entries: EntryRef[]) => {
-  const uniq: string[] = []
+  const maxCount: Record<string, number> = {}
   entries.forEach((e) => {
+    const freq: Record<string, number> = {}
     e.answer
       .toUpperCase()
       .split('')
       .forEach((ch) => {
-        if (!uniq.includes(ch) && uniq.length < MAX_LETTERS) {
-          uniq.push(ch)
-        }
+        freq[ch] = (freq[ch] || 0) + 1
+        maxCount[ch] = Math.max(maxCount[ch] || 0, freq[ch])
       })
   })
-  return shuffle(uniq)
+  const letters: string[] = []
+  Object.entries(maxCount).forEach(([ch, count]) => {
+    for (let i = 0; i < count; i++) letters.push(ch)
+  })
+  return shuffle(letters)
 }
 
 const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
@@ -136,7 +140,7 @@ const useGameStore = create<State>((set, get) => ({
       gridLetters,
       typedWord: '',
       path: [],
-      coins: get().coins + 50 * get().level,
+      coins: get().coins + 50 * get().level, // монеты только за решённое слово
     })
 
     const allSolved = Object.keys(solved).length === entries.length

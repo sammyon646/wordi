@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 288 // px (18rem)
+const CIRCLE_SIZE = 288
 const CENTER = CIRCLE_SIZE / 2
 const RADIUS = 105
 const HIT_RADIUS = 24
-const LETTER_SIZE = 48 // px
+const LETTER_SIZE = 48
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -21,7 +21,6 @@ export default function App() {
     path,
     entries,
     gridLetters,
-    addCoins,
     updateTypedWord,
     resetPath,
     trySolveTypedWord,
@@ -57,7 +56,6 @@ export default function App() {
       const dy = pos.y - (CENTER + ly)
       if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) {
         updateTypedWord(letter, i)
-        addCoins(1)
       }
     })
   }
@@ -83,7 +81,6 @@ export default function App() {
       resetPath()
       return
     }
-
     const { solved, allSolved } = trySolveTypedWord()
     if (solved && allSolved) {
       canvasConfetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } })
@@ -151,7 +148,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-black text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col">
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -173,39 +170,40 @@ export default function App() {
         </div>
       </div>
 
-      {/* Кроссворд */}
-      <div className="flex justify-center px-4">
-        <div className="inline-flex flex-col gap-1 bg-purple-950/40 p-3 rounded-xl border border-purple-700">
-          {Array.from({ length: maxRow + 1 }).map((_, r) => (
-            <div key={r} className="flex gap-1">
-              {Array.from({ length: maxCol + 1 }).map((_, c) => {
-                const key = `${r}-${c}`
-                const isActive = activeCells.has(key)
-                const letter = gridLetters[key]
-                return (
-                  <div
-                    key={c}
-                    className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
-                      isActive ? 'bg-purple-800 border border-purple-600' : 'bg-transparent'
-                    }`}
-                  >
-                    {letter ? letter.toUpperCase() : ''}
-                  </div>
-                )
-              })}
-            </div>
-          ))}
+      {/* Основная зона с кроссвордом и кругом, подняли над нижним меню */}
+      <div className="flex-1 flex flex-col items-center px-4 pb-28">
+        {/* Кроссворд */}
+        <div className="flex justify-center">
+          <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
+            {Array.from({ length: maxRow + 1 }).map((_, r) => (
+              <div key={r} className="flex gap-1">
+                {Array.from({ length: maxCol + 1 }).map((_, c) => {
+                  const key = `${r}-${c}`
+                  const isActive = activeCells.has(key)
+                  const letter = gridLetters[key]
+                  return (
+                    <div
+                      key={c}
+                      className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
+                        isActive ? 'bg-purple-800/80 border border-purple-500/80 text-white' : 'bg-transparent'
+                      }`}
+                    >
+                      {letter ? letter.toUpperCase() : ''}
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Зона ввода и круг */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="h-20 flex items-center justify-center">
+        {/* Зона ввода */}
+        <div className="h-20 flex items-center justify-center mt-4">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
                 key={i}
-                className="w-10 h-10 bg-purple-900/80 border-2 border-purple-600 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
+                className="w-10 h-10 bg-[#2b1755] border-2 border-purple-500/80 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
@@ -217,10 +215,10 @@ export default function App() {
         </div>
 
         {/* Центральный круг */}
-        <div className="flex-1 flex items-center justify-center -mt-4">
+        <div className="flex items-center justify-center mt-2">
           <div
             ref={circleRef}
-            className="relative rounded-full bg-purple-950 shadow-2xl"
+            className="relative rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"
             style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
           >
             <div className="absolute inset-0 z-10" />
@@ -232,7 +230,7 @@ export default function App() {
                 <motion.div
                   key={i}
                   className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
-                    isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-600 text-white'
+                    isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
                   }`}
                   style={{
                     width: LETTER_SIZE,
@@ -281,7 +279,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Нижнее меню */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-white/20 flex justify-around py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0c061a]/90 backdrop-blur-md border-t border-white/10 flex justify-around py-3">
         <button className="flex flex-col items-center text-white">
           <Trophy className="w-7 h-7 mb-1" />
           <span className="text-xs">{t('boost')}</span>
