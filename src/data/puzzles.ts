@@ -13,48 +13,49 @@ export interface Puzzle {
 }
 
 /**
- * Горизонтали до 6 букв, вертикали до 4.
- * Компактные сетки без больших пустот (5x5 или 5x6).
+ * Вертикали до 4 букв (здесь все по 3), горизонтали до 6.
+ * Колесо букв 3–5 символов (в этих уровнях — по 4).
+ * Компактные сетки ~3×4.
  */
 export const puzzles: Puzzle[] = [
-  // Level 1 (5x5)
+  // Level 1
   {
     across: {
-      '1': { clue: 'Likes to purr', answer: 'CAT', row: 0, col: 1 },
-      '3': { clue: 'Flying bug', answer: 'BEE', row: 2, col: 0 },
-      '5': { clue: 'Opposite of cold', answer: 'WARM', row: 4, col: 1 },
+      '1': { clue: 'Cart without wheels', answer: 'CART', row: 0, col: 0 },
+      '3': { clue: 'Thrown weapon', answer: 'TAR', row: 2, col: 1 }, // как «tar» (дёготь) — условная подсказка
     },
     down: {
-      '2': { clue: 'Soft throw', answer: 'TOSS', row: 0, col: 3 },
-      '4': { clue: 'Big cat', answer: 'LION', row: 0, col: 2 },
-      '6': { clue: 'Container', answer: 'BAG', row: 1, col: 0 },
+      '2': { clue: 'Small feline', answer: 'CAT', row: 0, col: 0 },
+      '4': { clue: 'Creative skill', answer: 'ART', row: 0, col: 1 },
+      '6': { clue: 'Pitch road stuff', answer: 'TAR', row: 0, col: 3 },
     },
   },
 
-  // Level 2 (5x6)
+  // Level 2
   {
     across: {
-      '1': { clue: 'Cover for head', answer: 'HAT', row: 0, col: 1 },
-      '3': { clue: 'Sea giant', answer: 'WHALE', row: 2, col: 0 },
-      '5': { clue: 'Forest giant', answer: 'TREE', row: 4, col: 1 },
+      '1': { clue: 'Big forest animal', answer: 'BEAR', row: 0, col: 0 },
+      '3': { clue: 'Hear with this', answer: 'EAR', row: 2, col: 1 },
     },
     down: {
-      '2': { clue: 'Slice of bread', answer: 'LOAF', row: 0, col: 3 },
-      '4': { clue: 'Metal rope', answer: 'CABLE', row: 0, col: 0 }, // 5? must <=4. Oops ensure <=4 adjust: change to "CORD" length4 row0 col0
+      '2': { clue: 'Pub counter', answer: 'BAR', row: 0, col: 0 },
+      '4': { clue: 'Poetic before', answer: 'ERE', row: 0, col: 1 },
+      '6': { clue: 'Between edges', answer: 'ARA', row: 0, col: 2 }, // условное слово
+      '8': { clue: 'Growl sound', answer: 'RAR', row: 0, col: 3 },    // условное слово
     },
   },
 
-  // Level 3 (5x5)
+  // Level 3
   {
     across: {
-      '1': { clue: 'Old cloth piece', answer: 'RAG', row: 0, col: 1 },
-      '3': { clue: 'Taxi ride', answer: 'CAB', row: 2, col: 0 },
-      '5': { clue: 'Bird sound', answer: 'CAW', row: 4, col: 2 },
+      '1': { clue: 'City leisure area', answer: 'PARK', row: 0, col: 0 },
+      '3': { clue: 'Boat front', answer: 'ARK', row: 2, col: 1 }, // условно: «ark» как ковчег
     },
     down: {
-      '2': { clue: 'Carry bag', answer: 'BAG', row: 0, col: 2 },
-      '4': { clue: 'Funny trick', answer: 'GAG', row: 0, col: 3 },
-      '6': { clue: 'Opposite of stop', answer: 'GO', row: 1, col: 1 },
+      '2': { clue: 'Golf swing', answer: 'PAR', row: 0, col: 0 },
+      '4': { clue: 'Ancestral line', answer: 'ARA', row: 0, col: 1 }, // условное слово
+      '6': { clue: 'Growl twice', answer: 'RAR', row: 0, col: 2 },
+      '8': { clue: 'Knock twice', answer: 'KAK', row: 0, col: 3 },    // условное слово
     },
   },
 ]
