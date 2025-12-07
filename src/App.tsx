@@ -5,7 +5,7 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 240
+const CIRCLE_SIZE = 220
 const CENTER = CIRCLE_SIZE / 2
 const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
@@ -155,8 +155,8 @@ export default function App() {
         </div>
       </div>
 
-      {/* Основная зона: кроссворд + вывод набранного слова + круг */}
-      <div className="flex-1 flex flex-col px-4 pb-0 gap-2">
+      {/* Основная зона */}
+      <div className="flex-1 flex flex-col px-4 gap-2">
         {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -202,40 +202,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг и иконки */}
+        {/* Круг */}
         <div className="flex-1 flex items-end justify-center pb-4">
-          <div
-            className="relative flex items-center justify-center"
-            style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}
-          >
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-                <Trophy className="w-6 h-6" />
-              </div>
-              <span className="text-xs">{t('boost', 'boost')}</span>
-            </div>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-                <Users className="w-6 h-6" />
-              </div>
-              <span className="text-xs">{t('friends', 'friends')}</span>
-            </div>
-            <div className="absolute left-16 bottom-2 flex flex-col items-center gap-1">
-              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-                <DollarSign className="w-6 h-6" />
-              </div>
-              <span className="text-xs">{t('earn', 'earn')}</span>
-            </div>
-            <div className="absolute right-16 bottom-2 flex flex-col items-center gap-1">
-              <button
-                onClick={() => setIsSettingsOpen(true)}
-                className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
-              >
-                <Settings className="w-6 h-6" />
-              </button>
-              <span className="text-xs">{t('settings', 'settings')}</span>
-            </div>
-
+          <div className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}>
             <motion.div
               ref={circleRef}
               className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
@@ -281,6 +250,37 @@ export default function App() {
               )}
             </motion.div>
           </div>
+        </div>
+      </div>
+
+      {/* Нижняя панель с кнопками */}
+      <div className="border-t border-purple-800/60 bg-purple-950/70 backdrop-blur-md px-6 py-3 flex justify-around items-center">
+        <div className="flex flex-col items-center text-xs gap-1">
+          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+            <Trophy className="w-6 h-6" />
+          </div>
+          <span>{t('boost', 'boost')}</span>
+        </div>
+        <div className="flex flex-col items-center text-xs gap-1">
+          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+            <Users className="w-6 h-6" />
+          </div>
+          <span>{t('friends', 'friends')}</span>
+        </div>
+        <div className="flex flex-col items-center text-xs gap-1">
+          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+            <DollarSign className="w-6 h-6" />
+          </div>
+          <span>{t('earn', 'earn')}</span>
+        </div>
+        <div className="flex flex-col items-center text-xs gap-1">
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
+          >
+            <Settings className="w-6 h-6" />
+          </button>
+          <span>{t('settings', 'settings')}</span>
         </div>
       </div>
 

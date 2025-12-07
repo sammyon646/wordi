@@ -28,7 +28,7 @@ export const puzzles: Puzzle[] = [
     },
   },
 
-  // Level 2 — буквы B E A R V (4 слова) — исправлены пересечения
+  // Level 2 — буквы B E A R V (4 слова) — валидные пересечения
   {
     across: {
       '1': { clue: 'Animal with fur', answer: 'BEAR', row: 1, col: 1 },
@@ -40,14 +40,14 @@ export const puzzles: Puzzle[] = [
     },
   },
 
-  // Level 3 — буквы D O G L (3 слова)
+  // Level 3 — буквы D O G L W (3 слова) — валидные пересечения
   {
     across: {
       '1': { clue: 'Pet that barks', answer: 'DOG', row: 1, col: 1 },
     },
     down: {
-      '2': { clue: 'Tree trunk', answer: 'LOG', row: 0, col: 2 },
-      '4': { clue: 'Opposite of high', answer: 'LOW', row: 0, col: 1 },
+      '2': { clue: 'Tree trunk', answer: 'LOG', row: 0, col: 2 }, // пересекается по O
+      '4': { clue: 'Nocturnal bird', answer: 'OWL', row: 0, col: 0 }, // без конфликта
     },
   },
 ]
