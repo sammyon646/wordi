@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 180
+const CIRCLE_SIZE = 240
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 68
-const HIT_RADIUS = 20
-const LETTER_SIZE = 40
+const RADIUS = 90
+const HIT_RADIUS = 22
+const LETTER_SIZE = 46
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -27,7 +27,7 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
-  // Анимация монет
+  // анимация монет
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -43,9 +43,7 @@ export default function App() {
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
-    const x = RADIUS * Math.cos(angle)
-    const y = RADIUS * Math.sin(angle)
-    return { x, y }
+    return { x: RADIUS * Math.cos(angle), y: RADIUS * Math.sin(angle) }
   }
 
   const getEventPosition = (e: MouseEvent | TouchEvent) => {
@@ -78,7 +76,7 @@ export default function App() {
   const handleMove = (e: any) => {
     e.preventDefault()
     e.stopPropagation()
-    if (path.length === 0) return
+    if (!path.length) return
     const pos = getEventPosition(e)
     checkLetterHit(pos)
   }
@@ -126,17 +124,14 @@ export default function App() {
   useEffect(() => {
     const el = circleRef.current
     if (!el) return
-
     el.addEventListener('touchstart', handleStart, { passive: false })
     el.addEventListener('touchmove', handleMove, { passive: false })
     el.addEventListener('touchend', handleEnd)
     el.addEventListener('mousedown', handleStart)
     el.addEventListener('mousemove', handleMove)
     el.addEventListener('mouseup', handleEnd)
-
     document.body.style.overflow = 'hidden'
     document.body.style.touchAction = 'none'
-
     return () => {
       el.removeEventListener('touchstart', handleStart)
       el.removeEventListener('touchmove', handleMove)
@@ -156,7 +151,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col">
-      {/* Шапка */}
+      {/* шапка */}
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Coins className="w-7 h-7 text-yellow-400" />
@@ -164,7 +159,6 @@ export default function App() {
             {coinsDisplay as any}
           </motion.span>
         </div>
-
         <button
           onClick={() => setIsHintsOpen(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-700 hover:bg-purple-600 transition"
@@ -172,16 +166,15 @@ export default function App() {
           <Lightbulb className="w-5 h-5" />
           <span className="text-sm font-semibold">Hints</span>
         </button>
-
         <div className="flex items-center gap-2">
           <Trophy className="w-7 h-7 text-yellow-400" />
           <span className="text-xl font-bold">Lv {level}</span>
         </div>
       </div>
 
-      {/* Основная зона */}
+      {/* основная зона */}
       <div className="flex-1 flex flex-col items-center px-4 pb-2">
-        {/* Кроссворд */}
+        {/* кроссворд */}
         <div className="w-full flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
             {Array.from({ length: maxRow + 1 }).map((_, r) => (
@@ -209,7 +202,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Собранное слово */}
+        {/* набранное слово */}
         <div className="h-12 flex items-center justify-center mt-2">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
@@ -226,32 +219,32 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг и кнопки вокруг — компактнее */}
+        {/* круг и кнопки вокруг (круг крупнее, иконки дальше) */}
         <div
           className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 90, height: CIRCLE_SIZE + 90 }}
+          style={{ width: CIRCLE_SIZE + 110, height: CIRCLE_SIZE + 110 }}
         >
           <div className="absolute left-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Trophy className="w-6 h-6 mb-1" />
+              <Trophy className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('boost')}</span>
             </button>
           </div>
           <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Users className="w-6 h-6 mb-1" />
+              <Users className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-10 bottom-0">
+          <div className="absolute left-12 bottom-1">
             <button className="flex flex-col items-center text-white">
-              <DollarSign className="w-6 h-6 mb-1" />
+              <DollarSign className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-10 bottom-0">
+          <div className="absolute right-12 bottom-1">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-              <Settings className="w-6 h-6 mb-1" />
+              <Settings className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('settings')}</span>
             </button>
           </div>
@@ -264,7 +257,6 @@ export default function App() {
             animate={{ scale: 1, opacity: 1 }}
           >
             <div className="absolute inset-0 z-10" />
-
             {letters.map((letter, i) => {
               const { x, y } = getLetterPosition(i)
               const isSelected = path.includes(i)
@@ -288,7 +280,6 @@ export default function App() {
                 </motion.div>
               )
             })}
-
             {path.length > 1 && (
               <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
                 <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />

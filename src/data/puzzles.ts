@@ -6,44 +6,45 @@ export interface Entry {
   row: number
   col: number
 }
-
 export interface Puzzle {
   across: Record<string, { clue: string; answer: string; row: number; col: number }>
   down: Record<string, { clue: string; answer: string; row: number; col: number }>
 }
 
-/**
- * Пересечения только по совпадающим буквам.
- * Level 1 — буквы FICTION, компактная сетка.
- */
 export const puzzles: Puzzle[] = [
-  // Level 1 — FICTION, FIT, NOT, TIN, ICON, INFO, FONT
+  // Level 1 — буквы CLOVE (5)
   {
     across: {
-      '1': { clue: 'Imaginary story', answer: 'FICTION', row: 3, col: 3 }, // F I C T I O N
-      '3': { clue: 'Metal container', answer: 'TIN', row: 1, col: 9 },     // T I N
-      '5': { clue: 'Text style', answer: 'FONT', row: 5, col: 0 },         // F O N T
+      '1': { clue: 'Garlic part', answer: 'CLOVE', row: 1, col: 1 }, // C L O V E
+      '3': { clue: 'Wild canine', answer: 'WOLF', row: 3, col: 3 },  // W O L F
     },
     down: {
-      '2': { clue: 'Be suitable', answer: 'FIT', row: 0, col: 5 },         // N O T (пересечений нет)
-      '4': { clue: 'Opposite of yes', answer: 'NOT', row: 0, col: 5 },     // N O T
-      '6': { clue: 'Symbol', answer: 'ICON', row: 0, col: 8 },             // I C O N (N пересекается с FICTION в (3,8))
-      '8': { clue: 'Information', answer: 'INFO', row: 1, col: 2 },        // I N F O
+      '2': { clue: 'Opposite of up', answer: 'LOW', row: 0, col: 3 },   // L O W (пересечение O с CLOVE)
+      '4': { clue: 'Affection', answer: 'LOVE', row: 1, col: 2 },       // L O V E (пересечение с CLOVE)
     },
   },
 
-  // Level 2 — (пример) буквы BEAVER
+  // Level 2 — буквы GRAPE (5)
   {
     across: {
-      '1': { clue: 'Courageous', answer: 'BRAVE', row: 2, col: 1 },
-      '3': { clue: 'Rodent builder', answer: 'BEAVER', row: 4, col: 0 },
-      '5': { clue: 'No longer', answer: 'NEVER', row: 6, col: 3 },
+      '1': { clue: 'Fruit bunch', answer: 'GRAPE', row: 1, col: 1 }, // G R A P E
+      '3': { clue: 'To tear', answer: 'RIP', row: 3, col: 2 },       // R I P
     },
     down: {
-      '2': { clue: 'At any time', answer: 'EVER', row: 0, col: 5 },
-      '4': { clue: 'Wild animal', answer: 'BEAR', row: 1, col: 4 },
-      '6': { clue: 'Face up to', answer: 'BRAVE', row: 1, col: 1 },
-      '8': { clue: 'Adult male bear', answer: 'BRUIN', row: 0, col: 3 },
+      '2': { clue: 'Big bird', answer: 'EMU', row: 0, col: 4 },     // E M U
+      '4': { clue: 'Perch', answer: 'ROOST', row: 0, col: 2 },      // R O O S T (пересечение R с GRAPE)
+    },
+  },
+
+  // Level 3 — буквы STEAM (5)
+  {
+    across: {
+      '1': { clue: 'Hot vapor', answer: 'STEAM', row: 1, col: 1 },  // S T E A M
+      '3': { clue: 'Consume', answer: 'EAT', row: 3, col: 2 },      // E A T
+    },
+    down: {
+      '2': { clue: 'Math symbol', answer: 'SUM', row: 0, col: 1 },  // S U M (пересечение с STEAM)
+      '4': { clue: 'Mother (short)', answer: 'MA', row: 1, col: 4 },// M A
     },
   },
 ]
