@@ -17,8 +17,4 @@ i18n
     interpolation: { escapeValue: false },
   })
 
-if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
-  i18n.changeLanguage(window.Telegram.WebApp.initDataUnsafe.user.language_code)
-}
-
 export default i18n
