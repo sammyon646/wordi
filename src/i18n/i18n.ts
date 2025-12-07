@@ -1,27 +1,24 @@
-// src/i18n/i18n.ts
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
-const resources = {
-  en: {
-    translation: {
-      boost: 'Boost',
-      friends: 'Friends',
-      earn: 'Earn',
-      settings: 'Settings',
-    },
-  },
-}
+import en from './locales/en.json'
+import ru from './locales/ru.json'
 
 i18n
   .use(initReactI18next)
+  .use(LanguageDetector)
   .init({
-    resources,
-    lng: 'en',
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
+    resources: {
+      en: { translation: en },
+      ru: { translation: ru },
     },
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },
   })
+
+if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
+  i18n.changeLanguage(window.Telegram.WebApp.initDataUnsafe.user.language_code)
+}
 
 export default i18n
