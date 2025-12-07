@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 240
+const CIRCLE_SIZE = 200
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 88
-const HIT_RADIUS = 22
-const LETTER_SIZE = 46
+const RADIUS = 75
+const HIT_RADIUS = 20
+const LETTER_SIZE = 42
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -95,7 +95,7 @@ export default function App() {
       setTimeout(() => {
         setShowLevelUp(false)
         setNewPuzzle()
-      }, 1800)
+      }, 1200)
     }
   }
 
@@ -180,7 +180,7 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col items-center px-4 pb-4">
+      <div className="flex-1 flex flex-col items-center px-4 pb-2">
         {/* Кроссворд */}
         <div className="w-full flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -210,7 +210,7 @@ export default function App() {
         </div>
 
         {/* Собранное слово */}
-        <div className="h-14 flex items-center justify-center mt-3">
+        <div className="h-12 flex items-center justify-center mt-2">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -226,33 +226,32 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг и кнопки вокруг — компактно */}
+        {/* Круг и кнопки вокруг */}
         <div
-          className="mt-4 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 70, height: CIRCLE_SIZE + 70 }}
+          className="mt-3 relative flex items-center justify-center"
+          style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
         >
-          {/* Кнопки вокруг круга */}
-          <div className="absolute left-2 top-1/2 -translate-y-1/2">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Trophy className="w-7 h-7 mb-1" />
+              <Trophy className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('boost')}</span>
             </button>
           </div>
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Users className="w-7 h-7 mb-1" />
+              <Users className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-8 bottom-3">
+          <div className="absolute left-10 bottom-2">
             <button className="flex flex-col items-center text-white">
-              <DollarSign className="w-7 h-7 mb-1" />
+              <DollarSign className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-8 bottom-3">
+          <div className="absolute right-10 bottom-2">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-              <Settings className="w-7 h-7 mb-1" />
+              <Settings className="w-6 h-6 mb-1" />
               <span className="text-xs">{t('settings')}</span>
             </button>
           </div>
@@ -321,7 +320,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Окно подсказок */}
+      {/* Hints */}
       <AnimatePresence>
         {isHintsOpen && (
           <motion.div
@@ -338,7 +337,7 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify между items-center mb-6">
                 <h2 className="text-2xl font-bold">Hints</h2>
                 <button onClick={() => setIsHintsOpen(false)}>
                   <X className="w-6 h-6" />
@@ -385,7 +384,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Настройки */}
+      {/* Settings */}
       <AnimatePresence>
         {isSettingsOpen && (
           <motion.div
@@ -402,7 +401,7 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify между	items-center mb-6">
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">{t('settings')}</h2>
                 <button onClick={() => setIsSettingsOpen(false)}>
                   <X className="w-6 h-6" />
