@@ -5,11 +5,11 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 288
+const CIRCLE_SIZE = 260
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 105
-const HIT_RADIUS = 24
-const LETTER_SIZE = 48
+const RADIUS = 95
+const HIT_RADIUS = 22
+const LETTER_SIZE = 46
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -179,10 +179,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Кроссворд и поле ввода — выше, круг чуть ниже */}
+      {/* Основная зона */}
       <div className="flex-1 flex flex-col items-center px-4 pb-4">
         {/* Кроссворд */}
-        <div className="flex justify-center">
+        <div className="w-full flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
             {Array.from({ length: maxRow + 1 }).map((_, r) => (
               <div key={r} className="flex gap-1">
@@ -209,7 +209,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Собранное слово — ближе к кругу */}
+        {/* Собранное слово */}
         <div className="h-16 flex items-center justify-center mt-3">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
@@ -226,30 +226,30 @@ export default function App() {
           </div>
         </div>
 
-        {/* Центральный круг + кнопки вокруг */}
-        <div className="relative mt-4" style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}>
+        {/* Круг и кнопки вокруг — компактно */}
+        <div className="mt-4 relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 80, height: CIRCLE_SIZE + 80 }}>
           {/* Кнопки вокруг круга */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+          <div className="absolute left-2 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Trophy className="w-8 h-8 mb-1" />
+              <Trophy className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('boost')}</span>
             </button>
           </div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
-              <Users className="w-8 h-8 mb-1" />
+              <Users className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-12 bottom-6">
+          <div className="absolute left-10 bottom-4">
             <button className="flex flex-col items-center text-white">
-              <DollarSign className="w-8 h-8 mb-1" />
+              <DollarSign className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-12 bottom-6">
+          <div className="absolute right-10 bottom-4">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-              <Settings className="w-8 h-8 mb-1" />
+              <Settings className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('settings')}</span>
             </button>
           </div>
