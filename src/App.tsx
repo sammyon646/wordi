@@ -34,6 +34,7 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
+  // анимация монет
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -178,7 +179,7 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col items-center px-4 pb-2">
+      <div className="flex-1 flex flex-col items-center px-4 pb-0">
         {/* Кроссворд */}
         <div className="w-full flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -224,78 +225,80 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг и иконки вокруг (как на референсе, без обводки круга) */}
-        <div
-          className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
-        >
-          {/* Иконки в маленьких фиолетовых кружках */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-              <Trophy className="w-6 h-6" />
-            </div>
-            <span className="text-xs">boost</span>
-          </div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-              <Users className="w-6 h-6" />
-            </div>
-            <span className="text-xs">friends</span>
-          </div>
-          <div className="absolute left-10 bottom-2 flex flex-col items-center gap-1">
-            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-              <DollarSign className="w-6 h-6" />
-            </div>
-            <span className="text-xs">earn</span>
-          </div>
-          <div className="absolute right-10 bottom-2 flex flex-col items-center gap-1">
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
-            >
-              <Settings className="w-6 h-6" />
-            </button>
-            <span className="text-xs">settings</span>
-          </div>
-
-          {/* Сам круг — без обводки */}
-          <motion.div
-            ref={circleRef}
-            className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl"
-            style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+        {/* Круг у нижней кромки + иконки вокруг */}
+        <div className="flex-1 w-full flex items-end justify-center pb-4">
+          <div
+            className="relative flex items-center justify-center"
+            style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
           >
-            <div className="absolute inset-0 z-10" />
-            {letters.map((letter, i) => {
-              const { x, y } = getLetterPosition(i)
-              const isSelected = path.includes(i)
-              return (
-                <motion.div
-                  key={i}
-                  className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
-                    isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
-                  }`}
-                  style={{
-                    width: LETTER_SIZE,
-                    height: LETTER_SIZE,
-                    left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
-                    top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
-                  }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
-                >
-                  {letter.toUpperCase()}
-                </motion.div>
-              )
-            })}
-            {path.length > 1 && (
-              <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
-                <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
-              </svg>
-            )}
-          </motion.div>
+            {/* Иконки с подложкой */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+                <Trophy className="w-6 h-6" />
+              </div>
+              <span className="text-xs">boost</span>
+            </div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+                <Users className="w-6 h-6" />
+              </div>
+              <span className="text-xs">friends</span>
+            </div>
+            <div className="absolute left-10 bottom-0 flex flex-col items-center gap-1">
+              <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <span className="text-xs">earn</span>
+            </div>
+            <div className="absolute right-10 bottom-0 flex flex-col items-center gap-1">
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
+              >
+                <Settings className="w-6 h-6" />
+              </button>
+              <span className="text-xs">settings</span>
+            </div>
+
+            {/* Сам круг — без обводки */}
+            <motion.div
+              ref={circleRef}
+              className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl"
+              style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <div className="absolute inset-0 z-10" />
+              {letters.map((letter, i) => {
+                const { x, y } = getLetterPosition(i)
+                const isSelected = path.includes(i)
+                return (
+                  <motion.div
+                    key={i}
+                    className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
+                      isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
+                    }`}
+                    style={{
+                      width: LETTER_SIZE,
+                      height: LETTER_SIZE,
+                      left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
+                      top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
+                    }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
+                  >
+                    {letter.toUpperCase()}
+                  </motion.div>
+                )
+              })}
+              {path.length > 1 && (
+                <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
+                  <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
+                </svg>
+              )}
+            </motion.div>
+          </div>
         </div>
       </div>
 
