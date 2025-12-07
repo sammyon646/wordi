@@ -13,40 +13,43 @@ export interface Puzzle {
 }
 
 /**
- * Каждая головоломка: 3–5 слов, единый связный кроссворд, ответы без повторяющихся букв.
+ * Простые слова (3–5 букв), каждый уровень 3–5 слов, единый связный кроссворд.
+ * Между параллельными словами есть хотя бы одна пустая клетка, пересечения на одинаковых буквах.
  */
 export const puzzles: Puzzle[] = [
-  // Level 1 (4 слова, связаны все вместе)
+  // Level 1
   {
     across: {
-      '1': { clue: 'Small vehicle with wheels', answer: 'CART', row: 1, col: 1 },
-      '3': { clue: 'Torn or ripped', answer: 'TORN', row: 2, col: 0 },
+      '1': { clue: 'Cat sound animal', answer: 'CAT', row: 1, col: 1 },
+      '3': { clue: 'Write with this', answer: 'PEN', row: 3, col: 3 },
     },
     down: {
-      '2': { clue: 'Grain plant', answer: 'CORN', row: 1, col: 1 },
-      '4': { clue: 'Mexican dish', answer: 'TACO', row: 1, col: 4 },
+      '2': { clue: 'Light hit', answer: 'TAP', row: 1, col: 3 },
+      '4': { clue: 'Opposite of can\'t', answer: 'CAN', row: 1, col: 1 },
     },
   },
 
-  // Level 2 (3 слова, все пересечены с главным словом)
+  // Level 2
   {
     across: {
-      '1': { clue: 'Hard piece of rock', answer: 'STONE', row: 0, col: 0 },
+      '1': { clue: 'Bread piece', answer: 'PAN', row: 2, col: 2 },
+      '3': { clue: 'Head cover', answer: 'HAT', row: 4, col: 2 },
     },
     down: {
-      '2': { clue: 'Multiple ones', answer: 'ONES', row: 0, col: 2 },
-      '3': { clue: 'Short letter', answer: 'NOTE', row: 0, col: 3 },
+      '2': { clue: 'Draw a simple plan', answer: 'MAP', row: 0, col: 2 },
+      '4': { clue: 'Catch with holes', answer: 'NET', row: 2, col: 4 },
     },
   },
 
-  // Level 3 (3 слова, общий набор букв)
+  // Level 3
   {
     across: {
-      '1': { clue: 'Flat wooden board', answer: 'BOARD', row: 0, col: 0 },
+      '1': { clue: 'Carry it', answer: 'BAG', row: 2, col: 2 },
+      '3': { clue: 'Old cloth piece', answer: 'RAG', row: 4, col: 2 },
     },
     down: {
-      '2': { clue: 'Poet or minstrel', answer: 'BARD', row: 0, col: 0 },
-      '3': { clue: 'Long street', answer: 'ROAD', row: 0, col: 3 },
+      '2': { clue: 'Taxi', answer: 'CAB', row: 0, col: 2 },
+      '4': { clue: 'Repeat it playfully', answer: 'GAG', row: 2, col: 4 },
     },
   },
 ]

@@ -5,6 +5,12 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
+const CIRCLE_SIZE = 288 // px (18rem)
+const CENTER = CIRCLE_SIZE / 2
+const RADIUS = 105
+const HIT_RADIUS = 24
+const LETTER_SIZE = 48 // px
+
 export default function App() {
   const { t, i18n } = useTranslation()
   const {
@@ -31,9 +37,8 @@ export default function App() {
 
   const getLetterPosition = (i: number) => {
     const angle = (i / letters.length) * 2 * Math.PI - Math.PI / 2
-    const radius = 130
-    const x = radius * Math.cos(angle)
-    const y = radius * Math.sin(angle)
+    const x = RADIUS * Math.cos(angle)
+    const y = RADIUS * Math.sin(angle)
     return { x, y }
   }
 
@@ -48,9 +53,9 @@ export default function App() {
     letters.forEach((letter, i) => {
       if (path.includes(i)) return
       const { x: lx, y: ly } = getLetterPosition(i)
-      const dx = pos.x - (160 + lx)
-      const dy = pos.y - (160 + ly)
-      if (dx * dx + dy * dy < 28 * 28) {
+      const dx = pos.x - (CENTER + lx)
+      const dy = pos.y - (CENTER + ly)
+      if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) {
         updateTypedWord(letter, i)
         addCoins(1)
       }
@@ -93,7 +98,7 @@ export default function App() {
   const linePath = path
     .map((i) => {
       const { x, y } = getLetterPosition(i)
-      return { x: 160 + x, y: 160 + y }
+      return { x: CENTER + x, y: CENTER + y }
     })
     .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
     .join(' ')
@@ -193,55 +198,63 @@ export default function App() {
         </div>
       </div>
 
-      {/* Квадратики ввода (текущее слово) */}
-      <div className="flex items-end justify-center pb-4">
-        <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
-          {displayedLetters.map((letter, i) => (
-            <motion.div
-              key={i}
-              className="w-12 h-12 bg-purple-900/80 border-2 border-purple-600 rounded-lg flex items-center justify-center text-3xl font-bold shadow-lg"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
-            >
-              {letter.toUpperCase()}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Центральный круг */}
-      <div className="flex-1 flex items-center justify-center">
-        <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl">
-          {/* Пустая область без текста */}
-          <div className="absolute inset-0 z-10" />
-
-          {/* Буквы по кругу */}
-          {letters.map((letter, i) => {
-            const { x, y } = getLetterPosition(i)
-            const isSelected = path.includes(i)
-            return (
+      {/* Зона ввода и круг */}
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="h-24 flex items-center justify-center">
+          <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
+            {displayedLetters.map((letter, i) => (
               <motion.div
                 key={i}
-                className={`absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
-                  isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-600 text-white'
-                }`}
-                style={{ left: `calc(50% + ${x}px - 28px)`, top: `calc(50% + ${y}px - 28px)` }}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                className="w-10 h-10 bg-purple-900/80 border-2 border-purple-600 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
               >
                 {letter.toUpperCase()}
               </motion.div>
-            )
-          })}
+            ))}
+          </div>
+        </div>
 
-          {/* Линия соединения */}
-          {path.length > 1 && (
-            <svg className="absolute inset-0 pointer-events-none z-10" viewBox="0 0 320 320">
-              <path d={linePath} stroke="#fbbf24" strokeWidth="10" fill="none" strokeLinecap="round" />
-            </svg>
-          )}
+        {/* Центральный круг */}
+        <div className="flex-1 flex items-center justify-center">
+          <div
+            ref={circleRef}
+            className="relative w-72 h-72 rounded-full bg-purple-950 shadow-2xl"
+            style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
+          >
+            <div className="absolute inset-0 z-10" />
+
+            {letters.map((letter, i) => {
+              const { x, y } = getLetterPosition(i)
+              const isSelected = path.includes(i)
+              return (
+                <motion.div
+                  key={i}
+                  className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
+                    isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-600 text-white'
+                  }`}
+                  style={{
+                    width: LETTER_SIZE,
+                    height: LETTER_SIZE,
+                    left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
+                    top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
+                  }}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
+                >
+                  {letter.toUpperCase()}
+                </motion.div>
+              )
+            })}
+
+            {path.length > 1 && (
+              <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
+                <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
+              </svg>
+            )}
+          </div>
         </div>
       </div>
 
