@@ -1,50 +1,43 @@
-export interface Entry {
-  id: string
-  direction: 'across' | 'down'
-  clue: string
-  answer: string
-  row: number
-  col: number
-}
+export interface Entry { id: string; direction: 'across' | 'down'; clue: string; answer: string; row: number; col: number }
 export interface Puzzle {
-  across: Record<string, { clue: string; answer: string; row: number; col: number }>
-  down: Record<string, { clue: string; answer: string; row: number; col: number }>
+  across: Record<string, { clue: string; answer: string; row: number; col: number }>;
+  down:   Record<string, { clue: string; answer: string; row: number; col: number }>;
 }
 
 export const puzzles: Puzzle[] = [
-  // Level 1 — буквы CLOVE (5)
+  // Level 1 — буквы REACT (5)
   {
     across: {
-      '1': { clue: 'Garlic part', answer: 'CLOVE', row: 1, col: 1 }, // C L O V E
-      '3': { clue: 'Wild canine', answer: 'WOLF', row: 3, col: 3 },  // W O L F
+      '1': { clue: 'Act in response', answer: 'REACT', row: 2, col: 1 },   // R E A C T
+      '3': { clue: 'Rate something',  answer: 'RATE',  row: 4, col: 0 },   // R A T E
     },
     down: {
-      '2': { clue: 'Opposite of up', answer: 'LOW', row: 0, col: 3 },   // L O W (пересечение O с CLOVE)
-      '4': { clue: 'Affection', answer: 'LOVE', row: 1, col: 2 },       // L O V E (пересечение с CLOVE)
+      '2': { clue: 'Art skill',       answer: 'CRAFT', row: 0, col: 3 },   // C R A F T
+      '4': { clue: 'Tea time?',       answer: 'TEA',   row: 0, col: 4 },   // T E A
     },
   },
 
-  // Level 2 — буквы GRAPE (5)
+  // Level 2 — буквы WORLD (5)
   {
     across: {
-      '1': { clue: 'Fruit bunch', answer: 'GRAPE', row: 1, col: 1 }, // G R A P E
-      '3': { clue: 'To tear', answer: 'RIP', row: 3, col: 2 },       // R I P
+      '1': { clue: 'Our planet',  answer: 'WORLD', row: 2, col: 1 },       // W O R L D
+      '3': { clue: 'Old',         answer: 'OLD',   row: 4, col: 3 },       // O L D
     },
     down: {
-      '2': { clue: 'Big bird', answer: 'EMU', row: 0, col: 4 },     // E M U
-      '4': { clue: 'Perch', answer: 'ROOST', row: 0, col: 2 },      // R O O S T (пересечение R с GRAPE)
+      '2': { clue: 'Ruler',       answer: 'LORD',  row: 0, col: 3 },       // L O R D
+      '4': { clue: 'Rowing tool', answer: 'OAR',   row: 1, col: 1 },       // O A R
     },
   },
 
-  // Level 3 — буквы STEAM (5)
+  // Level 3 — буквы LEAFS (5)
   {
     across: {
-      '1': { clue: 'Hot vapor', answer: 'STEAM', row: 1, col: 1 },  // S T E A M
-      '3': { clue: 'Consume', answer: 'EAT', row: 3, col: 2 },      // E A T
+      '1': { clue: 'Tree part',   answer: 'LEAF',  row: 1, col: 1 },       // L E A F
+      '3': { clue: 'Safe place',  answer: 'SAFE',  row: 3, col: 0 },       // S A F E
     },
     down: {
-      '2': { clue: 'Math symbol', answer: 'SUM', row: 0, col: 1 },  // S U M (пересечение с STEAM)
-      '4': { clue: 'Mother (short)', answer: 'MA', row: 1, col: 4 },// M A
+      '2': { clue: 'Not hard',    answer: 'EASY',  row: 0, col: 4 },       // E A S Y
+      '4': { clue: 'Tiny bug',    answer: 'FLEA',  row: 0, col: 2 },       // F L E A
     },
   },
-]
+];

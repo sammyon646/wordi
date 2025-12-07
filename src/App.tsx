@@ -219,10 +219,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* круг и кнопки вокруг (круг крупнее, иконки дальше) */}
+        {/* круг и кнопки вокруг (больше «рамка») */}
         <div
           className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 110, height: CIRCLE_SIZE + 110 }}
+          style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}
         >
           <div className="absolute left-0 top-1/2 -translate-y-1/2">
             <button className="flex flex-col items-center text-white">
@@ -236,13 +236,13 @@ export default function App() {
               <span className="text-xs">{t('friends')}</span>
             </button>
           </div>
-          <div className="absolute left-12 bottom-1">
+          <div className="absolute left-14 bottom-0">
             <button className="flex flex-col items-center text-white">
               <DollarSign className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('earn')}</span>
             </button>
           </div>
-          <div className="absolute right-12 bottom-1">
+          <div className="absolute right-14 bottom-0">
             <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
               <Settings className="w-7 h-7 mb-1" />
               <span className="text-xs">{t('settings')}</span>
