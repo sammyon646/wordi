@@ -132,23 +132,28 @@ const useGameStore = create<State>((set, get) => ({
   addCoins: (amount) => set({ coins: get().coins + amount }),
 
   setNewPuzzle: () => {
-    const nextIndex = (get().puzzleIndex + 1) % puzzles.length
-    const puzzle = puzzles[nextIndex]
-    const entries = buildEntries(puzzle)
-    if (!validateEntries(entries)) {
-      console.error('Invalid puzzle layout, skipping setNewPuzzle')
-      return
+    let attempts = puzzles.length
+    let nextIndex = get().puzzleIndex
+    while (attempts > 0) {
+      nextIndex = (nextIndex + 1) % puzzles.length
+      const puzzle = puzzles[nextIndex]
+      const entries = buildEntries(puzzle)
+      if (validateEntries(entries)) {
+        set({
+          puzzleIndex: nextIndex,
+          puzzle,
+          entries,
+          solved: {},
+          gridLetters: {},
+          letters: buildLettersFromPuzzle(entries),
+          typedWord: '',
+          path: [],
+        })
+        return
+      }
+      attempts--
     }
-    set({
-      puzzleIndex: nextIndex,
-      puzzle,
-      entries,
-      solved: {},
-      gridLetters: {},
-      letters: buildLettersFromPuzzle(entries),
-      typedWord: '',
-      path: [],
-    })
+    console.error('No valid puzzle layout found')
   },
 
   updateTypedWord: (letter, index) => {
@@ -180,7 +185,7 @@ const useGameStore = create<State>((set, get) => ({
       gridLetters,
       typedWord: '',
       path: [],
-      coins: get().coins + 50 * get().level, // монеты только за решённое слово
+      coins: get().coins + 50 * get().level,
     })
 
     const allSolved = Object.keys(solved).length === entries.length

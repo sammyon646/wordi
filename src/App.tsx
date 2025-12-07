@@ -5,9 +5,9 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
-const CIRCLE_SIZE = 260
+const CIRCLE_SIZE = 240
 const CENTER = CIRCLE_SIZE / 2
-const RADIUS = 100
+const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
 
@@ -43,6 +43,7 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isHintsOpen, setIsHintsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
+  const isPointerActive = useRef(false)
   const displayedLetters = typedWord.split('')
 
   const getLetterPosition = (i: number) => {
@@ -50,11 +51,9 @@ export default function App() {
     return { x: RADIUS * Math.cos(angle), y: RADIUS * Math.sin(angle) }
   }
 
-  const getEventPosition = (e: MouseEvent | TouchEvent) => {
+  const getEventPosition = (e: PointerEvent | React.PointerEvent) => {
     const rect = circleRef.current?.getBoundingClientRect() || { left: 0, top: 0 }
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-    return { x: clientX - rect.left, y: clientY - rect.top }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
 
   const checkLetterHit = (pos: { x: number; y: number }) => {
@@ -70,19 +69,23 @@ export default function App() {
     })
   }
 
-  const handleStart = (e: any) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    isPointerActive.current = true
     resetPath()
-    checkLetterHit(getEventPosition(e))
+    checkLetterHit(getEventPosition(e.nativeEvent))
+    ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
   }
-  const handleMove = (e: any) => {
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isPointerActive.current) return
     e.preventDefault()
     e.stopPropagation()
-    if (!path.length) return
-    checkLetterHit(getEventPosition(e))
+    checkLetterHit(getEventPosition(e.nativeEvent))
   }
-  const handleEnd = () => {
+  const handlePointerUp = () => {
+    if (!isPointerActive.current) return
+    isPointerActive.current = false
     if (!typedWord) {
       resetPath()
       return
@@ -122,36 +125,13 @@ export default function App() {
     return { maxRow: mr, maxCol: mc, activeCells: set }
   }, [entries])
 
-  useEffect(() => {
-    const el = circleRef.current
-    if (!el) return
-    el.addEventListener('touchstart', handleStart, { passive: false })
-    el.addEventListener('touchmove', handleMove, { passive: false })
-    el.addEventListener('touchend', handleEnd)
-    el.addEventListener('mousedown', handleStart)
-    el.addEventListener('mousemove', handleMove)
-    el.addEventListener('mouseup', handleEnd)
-    document.body.style.overflow = 'hidden'
-    document.body.style.touchAction = 'none'
-    return () => {
-      el.removeEventListener('touchstart', handleStart)
-      el.removeEventListener('touchmove', handleMove)
-      el.removeEventListener('touchend', handleEnd)
-      el.removeEventListener('mousedown', handleStart)
-      el.removeEventListener('mousemove', handleMove)
-      el.removeEventListener('mouseup', handleEnd)
-      document.body.style.overflow = ''
-      document.body.style.touchAction = ''
-    }
-  }, [path, letters, typedWord])
-
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
     setIsSettingsOpen(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)]">
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -165,16 +145,18 @@ export default function App() {
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-700 hover:bg-purple-600 transition"
         >
           <Lightbulb className="w-5 h-5" />
-          <span className="text-sm font-semibold">Hints</span>
+          <span className="text-sm font-semibold">{t('hints', 'Hints')}</span>
         </button>
         <div className="flex items-center gap-2">
           <Trophy className="w-7 h-7 text-yellow-400" />
-          <span className="text-xl font-bold">Lv {level}</span>
+          <span className="text-xl font-bold">
+            {t('level', 'Lv')} {level}
+          </span>
         </div>
       </div>
 
-      {/* Основная зона: кроссворд + вывод набранного слова + круг у нижней кромки */}
-      <div className="flex-1 flex flex-col px-4 pb-0">
+      {/* Основная зона: кроссворд + вывод набранного слова + круг */}
+      <div className="flex-1 flex flex-col px-4 pb-0 gap-2">
         {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -203,8 +185,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Зона для набранных букв */}
-        <div className="h-16 flex items-center justify-center mt-2 mb-2">
+        {/* Выбранные буквы */}
+        <div className="h-16 flex items-center justify-center">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -220,30 +202,29 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг прижат к низу, иконки не пересекаются */}
+        {/* Круг и иконки */}
         <div className="flex-1 flex items-end justify-center pb-4">
           <div
             className="relative flex items-center justify-center"
-            style={{ width: CIRCLE_SIZE + 140, height: CIRCLE_SIZE + 140 }}
+            style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}
           >
-            {/* Иконки с подложкой вынесены от круга */}
             <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <Trophy className="w-6 h-6" />
               </div>
-              <span className="text-xs">boost</span>
+              <span className="text-xs">{t('boost', 'boost')}</span>
             </div>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <Users className="w-6 h-6" />
               </div>
-              <span className="text-xs">friends</span>
+              <span className="text-xs">{t('friends', 'friends')}</span>
             </div>
             <div className="absolute left-16 bottom-2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <DollarSign className="w-6 h-6" />
               </div>
-              <span className="text-xs">earn</span>
+              <span className="text-xs">{t('earn', 'earn')}</span>
             </div>
             <div className="absolute right-16 bottom-2 flex flex-col items-center gap-1">
               <button
@@ -252,16 +233,22 @@ export default function App() {
               >
                 <Settings className="w-6 h-6" />
               </button>
-              <span className="text-xs">settings</span>
+              <span className="text-xs">{t('settings', 'settings')}</span>
             </div>
 
-            {/* Круг — без рамки */}
             <motion.div
               ref={circleRef}
-              className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl"
-              style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
+              className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
+              style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, touchAction: 'none' }}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={() => {
+                isPointerActive.current = false
+                resetPath()
+              }}
             >
               <div className="absolute inset-0 z-10" />
               {letters.map((letter, i) => {
@@ -313,7 +300,7 @@ export default function App() {
               exit={{ scale: 0, rotate: 180 }}
               transition={{ duration: 1.2, type: 'spring' }}
             >
-              Level Up!
+              {t('levelUp', 'Level Up!')}
             </motion.div>
           </motion.div>
         )}
@@ -337,14 +324,14 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Hints</h2>
+                <h2 className="text-2xl font-bold">{t('hints', 'Hints')}</h2>
                 <button onClick={() => setIsHintsOpen(false)}>
                   <X className="w-6 h-6" />
                 </button>
               </div>
               <div className="text-sm space-y-3">
                 <div>
-                  <div className="font-bold mb-1">Across:</div>
+                  <div className="font-bold mb-1">{t('across', 'Across')}:</div>
                   <div className="flex flex-wrap gap-2">
                     {entries
                       .filter((e) => e.direction === 'across')
@@ -361,7 +348,7 @@ export default function App() {
                   </div>
                 </div>
                 <div>
-                  <div className="font-bold mb-1">Down:</div>
+                  <div className="font-bold mb-1">{t('down', 'Down')}:</div>
                   <div className="flex flex-wrap gap-2">
                     {entries
                       .filter((e) => e.direction === 'down')
@@ -401,7 +388,7 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">{t('settings')}</h2>
+                <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
                 <button onClick={() => setIsSettingsOpen(false)}>
                   <X className="w-6 h-6" />
                 </button>

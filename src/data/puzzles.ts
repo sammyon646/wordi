@@ -28,7 +28,7 @@ export const puzzles: Puzzle[] = [
     },
   },
 
-  // Level 2 — буквы B E A R V (4 слова)
+  // Level 2 — буквы B E A R V (4 слова) — исправлены пересечения
   {
     across: {
       '1': { clue: 'Animal with fur', answer: 'BEAR', row: 1, col: 1 },
@@ -36,7 +36,7 @@ export const puzzles: Puzzle[] = [
     },
     down: {
       '2': { clue: 'Organ of hearing', answer: 'EAR', row: 0, col: 2 },
-      '4': { clue: 'Opposite of leave', answer: 'BE', row: 0, col: 1 }, // маленькое пересечение
+      '4': { clue: 'Pub counter', answer: 'BAR', row: 0, col: 0 },
     },
   },
 
