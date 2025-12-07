@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide-react'
@@ -26,6 +26,13 @@ export default function App() {
     trySolveTypedWord,
     setNewPuzzle,
   } = useGameStore()
+
+  // Анимация монет
+  const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
+  const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
+  useEffect(() => {
+    coinsValue.set(coins)
+  }, [coins, coinsValue])
 
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -153,7 +160,9 @@ export default function App() {
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Coins className="w-7 h-7 text-yellow-400" />
-          <span className="text-xl font-bold">{coins.toLocaleString()}</span>
+          <motion.span className="text-xl font-bold" key={coins}>
+            {coinsDisplay as any}
+          </motion.span>
         </div>
 
         <button
@@ -170,8 +179,8 @@ export default function App() {
         </div>
       </div>
 
-      {/* Основная зона с кроссвордом и кругом, подняли над нижним меню */}
-      <div className="flex-1 flex flex-col items-center px-4 pb-28">
+      {/* Основная зона: подняли над нижним меню */}
+      <div className="flex-1 flex flex-col items-center px-4 pb-32">
         {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -182,14 +191,17 @@ export default function App() {
                   const isActive = activeCells.has(key)
                   const letter = gridLetters[key]
                   return (
-                    <div
+                    <motion.div
                       key={c}
                       className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
                         isActive ? 'bg-purple-800/80 border border-purple-500/80 text-white' : 'bg-transparent'
                       }`}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
                     >
                       {letter ? letter.toUpperCase() : ''}
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
@@ -216,10 +228,12 @@ export default function App() {
 
         {/* Центральный круг */}
         <div className="flex items-center justify-center mt-2">
-          <div
+          <motion.div
             ref={circleRef}
             className="relative rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"
             style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
           >
             <div className="absolute inset-0 z-10" />
 
@@ -252,7 +266,7 @@ export default function App() {
                 <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
               </svg>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
 

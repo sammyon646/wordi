@@ -48,7 +48,7 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
-// Добавляем дубликаты букв столько раз, сколько нужно для каждого слова
+// Дубликаты букв добавляем столько раз, сколько нужно
 const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   const maxCount: Record<string, number> = {}
   entries.forEach((e) => {
