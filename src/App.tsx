@@ -200,7 +200,7 @@ export default function App() {
 
       {/* Зона ввода и круг */}
       <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="h-24 flex items-center justify-center">
+        <div className="h-20 flex items-center justify-center">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -217,10 +217,10 @@ export default function App() {
         </div>
 
         {/* Центральный круг */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center -mt-4">
           <div
             ref={circleRef}
-            className="relative w-72 h-72 rounded-full bg-purple-950 shadow-2xl"
+            className="relative rounded-full bg-purple-950 shadow-2xl"
             style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
           >
             <div className="absolute inset-0 z-10" />
