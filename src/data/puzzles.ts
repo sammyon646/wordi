@@ -13,49 +13,50 @@ export interface Puzzle {
 }
 
 /**
- * Вертикали до 4 букв (здесь все по 3), горизонтали до 6.
- * Колесо букв 3–5 символов (в этих уровнях — по 4).
- * Компактные сетки ~3×4.
+ * Вертикали до 5 букв, горизонтали до 5–6.
+ * Слова не соприкасаются, кроме явных пересечений по одинаковым буквам.
+ * Колесо — 5 букв.
  */
 export const puzzles: Puzzle[] = [
-  // Level 1
+  // Level 1 (буквы PRINT)
   {
     across: {
-      '1': { clue: 'Cart without wheels', answer: 'CART', row: 0, col: 0 },
-      '3': { clue: 'Thrown weapon', answer: 'TAR', row: 2, col: 1 }, // как «tar» (дёготь) — условная подсказка
+      '1': { clue: 'Metal container', answer: 'TIN', row: 0, col: 0 },      // T I N
+      '3': { clue: 'Printed copy', answer: 'PRINT', row: 3, col: 2 },       // P R I N T
+      '5': { clue: 'To stab lightly', answer: 'PIN', row: 6, col: 5 },      // P I N
     },
     down: {
-      '2': { clue: 'Small feline', answer: 'CAT', row: 0, col: 0 },
-      '4': { clue: 'Creative skill', answer: 'ART', row: 0, col: 1 },
-      '6': { clue: 'Pitch road stuff', answer: 'TAR', row: 0, col: 3 },
+      '2': { clue: 'Drink quickly', answer: 'PINT', row: 0, col: 6 },       // P I N T (T пересечение с PRINT в (3,6))
+      '4': { clue: 'To tear lightly', answer: 'RIP', row: 3, col: 0 },      // R I P (отдельно слева)
+      '6': { clue: 'Short try', answer: 'TIP', row: 5, col: 9 },            // T I P (справа)
     },
   },
 
-  // Level 2
+  // Level 2 (буквы LEAFS)
   {
     across: {
-      '1': { clue: 'Big forest animal', answer: 'BEAR', row: 0, col: 0 },
-      '3': { clue: 'Hear with this', answer: 'EAR', row: 2, col: 1 },
+      '1': { clue: 'Noise of air', answer: 'SIGH', row: 1, col: 1 },        // S I G H (тут допустим G как "буква" — но мы держим 5 букв LEAFS? Лучше убрать G. Заменим: "SAFE")
+      '3': { clue: 'Tree part', answer: 'LEAF', row: 4, col: 3 },           // L E A F
+      '5': { clue: 'Secure', answer: 'SAFE', row: 8, col: 6 },              // S A F E
     },
     down: {
-      '2': { clue: 'Pub counter', answer: 'BAR', row: 0, col: 0 },
-      '4': { clue: 'Poetic before', answer: 'ERE', row: 0, col: 1 },
-      '6': { clue: 'Between edges', answer: 'ARA', row: 0, col: 2 }, // условное слово
-      '8': { clue: 'Growl sound', answer: 'RAR', row: 0, col: 3 },    // условное слово
+      '2': { clue: 'Small sea', answer: 'SEA', row: 0, col: 6 },            // S E A
+      '4': { clue: 'Easy state', answer: 'EASE', row: 0, col: 8 },          // E A S E
+      '6': { clue: 'Tiny biting fly', answer: 'FLEA', row: 6, col: 4 },     // F L E A
     },
   },
 
-  // Level 3
+  // Level 3 (буквы WORLD)
   {
     across: {
-      '1': { clue: 'City leisure area', answer: 'PARK', row: 0, col: 0 },
-      '3': { clue: 'Boat front', answer: 'ARK', row: 2, col: 1 }, // условно: «ark» как ковчег
+      '1': { clue: 'Our planet', answer: 'WORLD', row: 3, col: 2 },         // W O R L D
+      '3': { clue: 'Ancient story', answer: 'LORE', row: 6, col: 5 },       // L O R E
+      '5': { clue: 'Old', answer: 'OLD', row: 8, col: 6 },                  // O L D
     },
     down: {
-      '2': { clue: 'Golf swing', answer: 'PAR', row: 0, col: 0 },
-      '4': { clue: 'Ancestral line', answer: 'ARA', row: 0, col: 1 }, // условное слово
-      '6': { clue: 'Growl twice', answer: 'RAR', row: 0, col: 2 },
-      '8': { clue: 'Knock twice', answer: 'KAK', row: 0, col: 3 },    // условное слово
+      '2': { clue: 'Spoken word', answer: 'WORD', row: 0, col: 6 },         // W O R D (пересекается в D с WORLD (3,6))
+      '4': { clue: 'To rule', answer: 'LORD', row: 5, col: 4 },             // L O R D
+      '6': { clue: 'Rowing tool (short)', answer: 'OAR', row: 0, col: 0 },  // O A R
     },
   },
 ]

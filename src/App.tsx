@@ -179,8 +179,8 @@ export default function App() {
         </div>
       </div>
 
-      {/* Основная зона: подняли над нижним меню */}
-      <div className="flex-1 flex flex-col items-center px-4 pb-32">
+      {/* Кроссворд и поле ввода — выше, круг чуть ниже */}
+      <div className="flex-1 flex flex-col items-center px-4 pb-4">
         {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
@@ -209,8 +209,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Зона ввода */}
-        <div className="h-20 flex items-center justify-center mt-4">
+        {/* Собранное слово — ближе к кругу */}
+        <div className="h-16 flex items-center justify-center mt-3">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
               <motion.div
@@ -226,11 +226,37 @@ export default function App() {
           </div>
         </div>
 
-        {/* Центральный круг */}
-        <div className="flex items-center justify-center mt-2">
+        {/* Центральный круг + кнопки вокруг */}
+        <div className="relative mt-4" style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}>
+          {/* Кнопки вокруг круга */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+            <button className="flex flex-col items-center text-white">
+              <Trophy className="w-8 h-8 mb-1" />
+              <span className="text-xs">{t('boost')}</span>
+            </button>
+          </div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            <button className="flex flex-col items-center text-white">
+              <Users className="w-8 h-8 mb-1" />
+              <span className="text-xs">{t('friends')}</span>
+            </button>
+          </div>
+          <div className="absolute left-12 bottom-6">
+            <button className="flex flex-col items-center text-white">
+              <DollarSign className="w-8 h-8 mb-1" />
+              <span className="text-xs">{t('earn')}</span>
+            </button>
+          </div>
+          <div className="absolute right-12 bottom-6">
+            <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
+              <Settings className="w-8 h-8 mb-1" />
+              <span className="text-xs">{t('settings')}</span>
+            </button>
+          </div>
+
           <motion.div
             ref={circleRef}
-            className="relative rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"
+            className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"
             style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -291,26 +317,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Нижнее меню */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#0c061a]/90 backdrop-blur-md border-t border-white/10 flex justify-around py-3">
-        <button className="flex flex-col items-center text-white">
-          <Trophy className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('boost')}</span>
-        </button>
-        <button className="flex flex-col items-center text-white">
-          <Users className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('friends')}</span>
-        </button>
-        <button className="flex flex-col items-center text-white">
-          <DollarSign className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('earn')}</span>
-        </button>
-        <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-          <Settings className="w-7 h-7 mb-1" />
-          <span className="text-xs">{t('settings')}</span>
-        </button>
-      </div>
 
       {/* Окно подсказок */}
       <AnimatePresence>
