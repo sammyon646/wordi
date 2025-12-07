@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, Trophy, Users, DollarSign, Settings, X } from 'lucide-react'
+import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide-react'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
@@ -24,9 +24,9 @@ export default function App() {
 
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isHintsOpen, setIsHintsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
 
-  // Квадратики текущего ввода (длина равна текущему слову ввода)
   const displayedLetters = typedWord.split('')
 
   const getLetterPosition = (i: number) => {
@@ -52,7 +52,7 @@ export default function App() {
       const dy = pos.y - (160 + ly)
       if (dx * dx + dy * dy < 28 * 28) {
         updateTypedWord(letter, i)
-        addCoins(1) // монета за выбор буквы
+        addCoins(1)
       }
     })
   }
@@ -98,7 +98,6 @@ export default function App() {
     .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
     .join(' ')
 
-  // Область активных клеток сетки
   const { maxRow, maxCol, activeCells } = useMemo(() => {
     let mr = 0
     let mc = 0
@@ -154,6 +153,15 @@ export default function App() {
           <Coins className="w-7 h-7 text-yellow-400" />
           <span className="text-xl font-bold">{coins.toLocaleString()}</span>
         </div>
+
+        <button
+          onClick={() => setIsHintsOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-700 hover:bg-purple-600 transition"
+        >
+          <Lightbulb className="w-5 h-5" />
+          <span className="text-sm font-semibold">Hints</span>
+        </button>
+
         <div className="flex items-center gap-2">
           <Trophy className="w-7 h-7 text-yellow-400" />
           <span className="text-xl font-bold">Lv {level}</span>
@@ -185,40 +193,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Подсказки */}
-      <div className="px-4 py-3 text-sm opacity-80">
-        <div className="font-bold mb-1">Across:</div>
-        <div className="flex flex-wrap gap-2">
-          {entries
-            .filter((e) => e.direction === 'across')
-            .map((e) => (
-              <span
-                key={`a-${e.id}`}
-                className={`px-2 py-1 rounded-full ${
-                  gridLetters[`${e.row}-${e.col}`] ? 'bg-green-500/80 text-black' : 'bg-white/10'
-                }`}
-              >
-                {e.id}. {e.clue}
-              </span>
-            ))}
-        </div>
-        <div className="font-bold mt-3 mb-1">Down:</div>
-        <div className="flex flex-wrap gap-2">
-          {entries
-            .filter((e) => e.direction === 'down')
-            .map((e) => (
-              <span
-                key={`d-${e.id}`}
-                className={`px-2 py-1 rounded-full ${
-                  gridLetters[`${e.row}-${e.col}`] ? 'bg-green-500/80 text-black' : 'bg-white/10'
-                }`}
-              >
-                {e.id}. {e.clue}
-              </span>
-            ))}
-        </div>
-      </div>
-
       {/* Квадратики ввода (текущее слово) */}
       <div className="flex items-end justify-center pb-4">
         <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
@@ -239,11 +213,8 @@ export default function App() {
       {/* Центральный круг */}
       <div className="flex-1 flex items-center justify-center">
         <div ref={circleRef} className="relative w-80 h-80 rounded-full bg-purple-950 shadow-2xl">
-          {/* Подсказка */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-            <div className="text-xl mb-1">Соединяй буквы</div>
-            <p className="text-sm opacity-70">Собери слова для кроссворда</p>
-          </div>
+          {/* Пустая область без текста */}
+          <div className="absolute inset-0 z-10" />
 
           {/* Буквы по кругу */}
           {letters.map((letter, i) => {
@@ -316,12 +287,79 @@ export default function App() {
         </button>
       </div>
 
+      {/* Окно подсказок */}
+      <AnimatePresence>
+        {isHintsOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsHintsOpen(false)}
+          >
+            <motion.div
+              className="bg-purple-900 rounded-2xl p-8 max-w-md w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Hints</h2>
+                <button onClick={() => setIsHintsOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="text-sm space-y-3">
+                <div>
+                  <div className="font-bold mb-1">Across:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {entries
+                      .filter((e) => e.direction === 'across')
+                      .map((e) => (
+                        <span
+                          key={`a-${e.id}`}
+                          className={`px-2 py-1 rounded-full ${
+                            gridLetters[`${e.row}-${e.col}`] ? 'bg-green-500/80 text-black' : 'bg-white/10'
+                          }`}
+                        >
+                          {e.id}. {e.clue}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-bold mb-1">Down:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {entries
+                      .filter((e) => e.direction === 'down')
+                      .map((e) => (
+                        <span
+                          key={`d-${e.id}`}
+                          className={`px-2 py-1 rounded-full ${
+                            gridLetters[`${e.row}-${e.col}`] ? 'bg-green-500/80 text-black' : 'bg-white/10'
+                          }`}
+                        >
+                          {e.id}. {e.clue}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Настройки */}
       <AnimatePresence>
         {isSettingsOpen && (
           <motion.div
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setIsSettingsOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
               className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"

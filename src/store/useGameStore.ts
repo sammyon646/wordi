@@ -17,7 +17,7 @@ type State = {
   puzzle: Puzzle
   entries: EntryRef[]
   solved: Record<string, boolean>
-  gridLetters: Record<string, string> // key: "row-col"
+  gridLetters: Record<string, string>
   letters: string[]
   typedWord: string
   path: number[]
@@ -48,12 +48,20 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
+const MAX_LETTERS = 7
 const buildLettersFromPuzzle = (entries: EntryRef[]) => {
-  const bag: string[] = []
+  const uniq: string[] = []
   entries.forEach((e) => {
-    e.answer.split('').forEach((ch) => bag.push(ch))
+    e.answer
+      .toUpperCase()
+      .split('')
+      .forEach((ch) => {
+        if (!uniq.includes(ch) && uniq.length < MAX_LETTERS) {
+          uniq.push(ch)
+        }
+      })
   })
-  return shuffle(bag)
+  return shuffle(uniq)
 }
 
 const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
@@ -117,12 +125,10 @@ const useGameStore = create<State>((set, get) => ({
     )
 
     if (!target) {
-      // не угадали
       set({ typedWord: '', path: [] })
       return { solved: false, allSolved: false }
     }
 
-    // отмечаем слово как решённое
     solved[`${target.direction}-${target.id}`] = true
     const gridLetters = buildGridFromSolved(entries, solved)
     set({
@@ -130,12 +136,11 @@ const useGameStore = create<State>((set, get) => ({
       gridLetters,
       typedWord: '',
       path: [],
-      coins: get().coins + 50 * get().level, // награда за слово
+      coins: get().coins + 50 * get().level,
     })
 
     const allSolved = Object.keys(solved).length === entries.length
     if (allSolved) {
-      // повышаем уровень
       set({ level: get().level + 1 })
     }
     return { solved: true, allSolved }
