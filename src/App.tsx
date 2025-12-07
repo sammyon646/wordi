@@ -5,11 +5,24 @@ import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 
+// Параметры круга
 const CIRCLE_SIZE = 260
 const CENTER = CIRCLE_SIZE / 2
 const RADIUS = 100
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
+
+// Лёгкая вибрация / haptic для iOS/Android/Telegram
+const triggerHaptic = () => {
+  // Telegram WebApp API
+  if (window?.Telegram?.WebApp?.HapticFeedback?.impactOccurred) {
+    window.Telegram.WebApp.HapticFeedback.impactOccurred('light')
+  }
+  // Вибрация браузера (Android)
+  if (navigator?.vibrate) {
+    navigator.vibrate(10)
+  }
+}
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -27,7 +40,7 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
-  // анимация монет
+  // Анимация монет
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -60,6 +73,7 @@ export default function App() {
       const dx = pos.x - (CENTER + lx)
       const dy = pos.y - (CENTER + ly)
       if (dx * dx + dy * dy < HIT_RADIUS * HIT_RADIUS) {
+        triggerHaptic()
         updateTypedWord(letter, i)
       }
     })
@@ -151,7 +165,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col">
-      {/* шапка */}
+      {/* Шапка */}
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Coins className="w-7 h-7 text-yellow-400" />
@@ -172,9 +186,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* основная зона */}
+      {/* Основная зона */}
       <div className="flex-1 flex flex-col items-center px-4 pb-2">
-        {/* кроссворд */}
+        {/* Кроссворд */}
         <div className="w-full flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
             {Array.from({ length: maxRow + 1 }).map((_, r) => (
@@ -202,7 +216,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* набранное слово */}
+        {/* Набранное слово */}
         <div className="h-12 flex items-center justify-center mt-2">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
@@ -219,36 +233,47 @@ export default function App() {
           </div>
         </div>
 
-        {/* круг и кнопки вокруг */}
+        {/* Круг + стилизованный фон под иконки */}
         <div
           className="mt-3 relative flex items-center justify-center"
-          style={{ width: CIRCLE_SIZE + 120, height: CIRCLE_SIZE + 120 }}
+          style={{ width: CIRCLE_SIZE + 140, height: CIRCLE_SIZE + 140 }}
         >
-          <div className="absolute left-0 top-1/2 -translate-y-1/2">
-            <button className="flex flex-col items-center text-white">
-              <Trophy className="w-7 h-7 mb-1" />
-              <span className="text-xs">{t('boost')}</span>
-            </button>
+          {/* Тёмный фон-подложка для иконок вокруг круга */}
+          <div
+            className="absolute inset-0 m-auto rounded-full bg-[#12072f]/50 blur-[0px]"
+            style={{ width: CIRCLE_SIZE + 100, height: CIRCLE_SIZE + 100 }}
+          />
+
+          {/* Иконки вокруг круга на подложке */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+              <Trophy className="w-6 h-6" />
+            </div>
+            <span className="text-xs">boost</span>
           </div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2">
-            <button className="flex flex-col items-center text-white">
-              <Users className="w-7 h-7 mb-1" />
-              <span className="text-xs">{t('friends')}</span>
-            </button>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+              <Users className="w-6 h-6" />
+            </div>
+            <span className="text-xs">friends</span>
           </div>
-          <div className="absolute left-14 bottom-0">
-            <button className="flex flex-col items-center text-white">
-              <DollarSign className="w-7 h-7 mb-1" />
-              <span className="text-xs">{t('earn')}</span>
-            </button>
+          <div className="absolute left-16 bottom-2 flex flex-col items-center gap-1">
+            <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60">
+              <DollarSign className="w-6 h-6" />
+            </div>
+            <span className="text-xs">earn</span>
           </div>
-          <div className="absolute right-14 bottom-0">
-            <button onClick={() => setIsSettingsOpen(true)} className="flex flex-col items-center text-white">
-              <Settings className="w-7 h-7 mb-1" />
-              <span className="text-xs">{t('settings')}</span>
+          <div className="absolute right-16 bottom-2 flex flex-col items-center gap-1">
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="w-12 h-12 rounded-full bg-[#1f0b3f] flex flex-col items-center justify-center shadow-lg border border-purple-700/60"
+            >
+              <Settings className="w-6 h-6" />
             </button>
+            <span className="text-xs">settings</span>
           </div>
 
+          {/* Сам круг */}
           <motion.div
             ref={circleRef}
             className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl border border-purple-700/60"

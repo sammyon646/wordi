@@ -32,3 +32,22 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>
 )
+
+interface TelegramHapticFeedback {
+  impactOccurred: (style: 'light' | 'medium' | 'heavy') => void
+  notificationOccurred?: (type: 'error' | 'success' | 'warning') => void
+  selectionChanged?: () => void
+}
+
+interface TelegramWebApp {
+  ready: () => void
+  expand: () => void
+  HapticFeedback?: TelegramHapticFeedback
+  initDataUnsafe?: { user?: { language_code?: string } }
+}
+
+declare global {
+  interface Window {
+    Telegram?: { WebApp: TelegramWebApp }
+  }
+}
