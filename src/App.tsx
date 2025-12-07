@@ -43,7 +43,6 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isHintsOpen, setIsHintsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
-
   const displayedLetters = typedWord.split('')
 
   const getLetterPosition = (i: number) => {
@@ -174,9 +173,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* Основная зона: блок под кроссворд и под вывод набранных букв */}
+      {/* Основная зона: кроссворд + вывод набранного слова + круг у нижней кромки */}
       <div className="flex-1 flex flex-col px-4 pb-0">
-        {/* Кроссворд (область 1) */}
+        {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
             {Array.from({ length: maxRow + 1 }).map((_, r) => (
@@ -204,7 +203,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Область для всплывающих букв (выделенное слово) — зона 2 */}
+        {/* Зона для набранных букв */}
         <div className="h-16 flex items-center justify-center mt-2 mb-2">
           <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
             {displayedLetters.map((letter, i) => (
@@ -221,29 +220,32 @@ export default function App() {
           </div>
         </div>
 
-        {/* Круг у нижней кромки + иконки вокруг (не пересекаются) */}
+        {/* Круг прижат к низу, иконки не пересекаются */}
         <div className="flex-1 flex items-end justify-center pb-4">
-          <div className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}>
-            {/* Иконки с подложкой (чуть дальше от круга) */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+          <div
+            className="relative flex items-center justify-center"
+            style={{ width: CIRCLE_SIZE + 140, height: CIRCLE_SIZE + 140 }}
+          >
+            {/* Иконки с подложкой вынесены от круга */}
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <Trophy className="w-6 h-6" />
               </div>
               <span className="text-xs">boost</span>
             </div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <Users className="w-6 h-6" />
               </div>
               <span className="text-xs">friends</span>
             </div>
-            <div className="absolute left-12 bottom-0 flex flex-col items-center gap-1">
+            <div className="absolute left-16 bottom-2 flex flex-col items-center gap-1">
               <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
                 <DollarSign className="w-6 h-6" />
               </div>
               <span className="text-xs">earn</span>
             </div>
-            <div className="absolute right-12 bottom-0 flex flex-col items-center gap-1">
+            <div className="absolute right-16 bottom-2 flex flex-col items-center gap-1">
               <button
                 onClick={() => setIsSettingsOpen(true)}
                 className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
@@ -253,7 +255,7 @@ export default function App() {
               <span className="text-xs">settings</span>
             </div>
 
-            {/* Сам круг — без обводки */}
+            {/* Круг — без рамки */}
             <motion.div
               ref={circleRef}
               className="absolute inset-0 m-auto rounded-full bg-[#1a0d34] shadow-2xl"
