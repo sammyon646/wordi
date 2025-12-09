@@ -33,6 +33,14 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
+  useEffect(() => {
+    const tg: any = (window as any)?.Telegram?.WebApp
+    tg?.ready?.()
+    tg?.expand?.()
+    tg?.disableVerticalSwipe?.()
+    tg?.disableVerticalSwipes?.()
+  }, [])
+
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -138,7 +146,7 @@ export default function App() {
 
   return (
     <div
-      className="h-screen min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)] overflow-hidden"
+      className="min-h-[100dvh] bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)] overflow-hidden"
       style={{ overscrollBehavior: 'none' }}
     >
       {/* Шапка */}
