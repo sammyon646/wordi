@@ -33,6 +33,7 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
+  // Полноэкранность WebApp
   useEffect(() => {
     const tg: any = (window as any)?.Telegram?.WebApp
     tg?.ready?.()
@@ -146,7 +147,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-[100dvh] bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)] overflow-hidden"
+      className="min-h-[100dvh] w-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col overflow-hidden"
       style={{ overscrollBehavior: 'none' }}
     >
       {/* Шапка */}
@@ -173,7 +174,7 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col px-4 gap-3 overflow-hidden">
+      <div className="flex-1 flex flex-col px-4 gap-3 overflow-hidden pb-24">
         {/* Кроссворд */}
         <div className="flex justify-center">
           <div className="inline-flex flex-col gap-1 p-4 rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg">
@@ -279,27 +280,34 @@ export default function App() {
       </div>
 
       {/* Нижняя панель с кнопками */}
-      <div className="border-t border-purple-800/60 bg-purple-950/80 backdrop-blur-md px-4 py-3 flex items-center justify-between">
-        {[
-          { icon: <Trophy className="w-6 h-6" />, label: t('boost', 'boost') },
-          { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
-          { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
-          {
-            icon: (
-              <button onClick={() => setIsSettingsOpen(true)}>
-                <Settings className="w-6 h-6" />
-              </button>
-            ),
-            label: t('settings', 'settings'),
-          },
-        ].map((item, idx, arr) => (
-          <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
-            <div className="flex items-center justify-center">{item.icon}</div>
-            <span className="text-xs">{item.label}</span>
-            {idx < arr.length - 1 && <div className="absolute right-0 top-1/2 -translate-y-1/2 h-10 w-px bg-purple-800/80" />}
-          </div>
-        ))}
-      </div>
+      <nav
+        className="fixed bottom-0 left-0 right-0 bg-[#19063a]/90 backdrop-blur-md border-t border-purple-800/60"
+        style={{ paddingBottom: `max(env(safe-area-inset-bottom), 12px)` }}
+      >
+        <div className="flex items-center justify-around px-4 py-2">
+          {[
+            { icon: <Trophy className="w-6 h-6" />, label: t('boost', 'boost') },
+            { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
+            { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
+            {
+              icon: (
+                <button onClick={() => setIsSettingsOpen(true)}>
+                  <Settings className="w-6 h-6" />
+                </button>
+              ),
+              label: t('settings', 'settings'),
+            },
+          ].map((item, idx, arr) => (
+            <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
+              <div className="flex items-center justify-center">{item.icon}</div>
+              <span className="text-xs">{item.label}</span>
+              {idx < arr.length - 1 && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-purple-800/80" />
+              )}
+            </div>
+          ))}
+        </div>
+      </nav>
 
       {/* Level Up */}
       <AnimatePresence>
