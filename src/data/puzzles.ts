@@ -13,149 +13,66 @@ export interface Puzzle {
 }
 
 export const puzzles: Puzzle[] = [
-  // Level 1
+  // Level 1 — буквы C A T R, пересечение CAR×CAT
   {
     across: {
-      '1': { clue: 'Yellow fruit', answer: 'LEMON', row: 2, col: 0 },
-      '4': { clue: 'You hear with it', answer: 'EAR', row: 0, col: 8 },
+      '1': { clue: 'Pet that purrs', answer: 'CAT', row: 1, col: 2 },
+      '3': { clue: 'Painting or music', answer: 'ART', row: 3, col: 0 },
     },
     down: {
-      '2': { clue: 'Twelve months', answer: 'YEAR', row: 0, col: 6 },
-      '3': { clue: 'Not early', answer: 'LATE', row: 1, col: 10 },
+      '2': { clue: 'Red + yellow = ?', answer: 'CAR', row: 0, col: 3 }, // пересечение в A (row1,col3)
     },
   },
 
-  // Level 2
+  // Level 2 — буквы D O G L F W A, пересечение FOG×DOG
   {
     across: {
-      '1': { clue: 'Big cat', answer: 'TIGER', row: 2, col: 0 },
-      '4': { clue: 'Used to see', answer: 'EYE', row: 0, col: 8 },
+      '1': { clue: 'Best friend of man', answer: 'DOG', row: 2, col: 2 },
+      '4': { clue: 'Wood from tree', answer: 'LOG', row: 0, col: 8 },
     },
     down: {
-      '2': { clue: 'Opposite of old', answer: 'NEW', row: 0, col: 6 },
-      '3': { clue: 'Not begin', answer: 'END', row: 0, col: 12 },
+      '2': { clue: 'Thick cloud on ground', answer: 'FOG', row: 0, col: 4 }, // пересечение в G (row2,col4)
+      '3': { clue: 'What dogs do with tail', answer: 'WAG', row: 0, col: 6 },
     },
   },
 
-  // Level 3
+  // Level 3 — буквы B A T E D (и др.), пересечения EAT×BAT и BET×BAT
   {
     across: {
-      '1': { clue: 'Animal that barks', answer: 'DOG', row: 2, col: 2 },
-      '4': { clue: 'Opposite of yes', answer: 'NO', row: 0, col: 10 },
+      '1': { clue: 'Vampire animal', answer: 'BAT', row: 2, col: 4 },
+      '4': { clue: 'Place for sleeping', answer: 'BED', row: 4, col: 0 },
     },
     down: {
-      '2': { clue: 'Tree part', answer: 'LOG', row: 0, col: 4 }, // пересечение по G
-      '3': { clue: 'You sit on it', answer: 'CHAIR', row: 0, col: 0 },
+      '2': { clue: 'Have food', answer: 'EAT', row: 0, col: 5 }, // пересечение в A (row2,col5)
+      '3': { clue: 'Not good', answer: 'BAD', row: 0, col: 0 },
+      '5': { clue: 'Wager', answer: 'BET', row: 0, col: 4 }, // пересечение в B (row2,col4)
     },
   },
 
-  // Level 4
+  // Level 4 — буквы S U N F R (и др.), пересечение SON×SUN
   {
     across: {
-      '1': { clue: 'Red fruit', answer: 'APPLE', row: 2, col: 0 },
-      '5': { clue: 'Not down', answer: 'UP', row: 0, col: 10 },
+      '1': { clue: 'Bright thing in sky', answer: 'SUN', row: 1, col: 2 },
+      '4': { clue: 'Have a good time', answer: 'FUN', row: 3, col: 0 },
+      '5': { clue: 'Move fast on foot', answer: 'RUN', row: 0, col: 8 },
     },
     down: {
-      '2': { clue: 'Father', answer: 'DAD', row: 0, col: 6 },
-      '3': { clue: 'Come in', answer: 'ENTER', row: 0, col: 14 },
-      '4': { clue: 'Season after summer', answer: 'FALL', row: 0, col: 5 },
+      '2': { clue: 'Male child', answer: 'SON', row: 0, col: 2 }, // пересечение в S (row1,col2)
+      '3': { clue: 'Opposite of off', answer: 'ON', row: 2, col: 6 },
     },
   },
 
-  // Level 5
+  // Level 5 — буквы R A I N W E T (и др.), пересечения EAR×RAIN и IN×RAIN
   {
     across: {
-      '1': { clue: 'Drink from beans', answer: 'TEA', row: 2, col: 2 },
-      '4': { clue: 'Green vegetable', answer: 'PEA', row: 0, col: 10 },
+      '1': { clue: 'Water from clouds', answer: 'RAIN', row: 2, col: 0 },
+      '4': { clue: 'Opposite of lose', answer: 'WIN', row: 0, col: 8 },
+      '6': { clue: 'Put on clothes', answer: 'WEAR', row: 4, col: 2 },
     },
     down: {
-      '2': { clue: 'Opposite of far', answer: 'NEAR', row: 0, col: 5 },
-      '3': { clue: 'Not light', answer: 'DARK', row: 0, col: 0 },
-    },
-  },
-
-  // Level 6
-  {
-    across: {
-      '1': { clue: 'Color of grass', answer: 'GREEN', row: 2, col: 0 },
-      '4': { clue: 'You write with it', answer: 'PEN', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Opposite of black', answer: 'WHITE', row: 0, col: 14 },
-      '3': { clue: 'Animal with long neck', answer: 'GIRAFFE', row: 0, col: 6 },
-    },
-  },
-
-  // Level 7
-  {
-    across: {
-      '1': { clue: 'Used to call', answer: 'PHONE', row: 2, col: 0 },
-      '4': { clue: 'Bird that hoots', answer: 'OWL', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Season', answer: 'SPRING', row: 0, col: 6 },
-      '3': { clue: 'Not go', answer: 'STAY', row: 0, col: 14 },
-    },
-  },
-
-  // Level 8
-  {
-    across: {
-      '1': { clue: 'Sky color', answer: 'BLUE', row: 2, col: 0 },
-      '4': { clue: 'Sweet food', answer: 'CAKE', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Rain + snow', answer: 'SLEET', row: 0, col: 4 },
-      '3': { clue: 'Not strong', answer: 'WEAK', row: 0, col: 14 },
-    },
-  },
-
-  // Level 9
-  {
-    across: {
-      '1': { clue: 'Large animal', answer: 'BEAR', row: 2, col: 0 },
-      '4': { clue: 'Used to eat soup', answer: 'SPOON', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Opposite of happy', answer: 'SAD', row: 0, col: 4 },
-      '3': { clue: 'Time before now', answer: 'PAST', row: 0, col: 16 },
-    },
-  },
-
-  // Level 10
-  {
-    across: {
-      '1': { clue: 'Fast animal', answer: 'CHEETAH', row: 2, col: 0 },
-      '5': { clue: 'Not slow', answer: 'FAST', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'You read it', answer: 'BOOK', row: 0, col: 8 },
-      '3': { clue: 'Hot drink', answer: 'TEA', row: 0, col: 14 },
-      '4': { clue: 'Opposite of cold', answer: 'HOT', row: 0, col: 6 }, // пересечение по H с CHEETAH
-    },
-  },
-
-  // Level 11
-  {
-    across: {
-      '1': { clue: 'School subject', answer: 'MATH', row: 2, col: 2 },
-      '4': { clue: 'Animal that jumps', answer: 'FROG', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Not front', answer: 'BACK', row: 0, col: 0 },
-      '3': { clue: 'Used to cut', answer: 'AXE', row: 0, col: 6 },
-    },
-  },
-
-  // Level 12
-  {
-    across: {
-      '1': { clue: 'Place to sleep', answer: 'BED', row: 2, col: 2 },
-      '4': { clue: 'Not off', answer: 'ON', row: 0, col: 10 },
-    },
-    down: {
-      '2': { clue: 'Opposite of good', answer: 'BAD', row: 0, col: 0 },
-      '3': { clue: 'You live in it', answer: 'HOME', row: 0, col: 14 },
+      '2': { clue: 'Organ for hearing', answer: 'EAR', row: 0, col: 0 }, // пересечение в R (row2,col0)
+      '3': { clue: 'Not out', answer: 'IN', row: 1, col: 3 }, // пересечение в N (row2,col3)
+      '5': { clue: 'Not dry', answer: 'WET', row: 0, col: 5 },
     },
   },
 ]

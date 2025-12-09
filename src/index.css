@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Запрет выделения и контекстного меню по long-press */
+* {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -14,10 +21,4 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: manipulation;
-}
-
-* {
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  user-select: none;
 }
