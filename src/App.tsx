@@ -109,9 +109,11 @@ export default function App() {
     .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
     .join(' ')
 
-  const { maxRow, maxCol, activeCells } = useMemo(() => {
+  const { maxRow, maxCol, minRow, minCol, activeCells } = useMemo(() => {
     let mr = 0
     let mc = 0
+    let minR = Infinity
+    let minC = Infinity
     const set = new Set<string>()
     entries.forEach((entry) => {
       entry.answer.split('').forEach((_, idx) => {
@@ -119,10 +121,14 @@ export default function App() {
         const c = entry.direction === 'across' ? entry.col + idx : entry.col
         mr = Math.max(mr, r)
         mc = Math.max(mc, c)
+        minR = Math.min(minR, r)
+        minC = Math.min(minC, c)
         set.add(`${r}-${c}`)
       })
     })
-    return { maxRow: mr, maxCol: mc, activeCells: set }
+    if (minR === Infinity) minR = 0
+    if (minC === Infinity) minC = 0
+    return { maxRow: mr, maxCol: mc, minRow: minR, minCol: minC, activeCells: set }
   }, [entries])
 
   const changeLanguage = (lng: string) => {
@@ -131,7 +137,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)]">
+    <div
+      className="h-screen min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col pb-[env(safe-area-inset-bottom)] overflow-hidden"
+      style={{ overscrollBehavior: 'none' }}
+    >
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -156,32 +165,36 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col px-4 gap-2">
+      <div className="flex-1 flex flex-col px-4 gap-3 overflow-hidden">
         {/* Кроссворд */}
         <div className="flex justify-center">
-          <div className="inline-flex flex-col gap-1 bg-purple-950/60 p-3 rounded-xl border border-purple-700/70 shadow-lg">
-            {Array.from({ length: maxRow + 1 }).map((_, r) => (
-              <div key={r} className="flex gap-1">
-                {Array.from({ length: maxCol + 1 }).map((_, c) => {
-                  const key = `${r}-${c}`
-                  const isActive = activeCells.has(key)
-                  const letter = gridLetters[key]
-                  return (
-                    <motion.div
-                      key={c}
-                      className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
-                        isActive ? 'bg-purple-800/80 border border-purple-500/80 text-white' : 'bg-transparent'
-                      }`}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
-                    >
-                      {letter ? letter.toUpperCase() : ''}
-                    </motion.div>
-                  )
-                })}
-              </div>
-            ))}
+          <div className="inline-flex flex-col gap-1 p-4 rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg">
+            {Array.from({ length: maxRow - minRow + 1 }).map((_, r) => {
+              const rGlobal = r + minRow
+              return (
+                <div key={rGlobal} className="flex gap-1 justify-center">
+                  {Array.from({ length: maxCol - minCol + 1 }).map((_, c) => {
+                    const cGlobal = c + minCol
+                    const key = `${rGlobal}-${cGlobal}`
+                    const isActive = activeCells.has(key)
+                    const letter = gridLetters[key]
+                    return (
+                      <motion.div
+                        key={cGlobal}
+                        className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
+                          isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
+                        }`}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
+                      >
+                        {letter ? letter.toUpperCase() : ''}
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
         </div>
 
@@ -204,7 +217,11 @@ export default function App() {
 
         {/* Круг */}
         <div className="flex-1 flex items-end justify-center pb-4">
-          <div className="relative flex items-center justify-center" style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}>
+          <div
+            className="relative flex items-center justify-center"
+            style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
+            onTouchMove={(e) => e.preventDefault()}
+          >
             <motion.div
               ref={circleRef}
               className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
@@ -254,34 +271,26 @@ export default function App() {
       </div>
 
       {/* Нижняя панель с кнопками */}
-      <div className="border-t border-purple-800/60 bg-purple-950/70 backdrop-blur-md px-6 py-3 flex justify-around items-center">
-        <div className="flex flex-col items-center text-xs gap-1">
-          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-            <Trophy className="w-6 h-6" />
+      <div className="border-t border-purple-800/60 bg-purple-950/80 backdrop-blur-md px-4 py-3 flex items-center justify-between">
+        {[
+          { icon: <Trophy className="w-6 h-6" />, label: t('boost', 'boost') },
+          { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
+          { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
+          {
+            icon: (
+              <button onClick={() => setIsSettingsOpen(true)}>
+                <Settings className="w-6 h-6" />
+              </button>
+            ),
+            label: t('settings', 'settings'),
+          },
+        ].map((item, idx, arr) => (
+          <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
+            <div className="flex items-center justify-center">{item.icon}</div>
+            <span className="text-xs">{item.label}</span>
+            {idx < arr.length - 1 && <div className="absolute right-0 top-1/2 -translate-y-1/2 h-10 w-px bg-purple-800/80" />}
           </div>
-          <span>{t('boost', 'boost')}</span>
-        </div>
-        <div className="flex flex-col items-center text-xs gap-1">
-          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-            <Users className="w-6 h-6" />
-          </div>
-          <span>{t('friends', 'friends')}</span>
-        </div>
-        <div className="flex flex-col items-center text-xs gap-1">
-          <div className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <span>{t('earn', 'earn')}</span>
-        </div>
-        <div className="flex flex-col items-center text-xs gap-1">
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            className="w-12 h-12 rounded-full bg-[#1f0b3f] flex items-center justify-center shadow-lg"
-          >
-            <Settings className="w-6 h-6" />
-          </button>
-          <span>{t('settings', 'settings')}</span>
-        </div>
+        ))}
       </div>
 
       {/* Level Up */}
