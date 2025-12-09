@@ -13,66 +13,62 @@ export interface Puzzle {
 }
 
 export const puzzles: Puzzle[] = [
-  // Level 1 — буквы C A T R, пересечение CAR×CAT
+  // Level 1 — CAT / TEA / ACT, компактно, без конфликтов
   {
     across: {
-      '1': { clue: 'Pet that purrs', answer: 'CAT', row: 1, col: 2 },
-      '3': { clue: 'Painting or music', answer: 'ART', row: 3, col: 0 },
+      '1': { clue: 'Pet that meows', answer: 'CAT', row: 0, col: 1 },
+      '3': { clue: 'Drink hot', answer: 'TEA', row: 2, col: 0 },
     },
     down: {
-      '2': { clue: 'Red + yellow = ?', answer: 'CAR', row: 0, col: 3 }, // пересечение в A (row1,col3)
+      '2': { clue: 'Not this', answer: 'ACT', row: 0, col: 0 }, // пересечение по C с CAT
     },
   },
 
-  // Level 2 — буквы D O G L F W A, пересечение FOG×DOG
+  // Level 2 — DOG / LOG / LONG, есть пересечения, без конфликтов
   {
     across: {
-      '1': { clue: 'Best friend of man', answer: 'DOG', row: 2, col: 2 },
-      '4': { clue: 'Wood from tree', answer: 'LOG', row: 0, col: 8 },
+      '1': { clue: 'Barks a lot', answer: 'DOG', row: 1, col: 1 },
+      '3': { clue: 'Wood piece', answer: 'LOG', row: 3, col: 0 },
     },
     down: {
-      '2': { clue: 'Thick cloud on ground', answer: 'FOG', row: 0, col: 4 }, // пересечение в G (row2,col4)
-      '3': { clue: 'What dogs do with tail', answer: 'WAG', row: 0, col: 6 },
+      '2': { clue: 'Not short', answer: 'LONG', row: 0, col: 2 }, // пересечение с DOG и LOG
     },
   },
 
-  // Level 3 — буквы B A T E D (и др.), пересечения EAT×BAT и BET×BAT
+  // Level 3 — BEAR / BARE / EAR / BEE, плотные пересечения
   {
     across: {
-      '1': { clue: 'Vampire animal', answer: 'BAT', row: 2, col: 4 },
-      '4': { clue: 'Place for sleeping', answer: 'BED', row: 4, col: 0 },
+      '1': { clue: 'Wild animal', answer: 'BEAR', row: 1, col: 1 },
+      '4': { clue: 'Naked', answer: 'BARE', row: 2, col: 1 },
     },
     down: {
-      '2': { clue: 'Have food', answer: 'EAT', row: 0, col: 5 }, // пересечение в A (row2,col5)
-      '3': { clue: 'Not good', answer: 'BAD', row: 0, col: 0 },
-      '5': { clue: 'Wager', answer: 'BET', row: 0, col: 4 }, // пересечение в B (row2,col4)
+      '2': { clue: 'Listen with', answer: 'EAR', row: 0, col: 3 }, // пересечение с BEAR/BARE
+      '3': { clue: 'Honey lover', answer: 'BEE', row: 0, col: 0 },
     },
   },
 
-  // Level 4 — буквы S U N F R (и др.), пересечение SON×SUN
+  // Level 4 — HAT / HAPPY / HIT / PIE, плотная сетка
   {
     across: {
-      '1': { clue: 'Bright thing in sky', answer: 'SUN', row: 1, col: 2 },
-      '4': { clue: 'Have a good time', answer: 'FUN', row: 3, col: 0 },
-      '5': { clue: 'Move fast on foot', answer: 'RUN', row: 0, col: 8 },
+      '1': { clue: 'On your head', answer: 'HAT', row: 0, col: 1 },
+      '4': { clue: 'Not sad', answer: 'HAPPY', row: 3, col: 0 },
     },
     down: {
-      '2': { clue: 'Male child', answer: 'SON', row: 0, col: 2 }, // пересечение в S (row1,col2)
-      '3': { clue: 'Opposite of off', answer: 'ON', row: 2, col: 6 },
+      '2': { clue: 'Cut with', answer: 'HIT', row: 0, col: 1 }, // пересечение с HAT
+      '3': { clue: 'Food circle', answer: 'PIE', row: 0, col: 3 },
     },
   },
 
-  // Level 5 — буквы R A I N W E T (и др.), пересечения EAR×RAIN и IN×RAIN
+  // Level 5 — RAIN / WEAR / WIN / EAR / WET, сложный, много пересечений
   {
     across: {
-      '1': { clue: 'Water from clouds', answer: 'RAIN', row: 2, col: 0 },
-      '4': { clue: 'Opposite of lose', answer: 'WIN', row: 0, col: 8 },
-      '6': { clue: 'Put on clothes', answer: 'WEAR', row: 4, col: 2 },
+      '1': { clue: 'From the sky', answer: 'RAIN', row: 1, col: 1 },
+      '4': { clue: 'Have on', answer: 'WEAR', row: 3, col: 0 },
+      '5': { clue: 'Opposite of lose', answer: 'WIN', row: 0, col: 0 },
     },
     down: {
-      '2': { clue: 'Organ for hearing', answer: 'EAR', row: 0, col: 0 }, // пересечение в R (row2,col0)
-      '3': { clue: 'Not out', answer: 'IN', row: 1, col: 3 }, // пересечение в N (row2,col3)
-      '5': { clue: 'Not dry', answer: 'WET', row: 0, col: 5 },
+      '2': { clue: 'Listen organ', answer: 'EAR', row: 0, col: 2 }, // пересечение с RAIN
+      '3': { clue: 'Not dry', answer: 'WET', row: 0, col: 5 },
     },
   },
 ]

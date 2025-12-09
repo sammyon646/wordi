@@ -94,7 +94,7 @@ const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   return shuffle(letters)
 }
 
-// Построение сетки из решённых слов; не перезаписываем отличающиеся буквы
+// Построение сетки из решённых слов
 const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
   const grid: Record<string, string> = {}
   entries.forEach((entry) => {
