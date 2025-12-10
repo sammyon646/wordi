@@ -26,7 +26,7 @@ export const puzzles: Puzzle[] = [
       '1': { clue: 'Десять (англ.)', answer: 'TEN', row: 0, col: 0 },
     },
     down: {
-      '2': { clue: 'Сеть (англ.)', answer: 'NET', row: 2, col: 0 },
+      '2': { clue: 'Сеть (англ.)', answer: 'NET', row: 0, col: 0 },
     },
   },
   {
