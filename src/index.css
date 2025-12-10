@@ -23,98 +23,47 @@ body {
   touch-action: manipulation;
 }
 
-.glow-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(6px);
-  padding: 1.5rem;
-}
-
-/* Корпус модалки */
 .glow-modal {
   position: relative;
-  width: min(420px, 100%);
-  padding: 1.5rem;
+  width: min(420px, 96vw);
+  padding: 2rem;
   border-radius: 24px;
+  background: #0d0619;
   overflow: hidden;
-  background: linear-gradient(125deg, #24083f, #1b0d33, #2f1c63);
-  background-size: 220% 220%;
-  animation: glow-grad 12s ease-in-out infinite;
+  isolation: isolate;
 }
 
-/* Анимированная обводка */
+/* Основа — тонкая неоновая обводка */
 .glow-modal::before {
   content: "";
   position: absolute;
-  inset: -3px;
+  inset: -2px;                     /* толщина обводки */
   border-radius: 26px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(180,120,255,0.8),
-    rgba(120,70,200,0.5),
-    rgba(200,160,255,0.9),
-    rgba(120,70,200,0.5),
-    rgba(180,120,255,0.8)
-  );
-  animation: glow-ring 8s linear infinite;
-  z-index: 0;
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      transparent 0deg,
+      #a855ff 30deg,   /* яркая часть полоски */
+      #e59fff 45deg,
+      transparent 60deg,
+      transparent 360deg
+    );
+  background-size: 200% 200%;
+  animation: comet 6s linear infinite;
+  z-index: -1;
+  filter: blur(1.5px);
 }
 
-/* Чтобы обводка была «кольцом» */
+/* Внутренняя тёмная маска, чтобы контент был чистым */
 .glow-modal::after {
   content: "";
   position: absolute;
-  inset: 1.5px;
+  inset: 3px;
   border-radius: 22px;
   background: linear-gradient(135deg, #190f2f, #0f0820, #1d1238);
-  z-index: 1;
-  opacity: 0.95;
+  z-index: -1;
 }
 
-/* Контент сверху над обводкой */
-.glow-header,
-.glow-body {
-  position: relative;
-  z-index: 2;
-}
-
-.glow-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.glow-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.glow-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.glow-close:hover { background: rgba(255,255,255,0.18); }
-
-@keyframes glow-grad {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-@keyframes glow-ring {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+@keyframes comet {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
 }
