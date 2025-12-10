@@ -104,9 +104,18 @@ body {
   justify-content: center;
 }
 
-.glow-close:hover {
-  background: rgba(255,255,255,0.18);
+.glow-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+.glow-close:hover { background: rgba(255,255,255,0.18); }
 
 @keyframes glow-grad {
   0%   { background-position: 0% 50%; }
