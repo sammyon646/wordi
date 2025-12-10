@@ -10,6 +10,7 @@ const CENTER = CIRCLE_SIZE / 2
 const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
+const BOARD_SIZE = 260 // фиксированный квадрат для кроссворда
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -140,6 +141,9 @@ export default function App() {
     return { maxRow: mr, maxCol: mc, minRow: minR, minCol: minC, activeCells: set }
   }, [entries])
 
+  const rows = maxRow - minRow + 1
+  const cols = maxCol - minCol + 1
+
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
     setIsSettingsOpen(false)
@@ -174,112 +178,119 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col px-4 gap-3 overflow-hidden pb-24">
-        {/* Кроссворд */}
-        <div className="flex justify-center">
-          <div className="inline-flex flex-col gap-1 p-4 rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg">
-            {Array.from({ length: maxRow - minRow + 1 }).map((_, r) => {
-              const rGlobal = r + minRow
-              return (
-                <div key={rGlobal} className="flex gap-1 justify-center">
-                  {Array.from({ length: maxCol - minCol + 1 }).map((_, c) => {
-                    const cGlobal = c + minCol
-                    const key = `${rGlobal}-${cGlobal}`
-                    const isActive = activeCells.has(key)
-                    const letter = gridLetters[key]
-                    return (
-                      <motion.div
-                        key={cGlobal}
-                        className={`w-10 h-10 rounded-md text-lg font-bold flex items-center justify-center ${
-                          isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
-                        }`}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
-                      >
-                        {letter ? letter.toUpperCase() : ''}
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Выбранные буквы */}
-        <div className="h-16 flex items-center justify-center">
-          <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
-            {displayedLetters.map((letter, i) => (
-              <motion.div
-                key={i}
-                className="w-10 h-10 bg-[#2b1755] border-2 border-purple-500/80 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
-              >
-                {letter.toUpperCase()}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Круг */}
-        <div className="flex-1 flex items-end justify-center pb-4">
+      <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden">
+        <div className="flex-1 flex flex-col items-center justify-between">
+          {/* Кроссворд в фиксированном квадрате */}
           <div
-            className="relative flex items-center justify-center"
-            style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
-            onTouchMove={(e) => e.preventDefault()}
+            className="rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg p-3"
+            style={{ width: BOARD_SIZE, height: BOARD_SIZE }}
           >
-            <motion.div
-              ref={circleRef}
-              className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
-              style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, touchAction: 'none' }}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={() => {
-                isPointerActive.current = false
-                resetPath()
+            <div
+              className="w-full h-full grid gap-1"
+              style={{
+                gridTemplateRows: `repeat(${rows}, 1fr)`,
+                gridTemplateColumns: `repeat(${cols}, 1fr)`,
               }}
             >
-              <div className="absolute inset-0 z-10" />
-              {letters.map((letter, i) => {
-                const { x, y } = getLetterPosition(i)
-                const isSelected = path.includes(i)
-                return (
-                  <motion.div
-                    key={i}
-                    className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
-                      isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
-                    }`}
-                    style={{
-                      width: LETTER_SIZE,
-                      height: LETTER_SIZE,
-                      left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
-                      top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
-                    }}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
-                  >
-                    {letter.toUpperCase()}
-                  </motion.div>
-                )
-              })}
-              {path.length > 1 && (
-                <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
-                  <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
-                </svg>
+              {Array.from({ length: rows }).map((_, r) =>
+                Array.from({ length: cols }).map((_, c) => {
+                  const rGlobal = r + minRow
+                  const cGlobal = c + minCol
+                  const key = `${rGlobal}-${cGlobal}`
+                  const isActive = activeCells.has(key)
+                  const letter = gridLetters[key]
+                  return (
+                    <motion.div
+                      key={`${r}-${c}`}
+                      className={`rounded-md text-lg font-bold flex items-center justify-center ${
+                        isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
+                      }`}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
+                    >
+                      {letter ? letter.toUpperCase() : ''}
+                    </motion.div>
+                  )
+                })
               )}
-            </motion.div>
+            </div>
+          </div>
+
+          {/* Выбранные буквы */}
+          <div className="min-h-[72px] flex items-center justify-center">
+            <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
+              {displayedLetters.map((letter, i) => (
+                <motion.div
+                  key={i}
+                  className="w-10 h-10 bg-[#2b1755] border-2 border-purple-500/80 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
+                >
+                  {letter.toUpperCase()}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Круг */}
+          <div className="pb-2">
+            <div
+              className="relative flex items-center justify-center"
+              style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
+              onTouchMove={(e) => e.preventDefault()}
+            >
+              <motion.div
+                ref={circleRef}
+                className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
+                style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, touchAction: 'none' }}
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={() => {
+                  isPointerActive.current = false
+                  resetPath()
+                }}
+              >
+                <div className="absolute inset-0 z-10" />
+                {letters.map((letter, i) => {
+                  const { x, y } = getLetterPosition(i)
+                  const isSelected = path.includes(i)
+                  return (
+                    <motion.div
+                      key={i}
+                      className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
+                        isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
+                      }`}
+                      style={{
+                        width: LETTER_SIZE,
+                        height: LETTER_SIZE,
+                        left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
+                        top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
+                      }}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
+                    >
+                      {letter.toUpperCase()}
+                    </motion.div>
+                  )
+                })}
+                {path.length > 1 && (
+                  <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
+                    <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
+                  </svg>
+                )}
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Нижняя панель с кнопками */}
+      {/* Нижняя панель */}
       <nav
         className="fixed bottom-0 left-0 right-0 bg-[#19063a]/90 backdrop-blur-md border-t border-purple-800/60"
         style={{ paddingBottom: `max(env(safe-area-inset-bottom), 12px)` }}
