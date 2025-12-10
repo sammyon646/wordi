@@ -10,7 +10,9 @@ const CENTER = CIRCLE_SIZE / 2
 const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
-const BOARD_SIZE = 300 // фиксированный квадрат
+const BOARD_SIZE = 260
+const MAX_CELL_SIZE = 64
+const INNER_PAD = 12
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -34,7 +36,6 @@ export default function App() {
     setNewPuzzle,
   } = useGameStore()
 
-  // Полноэкранность WebApp
   useEffect(() => {
     const tg: any = (window as any)?.Telegram?.WebApp
     tg?.ready?.()
@@ -143,8 +144,11 @@ export default function App() {
 
   const rows = maxRow - minRow + 1
   const cols = maxCol - minCol + 1
-  const innerPad = 12
-  const cellSize = Math.min((BOARD_SIZE - innerPad * 2) / cols, (BOARD_SIZE - innerPad * 2) / rows)
+  const cellSize = Math.min(
+    MAX_CELL_SIZE,
+    (BOARD_SIZE - INNER_PAD * 2) / cols,
+    (BOARD_SIZE - INNER_PAD * 2) / rows
+  )
   const gridW = cellSize * cols
   const gridH = cellSize * rows
 
@@ -224,7 +228,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Выбранные буквы по центру между полем и кругом */}
+          {/* Выбранные буквы — строго по центру между полем и кругом */}
           <div className="min-h-[72px] flex items-center justify-center mt-6 mb-6">
             <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
               {displayedLetters.map((letter, i) => (
@@ -241,8 +245,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Круг */}
-          <div className="pb-2">
+          {/* Круг — поднят выше */}
+          <div className="pb-1">
             <div
               className="relative flex items-center justify-center"
               style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60 }}
