@@ -485,7 +485,7 @@ export default function App() {
                   rel="noreferrer"
                   className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition w-full text-center"
                 >
-                  Support: @semyon_888
+                  Contact support
                 </a>
               </div>
             </motion.div>
