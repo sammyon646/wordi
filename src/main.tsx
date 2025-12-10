@@ -2,18 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
-
-// ────────────────── Фикс ошибки TypeScript для Telegram ──────────────────
-interface TelegramWebApp {
-  ready: () => void
-  expand: () => void
-  initDataUnsafe?: {
-    user?: {
-      language_code?: string
-    }
-  }
-}
-
+// если оставляешь d.ts с типами Telegram, можешь просто импортнуть его для TS:
+import './types/telegram' // либо './global' — в зависимости от того, как назвал файл с декларацией
 
 if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.ready()
@@ -25,16 +15,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>
 )
-
-interface TelegramHapticFeedback {
-  impactOccurred: (style: 'light' | 'medium' | 'heavy') => void
-  notificationOccurred?: (type: 'error' | 'success' | 'warning') => void
-  selectionChanged?: () => void
-}
-
-interface TelegramWebApp {
-  ready: () => void
-  expand: () => void
-  HapticFeedback?: TelegramHapticFeedback
-  initDataUnsafe?: { user?: { language_code?: string } }
-}
