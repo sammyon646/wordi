@@ -2,6 +2,7 @@ import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide-react'
+import GlowModal from './components/GlowModal'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 import WaveBackground from './WaveBackground'
@@ -455,89 +456,39 @@ export default function App() {
       </AnimatePresence>
 
       {/* About */}
-      <AnimatePresence>
-        {isAboutOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-            onClick={() => setIsAboutOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      <GlowModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} title="WORDI v1.0">
+        <p>Match letters, complete mini-crosswords, collect coins and beat all the levels!</p>
+          <a
+            href="https://t.me/semyon_888"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition w-full text-center mt-3"
           >
-            <motion.div
-              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">WORDI v1.0</h2>
-                <button onClick={() => setIsAboutOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="space-y-3 text-sm">
-                <p>Match letters, complete mini-crosswords, collect coins and beat all the levels!</p>
-                <a
-                  href="https://t.me/semyon_888"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition w-full text-center"
-                >
-                  Contact support
-                </a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    Contact support
+          </a>
+      </GlowModal>
 
       {/* Settings — только смена языка */}
-      <AnimatePresence>
-        {isSettingsOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-            onClick={() => setIsSettingsOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
+        <GlowModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} title={t('settings', 'Settings')}>
+          <div className="flex justify-center gap-6">
+            <button
+              onClick={() => changeLanguage('en')}
+              className={`px-8 py-4 rounded-full text-xl font-bold ${
+              i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+      }`}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
-                <button onClick={() => setIsSettingsOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="flex justify-center gap-6">
-                <button
-                  onClick={() => changeLanguage('en')}
-                  className={`px-8 py-4 rounded-full text-xl font-bold ${
-                    i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => changeLanguage('ru')}
-                  className={`px-8 py-4 rounded-full text-xl font-bold ${
-                    i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                  }`}
-                >
-                  RU
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            EN
+            </button>
+            <button
+            onClick={() => changeLanguage('ru')}
+      className={`px-8 py-4 rounded-full text-xl font-bold ${
+        i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+      }`}
+    >
+      RU
+    </button>
+  </div>
+</GlowModal>
     </div>
   )
 }
