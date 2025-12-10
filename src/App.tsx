@@ -249,7 +249,7 @@ export default function App() {
           <div className="pb-1">
             <div
               className="relative flex items-center justify-center"
-              style={{ width: CIRCLE_SIZE + 80, height: CIRCLE_SIZE + 80 }}
+              style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60, transform: 'translateY(-8px)'}}
               onTouchMove={(e) => e.preventDefault()}
             >
               <motion.div
