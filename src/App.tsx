@@ -10,7 +10,7 @@ const CENTER = CIRCLE_SIZE / 2
 const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
-const BOARD_SIZE = 260 // фиксированный квадрат для кроссворда
+const BOARD_SIZE = 300 // фиксированный квадрат
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -143,6 +143,10 @@ export default function App() {
 
   const rows = maxRow - minRow + 1
   const cols = maxCol - minCol + 1
+  const innerPad = 12
+  const cellSize = Math.min((BOARD_SIZE - innerPad * 2) / cols, (BOARD_SIZE - innerPad * 2) / rows)
+  const gridW = cellSize * cols
+  const gridH = cellSize * rows
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -182,14 +186,16 @@ export default function App() {
         <div className="flex-1 flex flex-col items-center justify-between">
           {/* Кроссворд в фиксированном квадрате */}
           <div
-            className="rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg p-3"
+            className="rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg p-3 flex items-center justify-center"
             style={{ width: BOARD_SIZE, height: BOARD_SIZE }}
           >
             <div
-              className="w-full h-full grid gap-1"
+              className="grid gap-1"
               style={{
-                gridTemplateRows: `repeat(${rows}, 1fr)`,
-                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                width: gridW,
+                height: gridH,
+                gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
+                gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
               }}
             >
               {Array.from({ length: rows }).map((_, r) =>
@@ -205,6 +211,7 @@ export default function App() {
                       className={`rounded-md text-lg font-bold flex items-center justify-center ${
                         isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
                       }`}
+                      style={{ width: cellSize, height: cellSize }}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
@@ -217,8 +224,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Выбранные буквы */}
-          <div className="min-h-[72px] flex items-center justify-center">
+          {/* Выбранные буквы по центру между полем и кругом */}
+          <div className="min-h-[72px] flex items-center justify-center mt-6 mb-6">
             <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
               {displayedLetters.map((letter, i) => (
                 <motion.div
