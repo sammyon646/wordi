@@ -37,10 +37,10 @@ export const puzzles: Puzzle[] = [
   {
     across: {
       '1': { clue: 'Выиграл (прош. время от win)', answer: 'WON', row: 0, col: 0 },
-      '3': { clue: 'Собственный (англ.)', answer: 'OWN', row: 2, col: 1 },
+      '3': { clue: 'Сейчас (англ.)', answer: 'NOW', row: 2, col: 1 },
     },
     down: {
-      '2': { clue: 'На (предлог)', answer: 'ON', row: 0, col: 1 },
+      '2': { clue: 'Владеть (англ.)', answer: 'OWN', row: 0, col: 1 },
     },
   },
 ]
