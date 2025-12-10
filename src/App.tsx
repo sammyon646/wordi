@@ -420,6 +420,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
+
       {/* Settings */}
       <AnimatePresence>
         {isSettingsOpen && (
