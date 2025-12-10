@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 // если оставляешь d.ts с типами Telegram, можешь просто импортнуть его для TS:
-import './types/telegram.d.ts' // либо './global' — в зависимости от того, как назвал файл с декларацией
+import './types/telegram.ts' // либо './global' — в зависимости от того, как назвал файл с декларацией
 
 if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.ready()
