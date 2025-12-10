@@ -38,7 +38,6 @@ export default function WaveBackground() {
       t += 0.02
       const { width: w, height: h } = canvas
 
-      // фон‑градиент + мягкое свечение
       const grad = ctx.createLinearGradient(0, 0, 0, h)
       grad.addColorStop(0, '#18052e')
       grad.addColorStop(1, '#0b031a')
@@ -51,7 +50,6 @@ export default function WaveBackground() {
       ctx.fillStyle = glow
       ctx.fillRect(0, 0, w, h)
 
-      // волны
       const drawWave = (amp: number, freq: number, speed: number, color: string, lw = 2) => {
         ctx.beginPath()
         for (let y = 0; y <= h; y += 2) {
@@ -66,7 +64,6 @@ export default function WaveBackground() {
       drawWave(w * 0.03, 0.020, 1.4, 'rgba(255,120,255,0.16)', 2.0)
       drawWave(w * 0.02, 0.030, 1.9, 'rgba(90,180,255,0.10)', 1.6)
 
-      // искры
       if (Math.random() < 0.4) spawnSpark()
       sparks.current.forEach((s) => {
         s.life++
@@ -91,7 +88,15 @@ export default function WaveBackground() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: 'absolute', inset: 0, zIndex: -1, width: '100%', height: '100%', display: 'block' }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: -1,
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        pointerEvents: 'none',
+      }}
     />
   )
 }

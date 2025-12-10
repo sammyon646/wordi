@@ -12,7 +12,7 @@ const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
 const INNER_PAD = 12
 const HIT_RADIUS = 24
-const HEADER_EXTRA = 24 // дополнительный отступ сверху под Close/Collapse
+const HEADER_EXTRA = 36 // доп. отступ под системные кнопки
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -44,12 +44,13 @@ export default function App() {
     tg?.disableVerticalSwipes?.()
   }, [])
 
+  // адаптивное масштабирование
   const [scale, setScale] = useState(1)
   useEffect(() => {
     const onResize = () => {
       const vw = window.innerWidth
       const vh = window.innerHeight
-      const factor = Math.min(vw / 390, vh / 844)
+      const factor = Math.min(vw / 390, vh / 844) // ориентир на iPhone 13
       setScale(Math.max(0.9, Math.min(1.25, factor)))
     }
     onResize()
@@ -181,9 +182,8 @@ export default function App() {
   return (
     <div
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
-      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}
+      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 36px)' }}
     >
-      {/* Фон без кликов */}
       <div style={{ pointerEvents: 'none' }}>
         <WaveBackground />
       </div>
