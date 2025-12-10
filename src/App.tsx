@@ -43,14 +43,15 @@ export default function App() {
     tg?.disableVerticalSwipes?.()
   }, [])
 
-  // адаптивный масштаб относительно базового мобильного 375x812
+  // адаптивный масштаб: клипуем в диапазоне
   const [scale, setScale] = useState(1)
   useEffect(() => {
     const onResize = () => {
       const vw = window.innerWidth
       const vh = window.innerHeight
-      const factor = Math.min(vw / 375, vh / 812)
-      setScale(Math.max(0.9, Math.min(1.2, factor))) // ограничим, чтобы не расползалось
+      // ориентирамся на iPhone 13 ~390x844
+      const factor = Math.min(vw / 390, vh / 844)
+      setScale(Math.max(0.9, Math.min(1.25, factor)))
     }
     onResize()
     window.addEventListener('resize', onResize)
@@ -181,9 +182,12 @@ export default function App() {
   return (
     <div
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
-      style={{ overscrollBehavior: 'none' }}
+      style={{ overscrollBehavior: 'none', paddingTop: 'env(safe-area-inset-top)' }}
     >
-      <WaveBackground />
+      {/* Фон не перехватывает клики */}
+      <div style={{ pointerEvents: 'none' }}>
+        <WaveBackground />
+      </div>
 
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center relative z-10">
@@ -346,20 +350,17 @@ export default function App() {
             },
             { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
             { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
-            {
-              icon: <Settings className="w-6 h-6" />,
-              label: t('settings', 'settings'),
-              onClick: () => setIsSettingsOpen(true),
-            },
+            { icon: <Settings className="w-6 h-6" />, label: t('settings', 'settings'), onClick: () => setIsSettingsOpen(true) },
           ].map((item, idx, arr) => (
-            <div
-              key={idx}
-              className="flex-1 flex flex-col items-center gap-1 relative"
-              onClick={item.onClick}
-              role="button"
-            >
-              <div className="flex items-center justify-center">{item.icon}</div>
-              <span className="text-xs">{item.label}</span>
+            <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
+              <button
+                onClick={item.onClick}
+                className="flex flex-col items-center gap-1 w-full focus:outline-none"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className="flex items-center justify-center">{item.icon}</div>
+                <span className="text-xs">{item.label}</span>
+              </button>
               {idx < arr.length - 1 && (
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-purple-800/80" />
               )}
@@ -478,9 +479,7 @@ export default function App() {
                 </button>
               </div>
               <div className="space-y-3 text-sm">
-                <p>
-                  Match letters, complete mini-crosswords, collect coins and beat all the levels!
-                </p>
+                <p>Match letters, complete mini-crosswords, collect coins and beat all the levels!</p>
                 <a
                   href="https://t.me/semyon_888"
                   target="_blank"
