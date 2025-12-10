@@ -182,7 +182,7 @@ export default function App() {
   return (
     <div
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
-      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 36px)' }}
+      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 48px)' }}
     >
       {/* фон */}
       <div style={{ pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 0 }}>
