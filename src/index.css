@@ -23,19 +23,29 @@ body {
   touch-action: manipulation;
 }
 
-/* Корпус модалки: живая анимированная заливка */
+.glow-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  padding: 1.5rem;
+}
+
+/* Корпус модалки */
 .glow-modal {
   position: relative;
   width: min(420px, 100%);
   padding: 1.5rem;
   border-radius: 24px;
   overflow: hidden;
-  background: linear-gradient(125deg, #24083f, #1b0d33, #2f1c63);
-  background-size: 220% 220%;
-  animation: glow-grad 12s ease-in-out infinite;
+  background: linear-gradient(135deg, #2b0d5c 0%, #1c0d39 50%, #2f1f63 100%);
 }
 
-/* Единая «металлическая» фиолетовая обводка */
+/* Анимированная обводка */
 .glow-modal::before {
   content: "";
   position: absolute;
@@ -43,28 +53,26 @@ body {
   border-radius: 26px;
   background: conic-gradient(
     from 0deg,
-    rgba(180,120,255,0.8),
-    rgba(120,70,200,0.5),
-    rgba(200,160,255,0.9),
-    rgba(120,70,200,0.5),
-    rgba(180,120,255,0.8)
+    #7c3aed,
+    #a855f7,
+    #c084fc,
+    #7c3aed
   );
-  animation: glow-ring 8s linear infinite;
+  animation: glow-spin 6s linear infinite;
   z-index: 0;
 }
 
-/* Внутренний фон, чтобы обводка была кольцом */
+/* Чтобы обводка была «кольцом» */
 .glow-modal::after {
   content: "";
   position: absolute;
   inset: 1.5px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #190f2f, #0f0820, #1d1238);
+  background: linear-gradient(135deg, #1a0f2f 0%, #0f0620 50%, #1f1338 100%);
   z-index: 1;
-  opacity: 0.95;
 }
 
-/* Контент над всеми слоями */
+/* Контент сверху над обводкой */
 .glow-header,
 .glow-body {
   position: relative;
@@ -95,9 +103,11 @@ body {
   align-items: center;
   justify-content: center;
 }
-.glow-close:hover { background: rgba(255,255,255,0.18); }
 
-/* Анимации */
+.glow-close:hover {
+  background: rgba(255,255,255,0.18);
+}
+
 @keyframes glow-grad {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
