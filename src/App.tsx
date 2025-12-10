@@ -6,14 +6,12 @@ import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 import WaveBackground from './WaveBackground'
 
-const CIRCLE_SIZE = 240
-const CENTER = CIRCLE_SIZE / 2
-const RADIUS = CIRCLE_SIZE * 0.38
-const HIT_RADIUS = 24
-const LETTER_SIZE = 48
-const BOARD_SIZE = 240
-const MAX_CELL_SIZE = 48
+const BASE_BOARD = 240
+const BASE_CIRCLE = 240
+const BASE_LETTER = 48
+const BASE_MAX_CELL = 48
 const INNER_PAD = 12
+const HIT_RADIUS = 24
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -45,6 +43,27 @@ export default function App() {
     tg?.disableVerticalSwipes?.()
   }, [])
 
+  // адаптивный масштаб относительно базового мобильного 375x812
+  const [scale, setScale] = useState(1)
+  useEffect(() => {
+    const onResize = () => {
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const factor = Math.min(vw / 375, vh / 812)
+      setScale(Math.max(0.9, Math.min(1.2, factor))) // ограничим, чтобы не расползалось
+    }
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const CIRCLE_SIZE = BASE_CIRCLE * scale
+  const CENTER = CIRCLE_SIZE / 2
+  const RADIUS = CIRCLE_SIZE * 0.38
+  const LETTER_SIZE = BASE_LETTER * scale
+  const BOARD_SIZE = BASE_BOARD * scale
+  const MAX_CELL_SIZE = BASE_MAX_CELL * scale
+
   const coinsValue = useSpring(coins, { stiffness: 120, damping: 16 })
   const coinsDisplay = useTransform(coinsValue, (v) => Math.round(v).toLocaleString())
   useEffect(() => {
@@ -54,6 +73,7 @@ export default function App() {
   const [showLevelUp, setShowLevelUp] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isHintsOpen, setIsHintsOpen] = useState(false)
+  const [isAboutOpen, setIsAboutOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
   const isPointerActive = useRef(false)
   const displayedLetters = typedWord.split('')
@@ -167,7 +187,7 @@ export default function App() {
 
       {/* Шапка */}
       <div className="p-4 flex justify-between items-center relative z-10">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pr-4">
           <Coins className="w-7 h-7 text-yellow-400" />
           <motion.span className="text-xl font-bold" key={coins}>
             {coinsDisplay as any}
@@ -180,7 +200,7 @@ export default function App() {
           <Lightbulb className="w-5 h-5" />
           <span className="text-sm font-semibold">{t('hints', 'Hints')}</span>
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pl-4">
           <Trophy className="w-7 h-7 text-yellow-400" />
           <span className="text-xl font-bold">
             {t('level', 'Lv')} {level}
@@ -252,7 +272,11 @@ export default function App() {
           <div className="pb-1">
             <div
               className="relative flex items-center justify-center"
-              style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60, transform: 'translateY(-48px)' }}
+              style={{
+                width: CIRCLE_SIZE + 60,
+                height: CIRCLE_SIZE + 60,
+                transform: 'translateY(-48px)',
+              }}
               onTouchMove={(e) => e.preventDefault()}
             >
               <motion.div
@@ -311,19 +335,29 @@ export default function App() {
       >
         <div className="flex items-center justify-around px-4 py-2">
           {[
-            { icon: <Trophy className="w-6 h-6" />, label: t('boost', 'boost') },
+            {
+              icon: (
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-extrabold">
+                  W
+                </div>
+              ),
+              label: 'About',
+              onClick: () => setIsAboutOpen(true),
+            },
             { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
             { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
             {
-              icon: (
-                <button onClick={() => setIsSettingsOpen(true)}>
-                  <Settings className="w-6 h-6" />
-                </button>
-              ),
+              icon: <Settings className="w-6 h-6" />,
               label: t('settings', 'settings'),
+              onClick: () => setIsSettingsOpen(true),
             },
           ].map((item, idx, arr) => (
-            <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
+            <div
+              key={idx}
+              className="flex-1 flex flex-col items-center gap-1 relative"
+              onClick={item.onClick}
+              role="button"
+            >
               <div className="flex items-center justify-center">{item.icon}</div>
               <span className="text-xs">{item.label}</span>
               {idx < arr.length - 1 && (
@@ -420,74 +454,92 @@ export default function App() {
         )}
       </AnimatePresence>
 
-
-      {/* Settings */}
-<AnimatePresence>
-  {isSettingsOpen && (
-    <motion.div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-      onClick={() => setIsSettingsOpen(false)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <motion.div
-        className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
-          <button onClick={() => setIsSettingsOpen(false)}>
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          {/* Информация о версии и контакт */}
-          <div className="bg-purple-800/60 rounded-xl p-4 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-bold">WORDI v1.0</span>
-            </div>
-            <p className="text-sm text-white/80">
-              Match letters, complete mini-crosswords, gather coins and beat all the levels!.
-            </p>
-            <a
-              href="https://t.me/semyon_888"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition"
+      {/* About */}
+      <AnimatePresence>
+        {isAboutOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+            onClick={() => setIsAboutOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              Support: @semyon_888
-            </a>
-          </div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">WORDI v1.0</h2>
+                <button onClick={() => setIsAboutOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="space-y-3 text-sm">
+                <p>
+                  Match letters, complete mini-crosswords, collect coins and beat all the levels!
+                </p>
+                <a
+                  href="https://t.me/semyon_888"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition w-full text-center"
+                >
+                  Support: @semyon_888
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* Переключение языка как было */}
-          <div className="flex justify-center gap-6">
-            <button
-              onClick={() => changeLanguage('en')}
-              className={`px-8 py-4 rounded-full text-xl font-bold ${
-                i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-              }`}
+      {/* Settings — только смена языка */}
+      <AnimatePresence>
+        {isSettingsOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+            onClick={() => setIsSettingsOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              EN
-            </button>
-            <button
-              onClick={() => changeLanguage('ru')}
-              className={`px-8 py-4 rounded-full text-xl font-bold ${
-                i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-              }`}
-            >
-              RU
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-  </AnimatePresence>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
+                <button onClick={() => setIsSettingsOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="flex justify-center gap-6">
+                <button
+                  onClick={() => changeLanguage('en')}
+                  className={`px-8 py-4 rounded-full text-xl font-bold ${
+                    i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => changeLanguage('ru')}
+                  className={`px-8 py-4 rounded-full text-xl font-bold ${
+                    i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+                  }`}
+                >
+                  RU
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
