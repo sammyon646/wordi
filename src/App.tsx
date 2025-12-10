@@ -12,6 +12,7 @@ const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
 const INNER_PAD = 12
 const HIT_RADIUS = 24
+const HEADER_EXTRA = 24 // дополнительный отступ сверху под Close/Collapse
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -43,13 +44,11 @@ export default function App() {
     tg?.disableVerticalSwipes?.()
   }, [])
 
-  // адаптивный масштаб: клипуем в диапазоне
   const [scale, setScale] = useState(1)
   useEffect(() => {
     const onResize = () => {
       const vw = window.innerWidth
       const vh = window.innerHeight
-      // ориентирамся на iPhone 13 ~390x844
       const factor = Math.min(vw / 390, vh / 844)
       setScale(Math.max(0.9, Math.min(1.25, factor)))
     }
@@ -182,15 +181,15 @@ export default function App() {
   return (
     <div
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
-      style={{ overscrollBehavior: 'none', paddingTop: 'env(safe-area-inset-top)' }}
+      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)' }}
     >
-      {/* Фон не перехватывает клики */}
+      {/* Фон без кликов */}
       <div style={{ pointerEvents: 'none' }}>
         <WaveBackground />
       </div>
 
       {/* Шапка */}
-      <div className="p-4 flex justify-between items-center relative z-10">
+      <div className="px-4 pb-2 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2 pr-4">
           <Coins className="w-7 h-7 text-yellow-400" />
           <motion.span className="text-xl font-bold" key={coins}>
@@ -213,7 +212,7 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden relative z-10">
+      <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden relative z-10" style={{ paddingTop: HEADER_EXTRA }}>
         <div className="flex-1 flex flex-col items-center justify-between">
           {/* Кроссворд */}
           <div
