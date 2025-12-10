@@ -23,10 +23,10 @@ export const puzzles: Puzzle[] = [
   },
   {
     across: {
-      '1': { clue: 'Десять (англ.)', answer: 'TEN', row: 0, col: 0 },
+      '1': { clue: 'Десять (англ.)', answer: 'TEN', row: 1, col: 0 },
     },
     down: {
-      '2': { clue: 'Сеть (англ.)', answer: 'NET', row: 1, col: 0 },
+      '2': { clue: 'Сеть (англ.)', answer: 'NET', row: 0, col: 1 },
     },
   },
   {
