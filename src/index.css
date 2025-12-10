@@ -53,12 +53,13 @@ body {
   border-radius: 26px;
   background: conic-gradient(
     from 0deg,
-    #7c3aed,
-    #a855f7,
-    #c084fc,
-    #7c3aed
+    rgba(180,120,255,0.8),
+    rgba(120,70,200,0.5),
+    rgba(200,160,255,0.9),
+    rgba(120,70,200,0.5),
+    rgba(180,120,255,0.8)
   );
-  animation: glow-spin 6s linear infinite;
+  animation: glow-ring 8s linear infinite;
   z-index: 0;
 }
 
@@ -68,8 +69,9 @@ body {
   position: absolute;
   inset: 1.5px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #1a0f2f 0%, #0f0620 50%, #1f1338 100%);
+  background: linear-gradient(135deg, #190f2f, #0f0820, #1d1238);
   z-index: 1;
+  opacity: 0.95;
 }
 
 /* Контент сверху над обводкой */
@@ -90,18 +92,6 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
-}
-
-.glow-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .glow-close {
