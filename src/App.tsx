@@ -10,7 +10,7 @@ const CENTER = CIRCLE_SIZE / 2
 const RADIUS = CIRCLE_SIZE * 0.38
 const HIT_RADIUS = 24
 const LETTER_SIZE = 48
-const BOARD_SIZE = 140
+const BOARD_SIZE = 240
 const MAX_CELL_SIZE = 48
 const INNER_PAD = 12
 
