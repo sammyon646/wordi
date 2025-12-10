@@ -1,4 +1,3 @@
-// src/App.tsx
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -164,7 +163,6 @@ export default function App() {
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
       style={{ overscrollBehavior: 'none' }}
     >
-      {/* Живой фон */}
       <WaveBackground />
 
       {/* Шапка */}
@@ -193,7 +191,7 @@ export default function App() {
       {/* Основная зона */}
       <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden relative z-10">
         <div className="flex-1 flex flex-col items-center justify-between">
-          {/* Кроссворд в фиксированном квадрате */}
+          {/* Кроссворд */}
           <div
             className="rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg p-3 flex items-center justify-center"
             style={{ width: BOARD_SIZE, height: BOARD_SIZE }}
@@ -217,7 +215,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={`${r}-${c}`}
-                      className={`rounded-md text-lg font-bold flex items-center justify_center ${
+                      className={`rounded-md text-lg font-bold flex items-center justify-center ${
                         isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
                       }`}
                       style={{ width: cellSize, height: cellSize }}
@@ -233,7 +231,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Выбранные буквы — строго по центру между полем и кругом */}
+          {/* Выбранные буквы */}
           <div className="min-h-[72px] flex items-center justify-center mt-6 mb-6" style={{ transform: 'translateY(-8px)' }}>
             <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
               {displayedLetters.map((letter, i) => (
@@ -250,7 +248,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Круг — поднят выше */}
+          {/* Круг */}
           <div className="pb-1">
             <div
               className="relative flex items-center justify-center"
@@ -278,7 +276,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={i}
-                      className={`absolute rounded-full flex items-center justify_center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
+                      className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
                         isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
                       }`}
                       style={{
@@ -426,7 +424,7 @@ export default function App() {
       <AnimatePresence>
         {isSettingsOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify_center"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setIsSettingsOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -439,13 +437,13 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify_between items-center mb-6">
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
                 <button onClick={() => setIsSettingsOpen(false)}>
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              <div className="flex justify_center gap-6">
+              <div className="flex justify-center gap-6">
                 <button
                   onClick={() => changeLanguage('en')}
                   className={`px-8 py-4 rounded-full text-xl font-bold ${
