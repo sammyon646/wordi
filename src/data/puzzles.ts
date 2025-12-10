@@ -19,7 +19,7 @@ export const puzzles: Puzzle[] = [
       '1': { clue: 'Кот (англ.)', answer: 'CAT', row: 0, col: 0 },
     },
     down: {
-      '2': { clue: 'Действовать (англ.)', answer: 'ACT', row: 0, col: 2 },
+      '2': { clue: 'Действовать (англ.)', answer: 'ACT', row: 0, col: 1 },
     },
   },
 
