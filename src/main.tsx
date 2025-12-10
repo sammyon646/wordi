@@ -14,13 +14,6 @@ interface TelegramWebApp {
   }
 }
 
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: TelegramWebApp
-    }
-  }
-}
 
 if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.ready()
@@ -44,10 +37,4 @@ interface TelegramWebApp {
   expand: () => void
   HapticFeedback?: TelegramHapticFeedback
   initDataUnsafe?: { user?: { language_code?: string } }
-}
-
-declare global {
-  interface Window {
-    Telegram?: { WebApp: TelegramWebApp }
-  }
 }
