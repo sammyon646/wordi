@@ -1,9 +1,11 @@
+// src/App.tsx
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Coins, Trophy, Users, DollarSign, Settings, X, Lightbulb } from 'lucide-react'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
+import WaveBackground from './WaveBackground'
 
 const CIRCLE_SIZE = 240
 const CENTER = CIRCLE_SIZE / 2
@@ -159,11 +161,14 @@ export default function App() {
 
   return (
     <div
-      className="min-h-[100dvh] w-screen bg-gradient-to-b from-purple-950 via-purple-900 to-[#0d041c] text-white flex flex-col overflow-hidden"
+      className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
       style={{ overscrollBehavior: 'none' }}
     >
+      {/* Живой фон */}
+      <WaveBackground />
+
       {/* Шапка */}
-      <div className="p-4 flex justify-between items-center">
+      <div className="p-4 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2">
           <Coins className="w-7 h-7 text-yellow-400" />
           <motion.span className="text-xl font-bold" key={coins}>
@@ -186,7 +191,7 @@ export default function App() {
       </div>
 
       {/* Основная зона */}
-      <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden">
+      <div className="flex-1 flex flex-col px-4 pb-24 overflow-hidden relative z-10">
         <div className="flex-1 flex flex-col items-center justify-between">
           {/* Кроссворд в фиксированном квадрате */}
           <div
@@ -212,7 +217,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={`${r}-${c}`}
-                      className={`rounded-md text-lg font-bold flex items-center justify-center ${
+                      className={`rounded-md text-lg font-bold flex items-center justify_center ${
                         isActive ? 'border border-purple-400/80 text-white bg-transparent' : 'bg-transparent'
                       }`}
                       style={{ width: cellSize, height: cellSize }}
@@ -249,7 +254,7 @@ export default function App() {
           <div className="pb-1">
             <div
               className="relative flex items-center justify-center"
-              style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60, transform: 'translateY(-48px)'}}
+              style={{ width: CIRCLE_SIZE + 60, height: CIRCLE_SIZE + 60, transform: 'translateY(-48px)' }}
               onTouchMove={(e) => e.preventDefault()}
             >
               <motion.div
@@ -273,7 +278,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={i}
-                      className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
+                      className={`absolute rounded-full flex items-center justify_center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
                         isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
                       }`}
                       style={{
@@ -421,7 +426,7 @@ export default function App() {
       <AnimatePresence>
         {isSettingsOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify_center"
             onClick={() => setIsSettingsOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -434,13 +439,13 @@ export default function App() {
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify_between items-center mb-6">
                 <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
                 <button onClick={() => setIsSettingsOpen(false)}>
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              <div className="flex justify-center gap-6">
+              <div className="flex justify_center gap-6">
                 <button
                   onClick={() => changeLanguage('en')}
                   className={`px-8 py-4 rounded-full text-xl font-bold ${
