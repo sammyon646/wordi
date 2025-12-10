@@ -38,4 +38,13 @@ export const puzzles: Puzzle[] = [
       '2': { clue: 'Владеть (англ.)', answer: 'OWN', row: 0, col: 1 },
     },
   },
+  {
+  across: {
+    '1': { clue: 'Стена', answer: 'WALL', row: 2, col: 0 },
+  },
+  down: {
+    '2': { clue: 'Закон (англ.)', answer: 'LAW', row: 0, col: 0 },
+    '3': { clue: 'Все (англ.)', answer: 'ALL', row: 0, col: 2 },
+  },
+  }
 ]

@@ -422,50 +422,72 @@ export default function App() {
 
 
       {/* Settings */}
-      <AnimatePresence>
-        {isSettingsOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-            onClick={() => setIsSettingsOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
+<AnimatePresence>
+  {isSettingsOpen && (
+    <motion.div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+      onClick={() => setIsSettingsOpen(false)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-purple-900 rounded-2xl p-8 max-w-xs w-full mx-4"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
+          <button onClick={() => setIsSettingsOpen(false)}>
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Информация о версии и контакт */}
+          <div className="bg-purple-800/60 rounded-xl p-4 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-bold">WORDI v1.0</span>
+            </div>
+            <p className="text-sm text-white/80">
+              Match letters, complete mini-crosswords, gather coins and beat all the levels!.
+            </p>
+            <a
+              href="https://t.me/semyon_888"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">{t('settings', 'Settings')}</h2>
-                <button onClick={() => setIsSettingsOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="flex justify-center gap-6">
-                <button
-                  onClick={() => changeLanguage('en')}
-                  className={`px-8 py-4 rounded-full text-xl font-bold ${
-                    i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => changeLanguage('ru')}
-                  className={`px-8 py-4 rounded-full text-xl font-bold ${
-                    i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
-                  }`}
-                >
-                  RU
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              Support: @semyon_888
+            </a>
+          </div>
+
+          {/* Переключение языка как было */}
+          <div className="flex justify-center gap-6">
+            <button
+              onClick={() => changeLanguage('en')}
+              className={`px-8 py-4 rounded-full text-xl font-bold ${
+                i18n.language === 'en' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => changeLanguage('ru')}
+              className={`px-8 py-4 rounded-full text-xl font-bold ${
+                i18n.language === 'ru' ? 'bg-yellow-400 text-black' : 'bg-purple-700'
+              }`}
+            >
+              RU
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+  </AnimatePresence>
     </div>
   )
 }
