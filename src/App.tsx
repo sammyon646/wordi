@@ -12,7 +12,7 @@ const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
 const INNER_PAD = 12
 const HIT_RADIUS = 24
-const HEADER_EXTRA = 36 // доп. отступ под системные кнопки
+const HEADER_EXTRA = 36
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
@@ -44,13 +44,12 @@ export default function App() {
     tg?.disableVerticalSwipes?.()
   }, [])
 
-  // адаптивное масштабирование
   const [scale, setScale] = useState(1)
   useEffect(() => {
     const onResize = () => {
       const vw = window.innerWidth
       const vh = window.innerHeight
-      const factor = Math.min(vw / 390, vh / 844) // ориентир на iPhone 13
+      const factor = Math.min(vw / 390, vh / 844)
       setScale(Math.max(0.9, Math.min(1.25, factor)))
     }
     onResize()
@@ -184,12 +183,13 @@ export default function App() {
       className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
       style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 36px)' }}
     >
-      <div style={{ pointerEvents: 'none' }}>
+      {/* фон */}
+      <div style={{ pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 0 }}>
         <WaveBackground />
       </div>
 
       {/* Шапка */}
-      <div className="px-4 pb-2 flex justify-between items-center relative z-10">
+      <div className="px-4 pb-2 flex justify-between items-center relative z-30">
         <div className="flex items-center gap-2 pr-4">
           <Coins className="w-7 h-7 text-yellow-400" />
           <motion.span className="text-xl font-bold" key={coins}>
@@ -333,7 +333,7 @@ export default function App() {
 
       {/* Нижняя панель */}
       <nav
-        className="fixed bottom-0 left-0 right-0 bg-[#19063a]/90 backdrop-blur-md border-t border-purple-800/60"
+        className="fixed bottom-0 left-0 right-0 bg-[#19063a]/90 backdrop-blur-md border-t border-purple-800/60 z-40"
         style={{ paddingBottom: `max(env(safe-area-inset-bottom), 12px)` }}
       >
         <div className="flex items-center justify-around px-4 py-2">
