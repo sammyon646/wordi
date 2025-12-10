@@ -229,7 +229,7 @@ export default function App() {
           </div>
 
           {/* Выбранные буквы — строго по центру между полем и кругом */}
-          <div className="min-h-[72px] flex items-center justify-center mt-6 mb-6">
+          <div className="min-h-[72px] flex items-center justify-center mt-6 mb-6" style={{ transform: 'translateY(-8px)' }}>
             <div className="flex gap-2 flex-wrap justify-center max-w-xs px-4">
               {displayedLetters.map((letter, i) => (
                 <motion.div
