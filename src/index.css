@@ -23,128 +23,100 @@ body {
   touch-action: manipulation;
 }
 
-@property --glow-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
+/* Overlay */
 .glow-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5); /* Полупрозрачный оверлей */
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(5px); /* Лёгкий блюр фона для красоты */
-  z-index: 50;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  padding: 1.5rem;
 }
 
+/* Корпус модалки: живая переливчатая заливка */
 .glow-modal {
   position: relative;
-  background: #ffffff; /* Или тёмный фон, если нужно */
-  border-radius: 16px;
-  overflow: hidden; /* Важно для маски */
-  padding: 0;
-  max-width: 90vw;
-  max-height: 90vh;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-
-  /* Радужный переливающийся glow-бордер */
-  background: conic-gradient(
-    from var(--glow-angle),
-    #ff00ff,
-    #00ffff,
-    #ffff00,
-    #ff00ff,
-    #00ffff,
-    #ffff00,
-    #ff00ff
-  );
-  background-size: 200% 200%; /* Для большего покрытия */
-  padding: 4px; /* Толщина glow-бордера */
-  animation: rotateGlow 8s linear infinite; /* Плавная анимация перелива */
-  
-  /* Маска, чтобы контент был внутри без бордера */
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) padding-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: 
-    linear-gradient(#fff 0 0) padding-box, 
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+  width: min(420px, 100%);
+  padding: 1.5rem;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2c0a52, #1a0f3b, #3a1b6a);
+  background-size: 220% 220%;
+  animation: glow-grad 12s ease-in-out infinite;
 }
 
+/* Единая «металлическая» фиолетовая обводка */
 .glow-modal::before {
-  content: '';
+  content: "";
   position: absolute;
-  inset: 4px; /* Отступ равен толщине бордера */
-  background: #ffffff; /* Цвет внутреннего фона модалки */
-  border-radius: 12px; /* Немного меньше внешнего */
-  z-index: -1;
+  inset: -3px;
+  border-radius: 26px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(190,140,255,0.85),
+    rgba(120,70,200,0.6),
+    rgba(220,180,255,0.95),
+    rgba(120,70,200,0.6),
+    rgba(190,140,255,0.85)
+  );
+  animation: glow-ring 7s linear infinite;
+  z-index: 0;
 }
 
-/* Дополнительно: пульсирующий glow с box-shadow */
-.glow-modal {
-  box-shadow: 
-    0 0 20px rgba(0, 255, 255, 0.5),
-    0 0 40px rgba(255, 0, 255, 0.3),
-    0 0 60px rgba(255, 255, 0, 0.2);
-  animation: 
-    rotateGlow 8s linear infinite,
-    pulseGlow 4s ease-in-out infinite alternate;
+/* Внутренний фон, чтобы обводка была кольцом */
+.glow-modal::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #1a0f2f, #0f0820, #1d1238);
+  z-index: 1;
+  opacity: 0.96;
 }
 
-/* Анимации */
-@keyframes rotateGlow {
-  to {
-    --glow-angle: 360deg;
-  }
+/* Контент */
+.glow-header,
+.glow-body {
+  position: relative;
+  z-index: 2;
 }
 
-@keyframes pulseGlow {
-  from {
-    box-shadow: 
-      0 0 20px rgba(0, 255, 255, 0.5),
-      0 0 40px rgba(255, 0, 255, 0.3),
-      0 0 60px rgba(255, 255, 0, 0.2);
-  }
-  to {
-    box-shadow: 
-      0 0 30px rgba(0, 255, 255, 0.8),
-      0 0 60px rgba(255, 0, 255, 0.5),
-      0 0 90px rgba(255, 255, 0, 0.4);
-  }
-}
-
-/* Стили для хедера и тела */
 .glow-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .glow-title {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .glow-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  transition: background 0.2s;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+.glow-close:hover { background: rgba(255,255,255,0.18); }
 
-.glow-close:hover {
-  background: rgba(0, 0, 0, 0.1);
+/* Анимации */
+@keyframes glow-grad {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-
-.glow-body {
-  padding: 1.5rem;
+@keyframes glow-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
