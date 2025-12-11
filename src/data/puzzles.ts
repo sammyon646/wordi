@@ -47,6 +47,7 @@ export const puzzles: Puzzle[] = [
       '3': { clue: 'Все (англ.)', answer: 'ALL', row: 0, col: 2 },
     },
   },
+  
   {
     across: {
       '1': { clue: 'Да (англ.)', answer: 'YES', row: 0, col: 0 },
