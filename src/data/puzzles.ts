@@ -53,11 +53,11 @@ export const puzzles: Puzzle[] = [
     across: {
       '1': { clue: 'Да (англ.)', answer: 'YES', row: 0, col: 0 },
       '2': { clue: 'Море (англ.)', answer: 'SEA', row: 2, col: 1 },
-
+      '3': { clue: 'Море (англ.)', answer: 'SAY', row: 3, col: -1 },
 
     },
     down: {
-      '3': { clue: 'Легко (англ.)', answer: 'EASY', row: 0, col: 1 },
+      '4': { clue: 'Легко (англ.)', answer: 'EASY', row: 0, col: 1 },
     },
   }
 ]
