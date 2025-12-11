@@ -23,118 +23,128 @@ body {
   touch-action: manipulation;
 }
 
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 .glow-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  background: rgba(0, 0, 0, 0.5); /* Полупрозрачный оверлей */
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(6px);
-  padding: 1.5rem;
+  backdrop-filter: blur(5px); /* Лёгкий блюр фона для красоты */
+  z-index: 50;
 }
-
-/* ---------------------------------------------------
-   GLOW MODAL — правильная анимированная рамка
-   --------------------------------------------------- */
 
 .glow-modal {
   position: relative;
-  width: min(420px, 100%);
-  padding: 1.5rem;
-  border-radius: 24px;
-  overflow: hidden;
+  background: #ffffff; /* Или тёмный фон, если нужно */
+  border-radius: 16px;
+  overflow: hidden; /* Важно для маски */
+  padding: 0;
+  max-width: 90vw;
+  max-height: 90vh;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 
-  background:
-    radial-gradient(circle at 25% 30%, rgba(150, 70, 255, 0.23), transparent 60%),
-    radial-gradient(circle at 75% 70%, rgba(220, 80, 255, 0.18), transparent 60%),
-    linear-gradient(135deg, #24083f, #1b0d33, #2f1c63, #1a0c2e);
-  background-size: 200% 200%;
-  animation: glow-shift 12s ease-in-out infinite alternate;
-
-  will-change: background-position;
-}
-
-/* 🔥 ПРАВИЛЬНАЯ ПОДСВЕТКА — ЧЕРЕЗ МАСКУ */
-.glow-modal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: 0;
-
-  /* Сам вращающийся градиент */
+  /* Радужный переливающийся glow-бордер */
   background: conic-gradient(
-    #ff80ff,
-    #d0a0ff,
-    #e040ff,
-    #ff80ff
+    from var(--glow-angle),
+    #ff00ff,
+    #00ffff,
+    #ffff00,
+    #ff00ff,
+    #00ffff,
+    #ffff00,
+    #ff00ff
   );
-
-  animation: spin 4s linear infinite;
-
-  /* Маска вырезает рамку идеально ровно по форме блока */
-  -webkit-mask:
-    radial-gradient(circle, transparent 0, transparent 23px, black 24px) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    radial-gradient(circle, transparent 0, transparent 23px, black 24px) content-box,
-    linear-gradient(#000 0 0);
-
-  padding: 3px; /* толщина рамки */
-  filter: blur(3px);
+  background-size: 200% 200%; /* Для большего покрытия */
+  padding: 4px; /* Толщина glow-бордера */
+  animation: rotateGlow 8s linear infinite; /* Плавная анимация перелива */
+  
+  /* Маска, чтобы контент был внутри без бордера */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) padding-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: 
+    linear-gradient(#fff 0 0) padding-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
 }
 
-/* Внутренняя подложка */
-.glow-modal::after {
-  content: "";
+.glow-modal::before {
+  content: '';
   position: absolute;
-  inset: 1.5px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #190f2f, #0f0820, #1d1238);
-  z-index: 1;
-  opacity: 0.98;
+  inset: 4px; /* Отступ равен толщине бордера */
+  background: #ffffff; /* Цвет внутреннего фона модалки */
+  border-radius: 12px; /* Немного меньше внешнего */
+  z-index: -1;
 }
 
-.glow-header,
-.glow-body {
-  position: relative;
-  z-index: 2;
+/* Дополнительно: пульсирующий glow с box-shadow */
+.glow-modal {
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.5),
+    0 0 40px rgba(255, 0, 255, 0.3),
+    0 0 60px rgba(255, 255, 0, 0.2);
+  animation: 
+    rotateGlow 8s linear infinite,
+    pulseGlow 4s ease-in-out infinite alternate;
 }
 
-/* ---------------------------------------------------
-   Buttons
-   --------------------------------------------------- */
+/* Анимации */
+@keyframes rotateGlow {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+@keyframes pulseGlow {
+  from {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.5),
+      0 0 40px rgba(255, 0, 255, 0.3),
+      0 0 60px rgba(255, 255, 0, 0.2);
+  }
+  to {
+    box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.8),
+      0 0 60px rgba(255, 0, 255, 0.5),
+      0 0 90px rgba(255, 255, 0, 0.4);
+  }
+}
+
+/* Стили для хедера и тела */
+.glow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.glow-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
 .glow-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  background: none;
   border: none;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
 }
 
 .glow-close:hover {
-  background: rgba(255,255,255,0.20);
+  background: rgba(0, 0, 0, 0.1);
 }
 
-/* ---------------------------------------------------
-   Animations
-   --------------------------------------------------- */
-
-@keyframes glow-shift {
-  0%   { background-position: 0% 0%; }
-  50%  { background-position: 100% 80%; }
-  100% { background-position: 0% 100%; }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+.glow-body {
+  padding: 1.5rem;
 }
