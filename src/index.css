@@ -23,6 +23,20 @@ body {
   touch-action: manipulation;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+}
+
+/* -----------------------------------
+   GLOW OVERLAY
+   ----------------------------------- */
+
 .glow-overlay {
   position: fixed;
   inset: 0;
@@ -36,7 +50,7 @@ body {
 }
 
 /* -----------------------------------
-   GLOW MODAL — оптимизированная версия
+   GLOW MODAL
    ----------------------------------- */
 
 .glow-modal {
@@ -46,27 +60,28 @@ body {
   border-radius: 24px;
   overflow: hidden;
 
-  /* Статичные плавные подсветки + движущийся линейный фон */
+  /* Статичные мягкие подсветки + движущийся линейный фон */
   background:
     radial-gradient(circle at 25% 30%, rgba(160, 80, 255, 0.25) 0%, transparent 65%),
     radial-gradient(circle at 75% 70%, rgba(160, 80, 255, 0.25) 0%, transparent 65%),
     linear-gradient(135deg, #24083f, #1b0d33, #2f1c63, #1a0c2e);
 
   background-size:
-    auto,             /* статичный radial */
-    auto,             /* статичный radial */
-    150% 150%;        /* двигаем только линейный фон */
+    auto,
+    auto,
+    150% 150%;
 
   animation: glow-grad 7s linear infinite;
   will-change: background-position;
 }
 
-/* Светящаяся неоновая рамка */
+/* Неоновая рамка */
 .glow-modal::before {
   content: "";
   position: absolute;
   inset: -3px;
   border-radius: 26px;
+
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
@@ -88,7 +103,7 @@ body {
   will-change: background-position;
 }
 
-/* Внутренняя тёмная поверхность */
+/* Внутренний слой */
 .glow-modal::after {
   content: "";
   position: absolute;
@@ -105,18 +120,42 @@ body {
   z-index: 2;
 }
 
-.glow-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
+/* -----------------------------------
+   GLOW TEXT — добавленный эффект
+   ----------------------------------- */
 
 .glow-title {
+  position: relative;
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
+
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  /* glowing light effect */
+  background: linear-gradient(90deg, #000, #fff, #000);
+  background-repeat: no-repeat;
+  background-size: 80%;
+  animation: glow-text-move 3s linear infinite;
+
+  /* compatibility */
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* optional fallback */
 }
+
+
+@keyframes glow-text-move {
+  0% { background-position: -500%; }
+  100% { background-position: 500%; }
+}
+
+/* -----------------------------------
+   HEADER BUTTON
+   ----------------------------------- */
 
 .glow-close {
   width: 36px;
@@ -135,9 +174,9 @@ body {
   background: rgba(255,255,255,0.20);
 }
 
-/* ------------------------------
-   АНИМАЦИИ
-   ------------------------------ */
+/* -----------------------------------
+   ANIMATIONS
+   ----------------------------------- */
 
 @keyframes glow-grad {
   0%   { background-position: 0% 0%, 0% 0%, 0% 0%; }
