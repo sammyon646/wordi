@@ -38,6 +38,7 @@ export const puzzles: Puzzle[] = [
       '2': { clue: 'Владеть (англ.)', answer: 'OWN', row: 0, col: 1 },
     },
   },
+  
   {
     across: {
       '1': { clue: 'Стена', answer: 'WALL', row: 2, col: 0 },
