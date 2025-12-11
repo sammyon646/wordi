@@ -47,15 +47,15 @@ export const puzzles: Puzzle[] = [
       '3': { clue: 'Все (англ.)', answer: 'ALL', row: 0, col: 2 },
     },
   },
-  {
-    across: {
-      '1': { clue: 'Да (англ.)', answer: 'YES', row: 0, col: 0 },
-      '2': { clue: 'Море (англ.)', answer: 'SEA', row: 2, col: 1 },
-      '3': { clue: 'Море (англ.)', answer: 'SAY', row: 3, col: 0 },
+  // {
+  //   across: {
+  //     '1': { clue: 'Да (англ.)', answer: 'YES', row: 0, col: 0 },
+  //     '2': { clue: 'Море (англ.)', answer: 'SEA', row: 2, col: 1 },
+  //     '3': { clue: 'Море (англ.)', answer: 'SAY', row: 3, col: 0 },
 
-    },
-    down: {
-      '4': { clue: 'Легко (англ.)', answer: 'EASY', row: 0, col: 1 },
-    },
-  }
+  //   },
+  //   down: {
+  //     '4': { clue: 'Легко (англ.)', answer: 'EASY', row: 0, col: 1 },
+  //   },
+  // }
 ]
