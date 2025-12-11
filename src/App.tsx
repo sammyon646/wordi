@@ -7,7 +7,7 @@ import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 import WaveBackground from './WaveBackground'
 
-const BASE_BOARD = 260
+const BASE_BOARD = 240
 const BASE_CIRCLE = 240
 const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
