@@ -36,7 +36,7 @@ body {
 }
 
 /* ------------------------------
-   GLOW MODAL (оптимизированная версия)
+   GLOW MODAL — плавная версия
    ------------------------------ */
 
 .glow-modal {
@@ -46,45 +46,40 @@ body {
   border-radius: 24px;
   overflow: hidden;
 
-  /* Новый фон — меньше размер, более плавные переходы */
+  /* Мягкий, плавно двигающийся фон */
   background:
-    radial-gradient(circle at 30% 20%, rgba(140, 60, 255, 0.25) 0%, transparent 60%),
-    radial-gradient(circle at 70% 80%, rgba(200, 80, 255, 0.20) 0%, transparent 60%),
+    radial-gradient(circle at 25% 30%, rgba(150, 70, 255, 0.23), transparent 60%),
+    radial-gradient(circle at 75% 70%, rgba(220, 80, 255, 0.18), transparent 60%),
     linear-gradient(135deg, #24083f, #1b0d33, #2f1c63, #1a0c2e);
+  background-size: 200% 200%;
 
-  background-size: 150% 150%;
-  animation: glow-grad 7s linear infinite;
+  animation: glow-shift 12s ease-in-out infinite alternate;
 
-  will-change: background-position; /* плавность на GPU */
+  will-change: background-position;
 }
 
 /* Светящаяся рамка */
 .glow-modal::before {
   content: "";
   position: absolute;
-  inset: -3px; /* немного меньше, выглядит аккуратнее */
+  inset: -3px;
   border-radius: 26px;
   background: conic-gradient(
     from 0deg,
-    transparent 0deg,
-    transparent 50deg,
-    #e040ff 80deg,
-    #ff80ff 100deg,
-    #d0a0ff 120deg,
-    #ff80ff 140deg,
-    #e040ff 160deg,
-    transparent 200deg,
+    #ff80ff 0deg,
+    #d0a0ff 60deg,
+    #e040ff 120deg,
+    transparent 180deg,
     transparent 360deg
   );
-
-  background-size: 200% 200%;
-  animation: comet-orbit 6s linear infinite;
+  filter: blur(3px);
   z-index: 0;
-  filter: blur(2px);
-  will-change: background-position;
+
+  /* Плавное движение — БЕЗ обрыва */
+  animation: border-rotate 8s linear infinite;
 }
 
-/* Внутренняя тёмная подложка (оставляем, но оптимизируем) */
+/* Внутренняя подложка */
 .glow-modal::after {
   content: "";
   position: absolute;
@@ -92,7 +87,7 @@ body {
   border-radius: 22px;
   background: linear-gradient(135deg, #190f2f, #0f0820, #1d1238);
   z-index: 1;
-  opacity: 0.97; /* слегка увеличена для контраста */
+  opacity: 0.98;
 }
 
 .glow-header,
@@ -132,15 +127,18 @@ body {
 }
 
 /* ------------------------------
-   АНИМАЦИИ (обновлённые)
+   АНИМАЦИИ
    ------------------------------ */
 
-@keyframes glow-grad {
+/* Плавный перелив фона — не обрывается */
+@keyframes glow-shift {
   0%   { background-position: 0% 0%; }
-  100% { background-position: 120% 120%; }
+  50%  { background-position: 100% 80%; }
+  100% { background-position: 0% 100%; }
 }
 
-@keyframes comet-orbit {
-  0%   { background-position: 0% 0%; }
-  100% { background-position: 200% 200%; }
+/* Плавная конусная орбита */
+@keyframes border-rotate {
+  0%   { transform: rotate(0deg);   }
+  100% { transform: rotate(360deg); }
 }
