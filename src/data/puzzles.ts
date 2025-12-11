@@ -38,7 +38,6 @@ export const puzzles: Puzzle[] = [
       '2': { clue: 'Владеть (англ.)', answer: 'OWN', row: 0, col: 1 },
     },
   },
-  
   {
     across: {
       '1': { clue: 'Стена', answer: 'WALL', row: 2, col: 0 },
@@ -48,8 +47,6 @@ export const puzzles: Puzzle[] = [
       '3': { clue: 'Все (англ.)', answer: 'ALL', row: 0, col: 2 },
     },
   },
-
-
   {
     across: {
       '1': { clue: 'Да (англ.)', answer: 'YES', row: 0, col: 0 },
