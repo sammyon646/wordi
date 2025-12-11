@@ -35,9 +35,9 @@ body {
   padding: 1.5rem;
 }
 
-/* ------------------------------
-   GLOW MODAL — плавная версия
-   ------------------------------ */
+/* ---------------------------------------------------
+   GLOW MODAL — правильная анимированная рамка
+   --------------------------------------------------- */
 
 .glow-modal {
   position: relative;
@@ -46,37 +46,44 @@ body {
   border-radius: 24px;
   overflow: hidden;
 
-  /* Мягкий, плавно двигающийся фон */
   background:
     radial-gradient(circle at 25% 30%, rgba(150, 70, 255, 0.23), transparent 60%),
     radial-gradient(circle at 75% 70%, rgba(220, 80, 255, 0.18), transparent 60%),
     linear-gradient(135deg, #24083f, #1b0d33, #2f1c63, #1a0c2e);
   background-size: 200% 200%;
-
   animation: glow-shift 12s ease-in-out infinite alternate;
 
   will-change: background-position;
 }
 
-/* Светящаяся рамка */
+/* 🔥 ПРАВИЛЬНАЯ ПОДСВЕТКА — ЧЕРЕЗ МАСКУ */
 .glow-modal::before {
   content: "";
   position: absolute;
-  inset: -3px;
-  border-radius: 26px;
-  background: conic-gradient(
-    from 0deg,
-    #ff80ff 0deg,
-    #d0a0ff 60deg,
-    #e040ff 120deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  filter: blur(3px);
+  inset: 0;
+  border-radius: inherit;
   z-index: 0;
 
-  /* Плавное движение — БЕЗ обрыва */
-  animation: border-rotate 8s linear infinite;
+  /* Сам вращающийся градиент */
+  background: conic-gradient(
+    #ff80ff,
+    #d0a0ff,
+    #e040ff,
+    #ff80ff
+  );
+
+  animation: spin 4s linear infinite;
+
+  /* Маска вырезает рамку идеально ровно по форме блока */
+  -webkit-mask:
+    radial-gradient(circle, transparent 0, transparent 23px, black 24px) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    radial-gradient(circle, transparent 0, transparent 23px, black 24px) content-box,
+    linear-gradient(#000 0 0);
+
+  padding: 3px; /* толщина рамки */
+  filter: blur(3px);
 }
 
 /* Внутренняя подложка */
@@ -96,18 +103,9 @@ body {
   z-index: 2;
 }
 
-.glow-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.glow-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-}
+/* ---------------------------------------------------
+   Buttons
+   --------------------------------------------------- */
 
 .glow-close {
   width: 36px;
@@ -126,19 +124,17 @@ body {
   background: rgba(255,255,255,0.20);
 }
 
-/* ------------------------------
-   АНИМАЦИИ
-   ------------------------------ */
+/* ---------------------------------------------------
+   Animations
+   --------------------------------------------------- */
 
-/* Плавный перелив фона — не обрывается */
 @keyframes glow-shift {
   0%   { background-position: 0% 0%; }
   50%  { background-position: 100% 80%; }
   100% { background-position: 0% 100%; }
 }
 
-/* Плавная конусная орбита */
-@keyframes border-rotate {
-  0%   { transform: rotate(0deg);   }
-  100% { transform: rotate(360deg); }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
