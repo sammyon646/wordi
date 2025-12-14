@@ -1,8 +1,54 @@
 import { useEffect, useRef } from 'react'
 
+type Theme = 'purple' | 'green' | 'yellow'
+
 type Spark = { x: number; y: number; life: number; maxLife: number; size: number }
 
-export default function WaveBackground() {
+const WAVE_CONFIG: Record<Theme, {
+  top: string
+  bottom: string
+  glow: string
+  waves: { amp: number; freq: number; speed: number; color: string; lw: number }[]
+  sparkBase: string // без альфы, например 'rgba(200,140,255,'
+}> = {
+  purple: {
+    top: '#18052e',
+    bottom: '#0b031a',
+    glow: 'rgba(90, 40, 200, 0.22)',
+    waves: [
+      { amp: 0.05, freq: 0.013, speed: 0.9, color: 'rgba(140,72,255,0.20)', lw: 2.4 },
+      { amp: 0.03, freq: 0.020, speed: 1.4, color: 'rgba(255,120,255,0.16)', lw: 2.0 },
+      { amp: 0.02, freq: 0.030, speed: 1.9, color: 'rgba(90,180,255,0.10)', lw: 1.6 },
+    ],
+    sparkBase: 'rgba(200,140,255,',
+  },
+  green: {
+    top: '#0d1f17',
+    bottom: '#08130e',
+    glow: 'rgba(30, 120, 80, 0.22)',
+    waves: [
+      { amp: 0.05, freq: 0.013, speed: 0.9, color: 'rgba(74,222,128,0.20)', lw: 2.4 },
+      { amp: 0.03, freq: 0.020, speed: 1.4, color: 'rgba(52,211,153,0.16)', lw: 2.0 },
+      { amp: 0.02, freq: 0.030, speed: 1.9, color: 'rgba(16,185,129,0.12)', lw: 1.6 },
+    ],
+    sparkBase: 'rgba(160,255,200,',
+  },
+  yellow: {
+    top: '#1c1404',
+    bottom: '#0f0a02',
+    glow: 'rgba(180, 120, 20, 0.22)',
+    waves: [
+      { amp: 0.05, freq: 0.013, speed: 0.9, color: 'rgba(245,158,11,0.20)', lw: 2.4 },
+      { amp: 0.03, freq: 0.020, speed: 1.4, color: 'rgba(251,191,36,0.16)', lw: 2.0 },
+      { amp: 0.02, freq: 0.030, speed: 1.9, color: 'rgba(217,119,6,0.10)', lw: 1.6 },
+    ],
+    sparkBase: 'rgba(255,220,140,',
+  },
+}
+
+type Props = { theme: Theme }
+
+export default function WaveBackground({ theme }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const rafId = useRef<number>()
   const sparks = useRef<Spark[]>([])
@@ -21,6 +67,8 @@ export default function WaveBackground() {
     window.addEventListener('resize', resize)
 
     let t = 0
+    const cfg = WAVE_CONFIG[theme]
+
     const spawnSpark = () => {
       const { width: w, height: h } = canvas
       sparks.current.push({
@@ -34,18 +82,17 @@ export default function WaveBackground() {
     }
 
     const render = () => {
-      if (!ctx) return
       t += 0.02
       const { width: w, height: h } = canvas
 
       const grad = ctx.createLinearGradient(0, 0, 0, h)
-      grad.addColorStop(0, '#18052e')
-      grad.addColorStop(1, '#0b031a')
+      grad.addColorStop(0, cfg.top)
+      grad.addColorStop(1, cfg.bottom)
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, w, h)
 
       const glow = ctx.createRadialGradient(w * 0.5, h * 0.35, 0, w * 0.5, h * 0.35, h * 0.9)
-      glow.addColorStop(0, 'rgba(90, 40, 200, 0.22)')
+      glow.addColorStop(0, cfg.glow)
       glow.addColorStop(1, 'rgba(0,0,0,0)')
       ctx.fillStyle = glow
       ctx.fillRect(0, 0, w, h)
@@ -60,9 +107,7 @@ export default function WaveBackground() {
         ctx.strokeStyle = color
         ctx.stroke()
       }
-      drawWave(w * 0.05, 0.013, 0.9, 'rgba(140,72,255,0.20)', 2.4)
-      drawWave(w * 0.03, 0.020, 1.4, 'rgba(255,120,255,0.16)', 2.0)
-      drawWave(w * 0.02, 0.030, 1.9, 'rgba(90,180,255,0.10)', 1.6)
+      cfg.waves.forEach((wCfg) => drawWave(w * wCfg.amp, wCfg.freq, wCfg.speed, wCfg.color, wCfg.lw))
 
       if (Math.random() < 0.4) spawnSpark()
       sparks.current.forEach((s) => {
@@ -70,7 +115,7 @@ export default function WaveBackground() {
         const a = 1 - s.life / s.maxLife
         ctx.beginPath()
         ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(200,140,255,${0.35 * a})`
+        ctx.fillStyle = `${cfg.sparkBase}${0.35 * a})`
         ctx.fill()
       })
       sparks.current = sparks.current.filter((s) => s.life < s.maxLife)
@@ -83,7 +128,7 @@ export default function WaveBackground() {
       window.removeEventListener('resize', resize)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
-  }, [])
+  }, [theme])
 
   return (
     <canvas
