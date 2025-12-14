@@ -258,7 +258,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={`${r}-${c}`}
-                      className={`rounded-md text-lg font-bold flex itemscenter justify-center ${
+                      className={`rounded-md font-bold flex items-center justify-center ${
                         isActive ? 'border text-white' : 'bg-transparent'
                       }`}
                       style={{
@@ -268,12 +268,23 @@ export default function App() {
                         borderColor: isActive ? 'var(--accent-strong)' : 'transparent',
                         backgroundColor: letter ? 'var(--cell-fill)' : 'transparent',
                         fontSize: `${cellSize * 0.5}px`,
+                        lineHeight: `${cellSize}px`,
                       }}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
                     >
-                      {letter ? letter.toUpperCase() : ''}
+                      {letter && (
+                        <motion.span
+                          key={`${key}-${letter}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2, delay: (r + c) * 0.02 }}
+                          style={{ display: 'block' }}
+                        >
+                          {letter.toUpperCase()}
+                        </motion.span>
+                      )}
                     </motion.div>
                   )
                 })
@@ -329,7 +340,7 @@ export default function App() {
                   const { x, y } = getLetterPosition(i)
                   const isSelected = path.includes(i)
                   return (
-                    <motion.div
+                    <div
                       key={i}
                       className="absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200"
                       style={{
@@ -341,12 +352,9 @@ export default function App() {
                         color: isSelected ? '#000' : 'var(--text)',
                         transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                       }}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
                     >
                       {letter.toUpperCase()}
-                    </motion.div>
+                    </div>
                   )
                 })}
                 {path.length > 1 && (
