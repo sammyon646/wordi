@@ -2,6 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Темы */
+:root {
+  --bg: #0f0826;
+  --panel: rgba(46, 17, 84, 0.35);
+  --panel-border: rgba(124, 58, 237, 0.6);
+  --accent: #7c3aed;
+  --accent-weak: rgba(124, 58, 237, 0.6);
+  --accent-strong: #a855f7;
+  --circle: #201040;
+  --letter: #8b5cf6;
+  --cell-fill: rgba(124, 58, 237, 0.35);
+  --selected: #fbbf24;
+  --nav-bg: rgba(25, 6, 58, 0.9);
+  --border: rgba(124, 58, 237, 0.6);
+  --text: #ffffff;
+}
+
+.theme-green {
+  --bg: #0c1f17;
+  --panel: rgba(18, 53, 36, 0.4);
+  --panel-border: rgba(34, 197, 94, 0.6);
+  --accent: #22c55e;
+  --accent-weak: rgba(34, 197, 94, 0.6);
+  --accent-strong: #4ade80;
+  --circle: #123524;
+  --letter: #22c55e;
+  --cell-fill: rgba(34, 197, 94, 0.25);
+  --selected: #fef08a;
+  --nav-bg: rgba(10, 28, 20, 0.9);
+  --border: rgba(34, 197, 94, 0.5);
+  --text: #eafff5;
+}
+
+.theme-yellow {
+  --bg: #120d03;
+  --panel: rgba(37, 27, 8, 0.4);
+  --panel-border: rgba(245, 158, 11, 0.6);
+  --accent: #f59e0b;
+  --accent-weak: rgba(245, 158, 11, 0.6);
+  --accent-strong: #fbbf24;
+  --circle: #251b08;
+  --letter: #f59e0b;
+  --cell-fill: rgba(245, 158, 11, 0.22);
+  --selected: #fde68a;
+  --nav-bg: rgba(30, 20, 5, 0.9);
+  --border: rgba(245, 158, 11, 0.5);
+  --text: #fff8e7;
+}
+
 /* Запрет выделения и контекстного меню по long-press */
 * {
   -webkit-user-select: none;
@@ -13,6 +62,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
 html,

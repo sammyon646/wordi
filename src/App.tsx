@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, Trophy, Users, DollarSign, Settings, Lightbulb } from 'lucide-react'
+import { Coins, Trophy, Users, DollarSign, Settings, Lightbulb, Palette } from 'lucide-react'
 import GlowModal from './components/GlowModal'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
@@ -13,13 +13,15 @@ const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
 const INNER_PAD = 12
 const HIT_RADIUS = 24
-const HEADER_EXTRA = 20
+const HEADER_EXTRA = 36
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
   tg?.HapticFeedback?.impactOccurred?.('light')
   if (navigator?.vibrate) navigator.vibrate(10)
 }
+
+type Theme = 'purple' | 'green' | 'yellow'
 
 export default function App() {
   const { t, i18n } = useTranslation()
@@ -58,6 +60,19 @@ export default function App() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
+  const [theme, setTheme] = useState<Theme>('purple')
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') as Theme | null
+    if (saved) setTheme(saved)
+  }, [])
+  const applyTheme = (th: Theme) => {
+    setTheme(th)
+    localStorage.setItem('theme', th)
+    setIsCosmeticsOpen(false)
+  }
+
+  const GRID_GAP = 4 * scale // аналог gap-1 в tailwind с учётом масштаба
+
   const CIRCLE_SIZE = BASE_CIRCLE * scale
   const CENTER = CIRCLE_SIZE / 2
   const RADIUS = CIRCLE_SIZE * 0.38
@@ -75,6 +90,7 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isHintsOpen, setIsHintsOpen] = useState(false)
   const [isAboutOpen, setIsAboutOpen] = useState(false)
+  const [isCosmeticsOpen, setIsCosmeticsOpen] = useState(false)
   const circleRef = useRef<HTMLDivElement>(null)
   const isPointerActive = useRef(false)
   const displayedLetters = typedWord.split('')
@@ -166,13 +182,13 @@ export default function App() {
 
   const rows = maxRow - minRow + 1
   const cols = maxCol - minCol + 1
-  const cellSize = Math.min(
-    MAX_CELL_SIZE,
-    (BOARD_SIZE - INNER_PAD * 2) / cols,
-    (BOARD_SIZE - INNER_PAD * 2) / rows
-  )
-  const gridW = cellSize * cols
-  const gridH = cellSize * rows
+
+  const availableW = BOARD_SIZE - INNER_PAD * 2 - GRID_GAP * (cols - 1)
+  const availableH = BOARD_SIZE - INNER_PAD * 2 - GRID_GAP * (rows - 1)
+
+  const cellSize = Math.min(MAX_CELL_SIZE, availableW / cols, availableH / rows)
+  const gridW = cellSize * cols + GRID_GAP * (cols - 1)
+  const gridH = cellSize * rows + GRID_GAP * (rows - 1)
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -181,8 +197,8 @@ export default function App() {
 
   return (
     <div
-      className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
-      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 54px)' }}
+      className={`min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative theme-${theme}`}
+      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 54px)', background: 'var(--bg)', color: 'var(--text)' }}
     >
       <div style={{ pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 0 }}>
         <WaveBackground />
@@ -191,7 +207,7 @@ export default function App() {
       {/* Шапка */}
       <div className="px-4 pb-2 grid grid-cols-3 items-center relative z-30">
         <div className="flex items-center gap-2 pr-4">
-          <Coins className="w-7 h-7 text-yellow-400" />
+          <Coins className="w-7 h-7" style={{ color: 'var(--selected)' }} />
           <motion.span className="text-xl font-bold" key={coins}>
             {coinsDisplay as any}
           </motion.span>
@@ -199,14 +215,15 @@ export default function App() {
 
         <button
           onClick={() => setIsHintsOpen(true)}
-          className="justify-self-center flex items-center gap-2 px-4 py-2 rounded-full bg-purple-700 hover:bg-purple-600 transition"
+          className="justify-self-center flex items-center gap-2 px-4 py-2 rounded-full transition"
+          style={{ background: 'var(--accent)', color: 'var(--text)' }}
         >
           <Lightbulb className="w-5 h-5" />
           <span className="text-sm font-semibold">{t('hints', 'Hints')}</span>
         </button>
 
         <div className="flex items-center gap-2 pl-4 justify-self-end">
-          <Trophy className="w-7 h-7 text-yellow-400" />
+          <Trophy className="w-7 h-7" style={{ color: 'var(--selected)' }} />
           <span className="text-xl font-bold">
             {t('level', 'Lv')} {level}
           </span>
@@ -218,14 +235,15 @@ export default function App() {
         <div className="flex-1 flex flex-col items-center justify-between">
           {/* Кроссворд */}
           <div
-            className="rounded-2xl border-2 border-purple-600/60 bg-purple-950/30 shadow-lg p-3 flex items-center justify-center"
-            style={{ width: BOARD_SIZE, height: BOARD_SIZE }}
+            className="rounded-2xl border-2 shadow-lg p-3 flex items-center justify-center"
+            style={{ width: BOARD_SIZE, height: BOARD_SIZE, background: 'var(--panel)', borderColor: 'var(--panel-border)' }}
           >
             <div
-              className="grid gap-1"
+              className="grid"
               style={{
                 width: gridW,
                 height: gridH,
+                gap: GRID_GAP,
                 gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
                 gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
               }}
@@ -241,14 +259,18 @@ export default function App() {
                     <motion.div
                       key={`${r}-${c}`}
                       className={`rounded-md text-lg font-bold flex items-center justify-center ${
-                        isActive ? 'border border-purple-400/80 text-white' : 'bg-transparent'
+                        isActive ? 'border text-white' : 'bg-transparent'
                       }`}
-                      style={{ width: cellSize, height: cellSize, overflow: 'hidden' }}
-                      initial={{ scale: 0 }}
-                      animate={{
-                        scale: 1,
-                        backgroundColor: letter ? 'rgba(120,70,200,0.35)' : 'transparent',
+                      style={{
+                        width: cellSize,
+                        height: cellSize,
+                        overflow: 'hidden',
+                        borderColor: isActive ? 'var(--accent-strong)' : 'transparent',
+                        backgroundColor: letter ? 'var(--cell-fill)' : 'transparent',
+                        fontSize: `${cellSize * 0.5}px`,
                       }}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
                       transition={{ delay: (r + c) * 0.02, type: 'spring', stiffness: 220 }}
                     >
                       {letter ? letter.toUpperCase() : ''}
@@ -265,7 +287,8 @@ export default function App() {
               {displayedLetters.map((letter, i) => (
                 <motion.div
                   key={i}
-                  className="w-10 h-10 bg-[#2b1755] border-2 border-purple-500/80 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
+                  className="w-10 h-10 border-2 rounded-lg flex items-center justify-center text-2xl font-bold shadow-lg"
+                  style={{ background: 'var(--circle)', borderColor: 'var(--accent-strong)' }}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
@@ -289,8 +312,8 @@ export default function App() {
             >
               <motion.div
                 ref={circleRef}
-                className="absolute inset-0 m-auto rounded-full bg-[#201040] shadow-2xl"
-                style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, touchAction: 'none' }}
+                className="absolute inset-0 m-auto rounded-full shadow-2xl"
+                style={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE, touchAction: 'none', background: 'var(--circle)' }}
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 onPointerDown={handlePointerDown}
@@ -308,14 +331,15 @@ export default function App() {
                   return (
                     <motion.div
                       key={i}
-                      className={`absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200 ${
-                        isSelected ? 'bg-yellow-400 text-black scale-110' : 'bg-purple-500 text-white'
-                      }`}
+                      className="absolute rounded-full flex items-center justify-center text-2xl font-bold shadow-lg z-20 transition-all duration-200"
                       style={{
                         width: LETTER_SIZE,
                         height: LETTER_SIZE,
                         left: `calc(50% + ${x}px - ${LETTER_SIZE / 2}px)`,
                         top: `calc(50% + ${y}px - ${LETTER_SIZE / 2}px)`,
+                        background: isSelected ? 'var(--selected)' : 'var(--letter)',
+                        color: isSelected ? '#000' : 'var(--text)',
+                        transform: isSelected ? 'scale(1.1)' : 'scale(1)',
                       }}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -327,7 +351,7 @@ export default function App() {
                 })}
                 {path.length > 1 && (
                   <svg className="absolute inset-0 pointer-events-none z-10" viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}>
-                    <path d={linePath} stroke="#fbbf24" strokeWidth="8" fill="none" strokeLinecap="round" />
+                    <path d={linePath} stroke="var(--selected)" strokeWidth="8" fill="none" strokeLinecap="round" />
                   </svg>
                 )}
               </motion.div>
@@ -338,14 +362,14 @@ export default function App() {
 
       {/* Нижняя панель */}
       <nav
-        className="fixed bottom-0 left-0 right-0 bg-[#19063a]/90 backdrop-blur-md border-t border-purple-800/60 z-40"
-        style={{ paddingBottom: `max(env(safe-area-inset-bottom), 12px)` }}
+        className="fixed bottom-0 left-0 right-0 backdrop-blur-md border-t z-40"
+        style={{ paddingBottom: `max(env(safe-area-inset-bottom), 12px)`, background: 'var(--nav-bg)', borderColor: 'var(--border)' }}
       >
         <div className="flex items-center justify-around px-4 py-2">
           {[
             {
               icon: (
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-extrabold">
+                <div className="w-6 h-6 rounded-full text-white flex items-center justify-center font-extrabold" style={{ background: 'var(--accent)' }}>
                   W
                 </div>
               ),
@@ -354,19 +378,20 @@ export default function App() {
             },
             { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
             { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
+            { icon: <Palette className="w-6 h-6" />, label: t('cosmetics', 'cosmetics'), onClick: () => setIsCosmeticsOpen(true) },
             { icon: <Settings className="w-6 h-6" />, label: t('settings', 'settings'), onClick: () => setIsSettingsOpen(true) },
           ].map((item, idx, arr) => (
             <div key={idx} className="flex-1 flex flex-col items-center gap-1 relative">
               <button
                 onClick={item.onClick}
                 className="flex flex-col items-center gap-1 w-full focus:outline-none"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
+                style={{ WebkitTapHighlightColor: 'transparent', color: 'var(--text)' }}
               >
                 <div className="flex items-center justify-center">{item.icon}</div>
                 <span className="text-xs">{item.label}</span>
               </button>
               {idx < arr.length - 1 && (
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-purple-800/80" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px" style={{ background: 'var(--border)' }} />
               )}
             </div>
           ))}
@@ -383,7 +408,8 @@ export default function App() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="text-7xl font-bold text-yellow-400 drop-shadow-2xl"
+              className="text-7xl font-bold drop-shadow-2xl"
+              style={{ color: 'var(--selected)' }}
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1.3, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
@@ -471,6 +497,30 @@ export default function App() {
           >
             RU
           </button>
+        </div>
+      </GlowModal>
+
+      {/* Cosmetics */}
+      <GlowModal isOpen={isCosmeticsOpen} onClose={() => setIsCosmeticsOpen(false)} title={t('cosmetics', 'Cosmetics')}>
+        <div className="grid grid-cols-3 gap-3">
+          {(['purple', 'green', 'yellow'] as Theme[]).map((th) => (
+            <button
+              key={th}
+              onClick={() => applyTheme(th)}
+              className={`px-4 py-3 rounded-2xl font-bold border ${
+                theme === th ? 'ring-2 ring-yellow-400' : ''
+              }`}
+              style={{
+                background: th === 'purple' ? '#201040' : th === 'green' ? '#123524' : '#251b08',
+                borderColor: th === 'purple' ? '#a855f7' : th === 'green' ? '#4ade80' : '#fbbf24',
+                color: '#fff',
+              }}
+            >
+              {th === 'purple' && 'Purple'}
+              {th === 'green' && 'Green'}
+              {th === 'yellow' && 'Yellow'}
+            </button>
+          ))}
         </div>
       </GlowModal>
     </div>
