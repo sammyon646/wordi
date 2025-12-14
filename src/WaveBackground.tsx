@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 
 type Theme = 'purple' | 'green' | 'yellow'
-
 type Spark = { x: number; y: number; life: number; maxLife: number; size: number }
 
 const WAVE_CONFIG: Record<Theme, {
@@ -9,7 +8,7 @@ const WAVE_CONFIG: Record<Theme, {
   bottom: string
   glow: string
   waves: { amp: number; freq: number; speed: number; color: string; lw: number }[]
-  sparkBase: string // без альфы, например 'rgba(200,140,255,'
+  sparkBase: string
 }> = {
   purple: {
     top: '#18052e',
@@ -46,9 +45,7 @@ const WAVE_CONFIG: Record<Theme, {
   },
 }
 
-type Props = { theme: Theme }
-
-export default function WaveBackground({ theme }: Props) {
+export default function WaveBackground({ theme }: { theme: Theme }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const rafId = useRef<number>()
   const sparks = useRef<Spark[]>([])

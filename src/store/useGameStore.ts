@@ -48,7 +48,6 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
-// Проверка пересечений: если разные буквы — конфликт
 const validateEntries = (entries: EntryRef[]) => {
   const cellMap: Record<string, string> = {}
   const conflicts: string[] = []
@@ -74,7 +73,6 @@ const validateEntries = (entries: EntryRef[]) => {
   return true
 }
 
-// Дубликаты букв — ровно столько, сколько максимум в любом слове
 const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   const maxCount: Record<string, number> = {}
   entries.forEach((e) => {
@@ -94,7 +92,6 @@ const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   return shuffle(letters)
 }
 
-// Построение сетки из решённых слов
 const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
   const grid: Record<string, string> = {}
   entries.forEach((entry) => {
@@ -185,7 +182,7 @@ const useGameStore = create<State>((set, get) => ({
       gridLetters,
       typedWord: '',
       path: [],
-      coins: get().coins + 50 * get().level,
+      coins: get().coins + 25, // фиксированная награда за слово
     })
 
     const allSolved = Object.keys(solved).length === entries.length

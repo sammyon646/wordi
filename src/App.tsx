@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Coins, Trophy, Users, DollarSign, Settings, Lightbulb, Palette } from 'lucide-react'
+import { Coins, Trophy, DollarSign, Settings, Lightbulb, Palette, Info } from 'lucide-react'
 import GlowModal from './components/GlowModal'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
@@ -71,7 +71,7 @@ export default function App() {
     setIsCosmeticsOpen(false)
   }
 
-  const GRID_GAP = 4 * scale // аналог gap-1 в tailwind с учётом масштаба
+  const GRID_GAP = 4 * scale
 
   const CIRCLE_SIZE = BASE_CIRCLE * scale
   const CENTER = CIRCLE_SIZE / 2
@@ -201,7 +201,7 @@ export default function App() {
       style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 54px)', background: 'var(--bg)', color: 'var(--text)' }}
     >
       <div style={{ pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 0 }}>
-        <WaveBackground theme={theme}/>
+        <WaveBackground theme={theme} />
       </div>
 
       {/* Шапка */}
@@ -258,7 +258,7 @@ export default function App() {
                   return (
                     <motion.div
                       key={`${r}-${c}`}
-                      className={`rounded-md text-lg font-bold flex items-center justify-center ${
+                      className={`rounded-md text-lg font-bold flex itemscenter justify-center ${
                         isActive ? 'border text-white' : 'bg-transparent'
                       }`}
                       style={{
@@ -367,16 +367,7 @@ export default function App() {
       >
         <div className="flex items-center justify-around px-4 py-2">
           {[
-            {
-              icon: (
-                <div className="w-6 h-6 rounded-full text-white flex items-center justify-center font-extrabold" style={{ background: 'var(--accent)' }}>
-                  W
-                </div>
-              ),
-              label: 'About',
-              onClick: () => setIsAboutOpen(true),
-            },
-            { icon: <Users className="w-6 h-6" />, label: t('friends', 'friends') },
+            { icon: <Info className="w-6 h-6" />, label: 'about', onClick: () => setIsAboutOpen(true) },
             { icon: <DollarSign className="w-6 h-6" />, label: t('earn', 'earn') },
             { icon: <Palette className="w-6 h-6" />, label: t('cosmetics', 'cosmetics'), onClick: () => setIsCosmeticsOpen(true) },
             { icon: <Settings className="w-6 h-6" />, label: t('settings', 'settings'), onClick: () => setIsSettingsOpen(true) },
@@ -507,9 +498,7 @@ export default function App() {
             <button
               key={th}
               onClick={() => applyTheme(th)}
-              className={`px-4 py-3 rounded-2xl font-bold border ${
-                theme === th ? 'ring-2 ring-yellow-400' : ''
-              }`}
+              className={`px-4 py-3 rounded-2xl font-bold border ${theme === th ? 'ring-2 ring-yellow-400' : ''}`}
               style={{
                 background: th === 'purple' ? '#201040' : th === 'green' ? '#123524' : '#251b08',
                 borderColor: th === 'purple' ? '#a855f7' : th === 'green' ? '#4ade80' : '#fbbf24',

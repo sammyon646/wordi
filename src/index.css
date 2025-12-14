@@ -17,6 +17,17 @@
   --nav-bg: rgba(25, 6, 58, 0.9);
   --border: rgba(124, 58, 237, 0.6);
   --text: #ffffff;
+
+  --modal-g1: rgba(120, 70, 200, 0.45);
+  --modal-g2: rgba(180, 120, 255, 0.35);
+  --modal-g3: rgba(90, 60, 180, 0.35);
+  --modal-bg1: #16082a;
+  --modal-bg2: #0f071f;
+  --modal-bg3: #1d0f35;
+  --modal-border1: rgba(200,160,255,0.9);
+  --modal-border2: rgba(110,60,200,0.7);
+  --modal-inner: rgba(15, 8, 30, 0.9);
+  --spark: rgba(200,140,255,0.35);
 }
 
 .theme-green {
@@ -33,6 +44,17 @@
   --nav-bg: rgba(10, 28, 20, 0.9);
   --border: rgba(34, 197, 94, 0.5);
   --text: #eafff5;
+
+  --modal-g1: rgba(34, 197, 94, 0.35);
+  --modal-g2: rgba(74, 222, 128, 0.3);
+  --modal-g3: rgba(16, 185, 129, 0.25);
+  --modal-bg1: #0f2a20;
+  --modal-bg2: #0c1f17;
+  --modal-bg3: #123524;
+  --modal-border1: rgba(74,222,128,0.9);
+  --modal-border2: rgba(34,197,94,0.7);
+  --modal-inner: rgba(8, 20, 14, 0.9);
+  --spark: rgba(160,255,200,0.35);
 }
 
 .theme-yellow {
@@ -49,6 +71,17 @@
   --nav-bg: rgba(30, 20, 5, 0.9);
   --border: rgba(245, 158, 11, 0.5);
   --text: #fff8e7;
+
+  --modal-g1: rgba(245, 158, 11, 0.35);
+  --modal-g2: rgba(251, 191, 36, 0.3);
+  --modal-g3: rgba(217, 119, 6, 0.25);
+  --modal-bg1: #2a1d07;
+  --modal-bg2: #1d1405;
+  --modal-bg3: #3a2809;
+  --modal-border1: rgba(251,191,36,0.9);
+  --modal-border2: rgba(245,158,11,0.7);
+  --modal-inner: rgba(20, 12, 3, 0.9);
+  --spark: rgba(255,220,140,0.35);
 }
 
 /* Запрет выделения и контекстного меню по long-press */
@@ -87,41 +120,40 @@ body {
   padding: 1.5rem;
 }
 
-/* Корпус: мягкая живая заливка + тёмная вуаль */
+/* Корпус модалки */
 .glow-modal {
   position: relative;
   width: min(420px, 100%);
   padding: 1.5rem;
   border-radius: 24px;
   overflow: hidden;
-  background: radial-gradient(circle at 30% 30%, rgba(120, 70, 200, 0.45), transparent 45%),
-              radial-gradient(circle at 80% 20%, rgba(180, 120, 255, 0.35), transparent 40%),
-              radial-gradient(circle at 70% 70%, rgba(90, 60, 180, 0.35), transparent 50%),
-              linear-gradient(135deg, #16082a, #0f071f, #1d0f35);
+  background:
+    radial-gradient(circle at 30% 30%, var(--modal-g1), transparent 45%),
+    radial-gradient(circle at 80% 20%, var(--modal-g2), transparent 40%),
+    radial-gradient(circle at 70% 70%, var(--modal-g3), transparent 50%),
+    linear-gradient(135deg, var(--modal-bg1), var(--modal-bg2), var(--modal-bg3));
   background-size: 200% 200%;
   animation: pulse-grad 10s ease-in-out infinite;
 }
 
-/* Неоновый контур с эффектом «дыхания» */
 .glow-modal::before {
   content: "";
   position: absolute;
   inset: -2px;
   border-radius: 26px;
-  background: linear-gradient(90deg, rgba(200,160,255,0.9), rgba(110,60,200,0.7), rgba(200,160,255,0.9));
+  background: linear-gradient(90deg, var(--modal-border1), var(--modal-border2), var(--modal-border1));
   filter: blur(4px);
   opacity: 0.7;
   animation: pulse-border 3s ease-in-out infinite;
   z-index: 0;
 }
 
-/* Внутренний слой, чтобы контур был кольцом */
 .glow-modal::after {
   content: "";
   position: absolute;
   inset: 2px;
   border-radius: 22px;
-  background: rgba(15, 8, 30, 0.9);
+  background: var(--modal-inner);
   z-index: 1;
 }
 
