@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@jaredreisinger/react-crossword": "^5.2.0",
+    "@prisma/client": "^7.1.0",
     "@telegram-apps/sdk": "^3.11.8",
     "@tma.js/sdk": "^2.0.0",
     "canvas-confetti": "^1.9.4",
@@ -21,6 +22,7 @@
     "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.556.0",
     "pixi.js": "^6.5.10",
+    "prisma": "^7.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.0.0",
