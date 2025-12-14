@@ -13,7 +13,7 @@ const BASE_LETTER = 48
 const BASE_MAX_CELL = 48
 const INNER_PAD = 12
 const HIT_RADIUS = 24
-const HEADER_EXTRA = 36
+const HEADER_EXTRA = 20
 
 const triggerHaptic = () => {
   const tg: any = (window as any)?.Telegram?.WebApp
