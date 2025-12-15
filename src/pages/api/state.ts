@@ -24,9 +24,19 @@ function checkTelegramAuth(initData?: string) {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const initData = req.method === 'GET' ? (req.query?.initData as string) : (req.body?.initData as string)
+
+  // Попытка телеграм-авторизации
   const user = checkTelegramAuth(initData)
-  if (!user) return res.status(401).json({ error: 'unauthorized' })
-  const userId = String(user.id)
+
+  // В dev режиме позволяем работу без initData
+  const userId =
+    user?.id
+      ? String(user.id)
+      : process.env.NODE_ENV === 'development'
+        ? 'dev-user' // фиксированный uid для локалки/тестов
+        : null
+
+  if (!userId) return res.status(401).json({ error: 'unauthorized' })
 
   if (req.method === 'GET') {
     const rows = await sql`select * from users where id = ${userId}`
