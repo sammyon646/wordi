@@ -17,7 +17,9 @@
     "@prisma/client": "^7.1.0",
     "@telegram-apps/sdk": "^3.11.8",
     "@tma.js/sdk": "^2.0.0",
+    "body-parser": "^2.2.1",
     "canvas-confetti": "^1.9.4",
+    "express": "^5.2.1",
     "framer-motion": "^11.0.0",
     "i18next": "^23.0.0",
     "i18next-browser-languagedetector": "^8.2.0",
@@ -31,7 +33,9 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.6",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/express": "^5.0.6",
     "@types/i18next": "^12.1.0",
     "@types/i18next-browser-languagedetector": "^2.0.2",
     "@types/pixi.js": "^4.8.9",
