@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { puzzles, Puzzle } from '../data/puzzles'
+import { ThemeId, WallpaperId } from '../data/cosmetics'
 
-type EntryRef = {
+export type EntryRef = {
   id: string
   direction: 'across' | 'down'
   clue: string
@@ -21,11 +22,29 @@ type State = {
   letters: string[]
   typedWord: string
   path: number[]
+  selectedTheme: ThemeId
+  selectedWallpaper: WallpaperId
+  unlockedThemes: ThemeId[]
+  unlockedWallpapers: WallpaperId[]
   addCoins: (amount: number) => void
   setNewPuzzle: () => void
   updateTypedWord: (letter: string, index: number) => void
   resetPath: () => void
   trySolveTypedWord: () => { solved: boolean; allSolved: boolean }
+  hydrateFromServer: (data: {
+    coins: number
+    level: number
+    puzzleIndex: number
+    solved: Record<string, boolean>
+    selectedTheme?: ThemeId
+    selectedWallpaper?: WallpaperId
+    unlockedThemes?: ThemeId[]
+    unlockedWallpapers?: WallpaperId[]
+  }) => void
+  selectTheme: (id: ThemeId) => void
+  selectWallpaper: (id: WallpaperId) => void
+  buyTheme: (id: ThemeId, price: number) => boolean
+  buyWallpaper: (id: WallpaperId, price: number) => boolean
 }
 
 const shuffle = <T,>(arr: T[]) => {
@@ -37,7 +56,7 @@ const shuffle = <T,>(arr: T[]) => {
   return a
 }
 
-const buildEntries = (puzzle: Puzzle): EntryRef[] => {
+export const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   const list: EntryRef[] = []
   Object.entries(puzzle.across).forEach(([id, val]) => {
     list.push({ id, direction: 'across', ...val })
@@ -48,7 +67,7 @@ const buildEntries = (puzzle: Puzzle): EntryRef[] => {
   return list
 }
 
-const validateEntries = (entries: EntryRef[]) => {
+export const validateEntries = (entries: EntryRef[]) => {
   const cellMap: Record<string, string> = {}
   const conflicts: string[] = []
   entries.forEach((entry) => {
@@ -73,7 +92,7 @@ const validateEntries = (entries: EntryRef[]) => {
   return true
 }
 
-const buildLettersFromPuzzle = (entries: EntryRef[]) => {
+export const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   const maxCount: Record<string, number> = {}
   entries.forEach((e) => {
     const freq: Record<string, number> = {}
@@ -92,7 +111,7 @@ const buildLettersFromPuzzle = (entries: EntryRef[]) => {
   return shuffle(letters)
 }
 
-const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
+export const buildGridFromSolved = (entries: EntryRef[], solved: Record<string, boolean>) => {
   const grid: Record<string, string> = {}
   entries.forEach((entry) => {
     if (!solved[`${entry.direction}-${entry.id}`]) return
@@ -125,6 +144,10 @@ const useGameStore = create<State>((set, get) => ({
   letters: buildLettersFromPuzzle(initEntries),
   typedWord: '',
   path: [],
+  selectedTheme: 'purple',
+  selectedWallpaper: 'wave',
+  unlockedThemes: ['purple'],
+  unlockedWallpapers: ['wave'],
 
   addCoins: (amount) => set({ coins: get().coins + amount }),
 
@@ -182,7 +205,7 @@ const useGameStore = create<State>((set, get) => ({
       gridLetters,
       typedWord: '',
       path: [],
-      coins: get().coins + 25, // фиксированная награда за слово
+      coins: get().coins + 25,
     })
 
     const allSolved = Object.keys(solved).length === entries.length
@@ -190,6 +213,63 @@ const useGameStore = create<State>((set, get) => ({
       set({ level: get().level + 1 })
     }
     return { solved: true, allSolved }
+  },
+
+  hydrateFromServer: ({
+    coins,
+    level,
+    puzzleIndex,
+    solved,
+    selectedTheme,
+    selectedWallpaper,
+    unlockedThemes,
+    unlockedWallpapers,
+  }) => {
+    const puzzle = puzzles[puzzleIndex]
+    const entries = buildEntries(puzzle)
+    set({
+      coins,
+      level,
+      puzzleIndex,
+      puzzle,
+      entries,
+      solved,
+      gridLetters: buildGridFromSolved(entries, solved),
+      letters: buildLettersFromPuzzle(entries),
+      typedWord: '',
+      path: [],
+      selectedTheme: selectedTheme || 'purple',
+      selectedWallpaper: selectedWallpaper || 'wave',
+      unlockedThemes: unlockedThemes || ['purple'],
+      unlockedWallpapers: unlockedWallpapers || ['wave'],
+    })
+  },
+
+  selectTheme: (id) => set({ selectedTheme: id }),
+  selectWallpaper: (id) => set({ selectedWallpaper: id }),
+
+  buyTheme: (id, price) => {
+    const state = get()
+    if (state.unlockedThemes.includes(id)) return true
+    if (state.coins < price) return false
+    set({
+      coins: state.coins - price,
+      unlockedThemes: [...state.unlockedThemes, id],
+      selectedTheme: id,
+    })
+    return true
+  },
+
+  buyWallpaper: (id, price) => {
+    const state = get()
+    if (state.unlockedWallpapers.includes(id)) return true
+    if (state.coins < price) return false
+    set({
+      coins: state.coins - price,
+      unlockedWallpapers: [...state.unlockedWallpapers, id],
+      selectedWallpaper: id,
+    })
+    return true
   },
 }))
 

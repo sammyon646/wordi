@@ -6,6 +6,8 @@ import GlowModal from './components/GlowModal'
 import canvasConfetti from 'canvas-confetti'
 import useGameStore from './store/useGameStore'
 import WaveBackground from './WaveBackground'
+import { themes, wallpapers } from './data/cosmetics'
+import type { ThemeId, WallpaperId } from './data/cosmetics'
 
 const BASE_BOARD = 240
 const BASE_CIRCLE = 240
@@ -21,8 +23,6 @@ const triggerHaptic = () => {
   if (navigator?.vibrate) navigator.vibrate(10)
 }
 
-type Theme = 'purple' | 'green' | 'yellow'
-
 export default function App() {
   const { t, i18n } = useTranslation()
   const {
@@ -37,6 +37,17 @@ export default function App() {
     resetPath,
     trySolveTypedWord,
     setNewPuzzle,
+    solved,
+    hydrateFromServer,
+    selectedTheme,
+    selectedWallpaper,
+    unlockedThemes,
+    unlockedWallpapers,
+    selectTheme,
+    selectWallpaper,
+    buyTheme,
+    buyWallpaper,
+    puzzleIndex,
   } = useGameStore()
 
   useEffect(() => {
@@ -46,6 +57,64 @@ export default function App() {
     tg?.disableVerticalSwipe?.()
     tg?.disableVerticalSwipes?.()
   }, [])
+
+  // Гидрация из бекенда
+  useEffect(() => {
+    async function load() {
+      try {
+        const tg = (window as any)?.Telegram?.WebApp
+        const initData = tg?.initData || ''
+        const resp = await fetch(`/api/state?initData=${encodeURIComponent(initData)}`)
+        const data = await resp.json()
+        if (data.user) {
+          hydrateFromServer({
+            coins: data.user.coins,
+            level: data.user.level,
+            puzzleIndex: data.user.puzzle_index,
+            solved: data.user.solved || {},
+            selectedTheme: data.user.selected_theme as ThemeId,
+            selectedWallpaper: data.user.selected_wallpaper as WallpaperId,
+            unlockedThemes: data.user.unlocked_themes || ['purple'],
+            unlockedWallpapers: data.user.unlocked_wallpapers || ['wave'],
+          })
+        }
+      } catch (e) {
+        console.error('Failed to load state', e)
+      }
+    }
+    load()
+  }, [hydrateFromServer])
+
+  // Автосохранение на бекенд
+  useEffect(() => {
+    const tg = (window as any)?.Telegram?.WebApp
+    const initData = tg?.initData || ''
+    const save = async () => {
+      try {
+        await fetch('/api/state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            initData,
+            state: {
+              coins,
+              level,
+              puzzleIndex,
+              solved,
+              selectedTheme,
+              selectedWallpaper,
+              unlockedThemes,
+              unlockedWallpapers,
+            },
+          }),
+        })
+      } catch (e) {
+        console.error('Failed to save state', e)
+      }
+    }
+    const tId = setTimeout(save, 500)
+    return () => clearTimeout(tId)
+  }, [coins, level, puzzleIndex, solved, selectedTheme, selectedWallpaper, unlockedThemes, unlockedWallpapers])
 
   const [scale, setScale] = useState(1)
   useEffect(() => {
@@ -60,19 +129,9 @@ export default function App() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  const [theme, setTheme] = useState<Theme>('purple')
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') as Theme | null
-    if (saved) setTheme(saved)
-  }, [])
-  const applyTheme = (th: Theme) => {
-    setTheme(th)
-    localStorage.setItem('theme', th)
-    setIsCosmeticsOpen(false)
-  }
+  const currentTheme = themes.find((t) => t.id === selectedTheme) || themes[0]
 
   const GRID_GAP = 4 * scale
-
   const CIRCLE_SIZE = BASE_CIRCLE * scale
   const CENTER = CIRCLE_SIZE / 2
   const RADIUS = CIRCLE_SIZE * 0.38
@@ -139,8 +198,8 @@ export default function App() {
       resetPath()
       return
     }
-    const { solved, allSolved } = trySolveTypedWord()
-    if (solved && allSolved) {
+    const { solved: solvedWord, allSolved } = trySolveTypedWord()
+    if (solvedWord && allSolved) {
       canvasConfetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } })
       setShowLevelUp(true)
       setTimeout(() => {
@@ -197,11 +256,17 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative theme-${theme}`}
-      style={{ overscrollBehavior: 'none', paddingTop: 'calc(env(safe-area-inset-top, 0px) + 54px)', background: 'var(--bg)', color: 'var(--text)' }}
+      className="min-h-[100dvh] w-screen text-white flex flex-col overflow-hidden relative"
+      style={{
+        ...currentTheme.vars,
+        overscrollBehavior: 'none',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 54px)',
+        background: 'var(--bg)',
+        color: 'var(--text)',
+      }}
     >
       <div style={{ pointerEvents: 'none', position: 'absolute', inset: 0, zIndex: 0 }}>
-        <WaveBackground theme={theme} />
+        <WaveBackground theme={selectedTheme} />
       </div>
 
       {/* Шапка */}
@@ -313,7 +378,7 @@ export default function App() {
           {/* Круг */}
           <div className="pb-1">
             <div
-              className="relative flex items-center justify-center"
+              className="relative flex itemscenter justify-center"
               style={{
                 width: CIRCLE_SIZE + 60,
                 height: CIRCLE_SIZE + 60,
@@ -501,23 +566,64 @@ export default function App() {
 
       {/* Cosmetics */}
       <GlowModal isOpen={isCosmeticsOpen} onClose={() => setIsCosmeticsOpen(false)} title={t('cosmetics', 'Cosmetics')}>
-        <div className="grid grid-cols-3 gap-3">
-          {(['purple', 'green', 'yellow'] as Theme[]).map((th) => (
-            <button
-              key={th}
-              onClick={() => applyTheme(th)}
-              className={`px-4 py-3 rounded-2xl font-bold border ${theme === th ? 'ring-2 ring-yellow-400' : ''}`}
-              style={{
-                background: th === 'purple' ? '#201040' : th === 'green' ? '#123524' : '#251b08',
-                borderColor: th === 'purple' ? '#a855f7' : th === 'green' ? '#4ade80' : '#fbbf24',
-                color: '#fff',
-              }}
-            >
-              {th === 'purple' && 'Purple'}
-              {th === 'green' && 'Green'}
-              {th === 'yellow' && 'Yellow'}
-            </button>
-          ))}
+        <div className="space-y-4">
+          <div>
+            <div className="font-bold mb-2">Themes</div>
+            <div className="grid grid-cols-3 gap-3">
+              {themes.map((th) => {
+                const unlocked = unlockedThemes.includes(th.id)
+                const selected = selectedTheme === th.id
+                return (
+                  <button
+                    key={th.id}
+                    onClick={() => (unlocked ? selectTheme(th.id) : buyTheme(th.id, th.price))}
+                    className={`px-4 py-3 rounded-2xl font-bold border text-left ${
+                      selected ? 'ring-2 ring-yellow-400' : ''
+                    } ${unlocked ? '' : 'opacity-80'}`}
+                    style={{
+                      borderColor: th.vars['--accent'],
+                      background: th.vars['--circle'],
+                      color: th.vars['--text'],
+                    }}
+                  >
+                    <div>{th.name}</div>
+                    <div className="text-xs opacity-80">
+                      {unlocked ? (selected ? 'Selected' : 'Select') : `Buy: ${th.price} 💰`}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="font-bold mb-2">Wallpapers</div>
+            <div className="grid grid-cols-3 gap-3">
+              {wallpapers.map((wp) => {
+                const unlocked = unlockedWallpapers.includes(wp.id)
+                const selected = selectedWallpaper === wp.id
+                return (
+                  <button
+                    key={wp.id}
+                    onClick={() => (unlocked ? selectWallpaper(wp.id) : buyWallpaper(wp.id, wp.price))}
+                    className={`px-4 py-3 rounded-2xl font-bold border text-left ${
+                      selected ? 'ring-2 ring-yellow-400' : ''
+                    } ${unlocked ? '' : 'opacity-80'}`}
+                    style={{
+                      borderColor: 'var(--accent)',
+                      background: 'var(--panel)',
+                      color: 'var(--text)',
+                    }}
+                  >
+                    <div>{wp.name}</div>
+                    <div className="text-xs opacity-80">
+                      {unlocked ? (selected ? 'Selected' : 'Select') : `Buy: ${wp.price} 💰`}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </GlowModal>
     </div>
